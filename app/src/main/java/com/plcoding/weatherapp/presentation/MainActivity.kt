@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.Text
 import androidx.compose.ui.Alignment
@@ -24,47 +25,50 @@ import com.plcoding.weatherapp.presentation.ui.theme.DarkGreen
 import com.plcoding.weatherapp.presentation.ui.theme.DeepGreenBackground
 import com.plcoding.weatherapp.presentation.ui.theme.WeatherAppTheme
 import dagger.hilt.android.AndroidEntryPoint
-import androidx.compose.foundation.layout.statusBarsPadding
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-
-
     private val viewModel: WeatherViewModel by viewModels()
     private lateinit var permissionLauncher: ActivityResultLauncher<Array<String>>
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        permissionLauncher = registerForActivityResult(
-            ActivityResultContracts.RequestMultiplePermissions()
-        ){
-            viewModel.loadWeatherInfo()
-        }
-        permissionLauncher.launch(arrayOf(
-            Manifest.permission.ACCESS_FINE_LOCATION,
-            Manifest.permission.ACCESS_COARSE_LOCATION))
+        permissionLauncher =
+            registerForActivityResult(
+                ActivityResultContracts.RequestMultiplePermissions(),
+            ) {
+                viewModel.loadWeatherInfo()
+            }
+        permissionLauncher.launch(
+            arrayOf(
+                Manifest.permission.ACCESS_FINE_LOCATION,
+                Manifest.permission.ACCESS_COARSE_LOCATION,
+            ),
+        )
         setContent {
             WeatherAppTheme {
                 Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .statusBarsPadding()
+                    modifier =
+                        Modifier
+                            .fillMaxSize()
+                            .statusBarsPadding(),
                 ) {
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .background(DarkGreen)
+                        modifier =
+                            Modifier
+                                .fillMaxSize()
+                                .background(DarkGreen),
                     ) {
                         WeatherCard(
                             state = viewModel.state,
-                            backgroundColor = DeepGreenBackground
+                            backgroundColor = DeepGreenBackground,
                         )
                         Spacer(modifier = Modifier.height(16.dp))
                         WeatherForeCast(state = viewModel.state)
                     }
-                    if(viewModel.state.isLoading) {
+                    if (viewModel.state.isLoading) {
                         CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
                         )
                     }
                     viewModel.state.error?.let { error ->
@@ -72,7 +76,7 @@ class MainActivity : ComponentActivity() {
                             text = error,
                             color = Color.Red,
                             textAlign = TextAlign.Center,
-                            modifier = Modifier.align(Alignment.Center)
+                            modifier = Modifier.align(Alignment.Center),
                         )
                     }
                 }

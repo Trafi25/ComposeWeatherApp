@@ -11,29 +11,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 
 @Composable
-fun WeatherDataDisplay (
+fun WeatherDataDisplay(
     value: Int,
     unit: String,
-    icon : ImageVector,
+    icon: ImageVector,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = TextStyle(),
-    iconTint: Color = Color.White
-    ){
+    iconTint: Color = Color.White,
+) {
     Row(
         modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically) {
-        Icon(imageVector = icon,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        Icon(
+            imageVector = icon,
             contentDescription = "special_icon_$unit",
             tint = iconTint,
-            modifier = Modifier.size(25.dp))
+            modifier = Modifier.size(25.dp),
+        )
 
-        Spacer(modifier= Modifier.width(4.dp))
+        Spacer(modifier = Modifier.width(4.dp))
         Text(text = "$value$unit", style = textStyle)
     }
-
 }

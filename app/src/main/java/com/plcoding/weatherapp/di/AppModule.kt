@@ -1,7 +1,6 @@
 package com.plcoding.weatherapp.di
 
 import android.app.Application
-import android.location.Location
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.plcoding.weatherapp.data.remote.WeatherApi
@@ -17,20 +16,18 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
-   @Provides
-   @Singleton
-   fun provideWeatherApi() : WeatherApi {
-       return Retrofit.Builder()
-           .baseUrl("https://api.open-meteo.com/")
-           .addConverterFactory(MoshiConverterFactory.create())
-           .build()
-           .create(WeatherApi::class.java)
-   }
+    @Provides
+    @Singleton
+    fun provideWeatherApi(): WeatherApi =
+        Retrofit
+            .Builder()
+            .baseUrl("https://api.open-meteo.com/")
+            .addConverterFactory(MoshiConverterFactory.create())
+            .build()
+            .create(WeatherApi::class.java)
 
     @Provides
     @Singleton
-    fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient {
-        return LocationServices.getFusedLocationProviderClient(app)
-    }
+    fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient =
+        LocationServices.getFusedLocationProviderClient(app)
 }

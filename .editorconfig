@@ -1,0 +1,24 @@
+# Top-level editorconfig file
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+indent_size = 4
+indent_style = space
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+[*.{kt,kts}]
+# Enable trailing commas for better git diffs and Compose readability
+ij_kotlin_allow_trailing_comma = true
+ij_kotlin_allow_trailing_comma_on_call_site = true
+
+# Use Android-specific linting rules
+ktlint_code_style = android
+
+# Ignore naming rules for @Composable functions (which start with Uppercase)
+ktlint_function_naming_ignore_when_annotated_with = Composable, Test
+
+# Optional: Disable wildcard import warnings if you prefer them
+ktlint_standard_no-wildcard-imports = disabled

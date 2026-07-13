@@ -15,29 +15,31 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
 @Composable
-fun WeatherForeCast (
+fun WeatherForeCast(
     state: WeatherState,
-    modifier: Modifier = Modifier
-){
+    modifier: Modifier = Modifier,
+) {
     state.weatherInfo?.weatherDataPerDay?.get(0)?.let { data ->
         Column(
-            modifier = modifier
-                .fillMaxWidth()
-                .padding(horizontal = 16.dp)
+            modifier =
+                modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp),
         ) {
             Text(
                 text = "Today",
                 fontSize = 20.sp,
-                color = Color.White
+                color = Color.White,
             )
             Spacer(modifier = Modifier.height(16.dp))
             LazyRow(content = {
                 items(data) { weatherData ->
                     HourlyWeatherDisplay(
                         weatherData = weatherData,
-                        modifier = Modifier
-                            .height(100.dp)
-                            .padding(horizontal = 16.dp)
+                        modifier =
+                            Modifier
+                                .height(100.dp)
+                                .padding(horizontal = 16.dp),
                     )
                 }
             })

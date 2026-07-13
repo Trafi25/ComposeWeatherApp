@@ -8,6 +8,6 @@ fun WeatherAppTheme(content: @Composable () -> Unit) {
     MaterialTheme(
         typography = Typography,
         shapes = Shapes,
-        content = content
+        content = content,
     )
 }
