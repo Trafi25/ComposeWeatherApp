@@ -1,7 +1,5 @@
 package com.plcoding.weatherapp.data.mappers
 
-import android.os.Build
-import androidx.annotation.RequiresApi
 import com.plcoding.weatherapp.data.remote.WeatherDataDto
 import com.plcoding.weatherapp.data.remote.WeatherDto
 import com.plcoding.weatherapp.domain.weather.WeatherData
@@ -16,8 +14,6 @@ private data class IndexedWeatherData(
     val data: WeatherData
 )
 
-
-@RequiresApi(Build.VERSION_CODES.O)
 fun WeatherDataDto.toWeatherDataMap() : Map<Int, List<WeatherData>> {
     return time.mapIndexed { index, time ->
         val temperature = temperatures[index]
@@ -37,7 +33,6 @@ fun WeatherDataDto.toWeatherDataMap() : Map<Int, List<WeatherData>> {
     }.groupBy { it.index/24 }.mapValues { it.value.map { it.data } }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
 fun WeatherDto.toWeatherInfo(): WeatherInfo {
     val weatherDataMap = weatherData.toWeatherDataMap()
     val now = LocalDateTime.now()
