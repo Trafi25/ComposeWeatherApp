@@ -1,14 +1,15 @@
 package com.plcoding.weatherapp.presentation
 
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.Resource
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -19,41 +20,45 @@ class WeatherViewModel
         private val repository: WeatherRepository,
         private val locationTracker: LocationTracker,
     ) : ViewModel() {
-        var state by mutableStateOf(WeatherState())
-            private set
 
+    private val _uiState = MutableStateFlow(WeatherState())
+    val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
         fun loadWeatherInfo() {
             viewModelScope.launch {
-                state =
-                    state.copy(
+                _uiState.update { currentState ->
+                    currentState.copy(
                         isLoading = true,
-                        error = null,
+                        errorMessage = null,
                     )
+                }
                 locationTracker.getCurrentLocation()?.let { location ->
                     when (val result = repository.getWeatherData(location.latitude, location.longitude)) {
                         is Resource.Success -> {
-                            state =
-                                state.copy(
+                            _uiState.update { currentState ->
+                                currentState.copy(
                                     weatherInfo = result.data,
                                     isLoading = false,
-                                    error = null,
+                                    errorMessage = null,
                                 )
+                            }
                         }
                         is Resource.Error -> {
-                            state =
-                                state.copy(
+                            _uiState.update { currentState ->
+                                currentState.copy(
                                     weatherInfo = null,
                                     isLoading = false,
-                                    error = result.message,
+                                    errorMessage = result.message,
                                 )
+                            }
                         }
                     }
                 } ?: kotlin.run {
-                    state =
-                        state.copy(
+                    _uiState.update { currentState ->
+                        currentState.copy(
                             isLoading = false,
-                            error = "Couldn't retrieve location. Make sure to grant permission and enable GPS.",
+                            errorMessage = "Couldn't retrieve location. Make sure to grant permission and enable GPS.",
                         )
+                    }
                 }
             }
         }
