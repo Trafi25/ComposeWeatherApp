@@ -4,7 +4,9 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
-import com.plcoding.weatherapp.domain.util.Resource
+import com.plcoding.weatherapp.domain.util.Result
+import com.plcoding.weatherapp.domain.util.WeatherError
+import com.plcoding.weatherapp.domain.util.toMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -33,7 +35,7 @@ class WeatherViewModel
                 }
                 locationTracker.getCurrentLocation()?.let { location ->
                     when (val result = repository.getWeatherData(location.latitude, location.longitude)) {
-                        is Resource.Success -> {
+                        is Result.Success -> {
                             _uiState.update { currentState ->
                                 currentState.copy(
                                     weatherInfo = result.data,
@@ -42,12 +44,12 @@ class WeatherViewModel
                                 )
                             }
                         }
-                        is Resource.Error -> {
+                        is Result.Error -> {
                             _uiState.update { currentState ->
                                 currentState.copy(
                                     weatherInfo = null,
                                     isLoading = false,
-                                    errorMessage = result.message,
+                                    errorMessage =  result.error.toMessage(),
                                 )
                             }
                         }
@@ -56,7 +58,7 @@ class WeatherViewModel
                     _uiState.update { currentState ->
                         currentState.copy(
                             isLoading = false,
-                            errorMessage = "Couldn't retrieve location. Make sure to grant permission and enable GPS.",
+                            errorMessage = WeatherError.LocationUnavailable.toMessage(),
                         )
                     }
                 }
