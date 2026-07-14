@@ -2,9 +2,11 @@ package com.plcoding.weatherapp.data.repository
 
 import com.plcoding.weatherapp.data.mappers.toWeatherInfo
 import com.plcoding.weatherapp.data.remote.WeatherApi
+import com.plcoding.weatherapp.data.util.toWeatherError
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
-import com.plcoding.weatherapp.domain.util.Resource
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
+import com.plcoding.weatherapp.domain.util.Result
+import com.plcoding.weatherapp.domain.util.WeatherError
 import javax.inject.Inject
 
 class WeatherRepositoryImpl
@@ -15,18 +17,21 @@ class WeatherRepositoryImpl
         override suspend fun getWeatherData(
             lat: Double,
             long: Double,
-        ): Resource<WeatherInfo> =
-            try {
-                Resource.Success(
-                    data =
-                        api
-                            .getWeatherData(
-                                lat = lat,
-                                long = long,
-                            ).toWeatherInfo(),
+        ): Result<WeatherInfo, WeatherError>
+        {
+            return try {
+                val weatherInfo = api
+                    .getWeatherData(
+                        lat = lat,
+                        long = long,
+                    )
+                    .toWeatherInfo()
+
+                Result.Success(weatherInfo)
+            } catch (exception: Exception) {
+                Result.Error(
+                    error = exception.toWeatherError(),
                 )
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Resource.Error(e.message ?: "An unknown error occurred.")
             }
-    }
+        }
+}
