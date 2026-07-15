@@ -8,6 +8,7 @@ import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.WeatherError
 import com.plcoding.weatherapp.domain.util.toMessage
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,43 +26,88 @@ class WeatherViewModel
 
     private val _uiState = MutableStateFlow(WeatherState())
     val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
-        fun loadWeatherInfo() {
-            viewModelScope.launch {
+    private var loadWeatherJob: Job? = null
+    fun loadWeatherInfo() {
+        loadWeatherJob?.cancel()
+
+        loadWeatherJob = viewModelScope.launch {
+            _uiState.update { currentState ->
+                currentState.copy(
+                    isLoading = true,
+                    errorMessage = null,
+                )
+            }
+
+            val location = locationTracker.getCurrentLocation()
+
+            if (location == null) {
                 _uiState.update { currentState ->
                     currentState.copy(
-                        isLoading = true,
+                        isLoading = false,
+                        errorMessage = WeatherError.LocationUnavailable.toMessage(),
+                    )
+                }
+
+                return@launch
+            }
+
+            loadWeatherForLocation(
+                latitude = location.latitude,
+                longitude = location.longitude,
+            )
+        }
+    }
+
+
+    private suspend fun loadWeatherForLocation(
+        latitude: Double,
+        longitude: Double,
+    ) {
+        when (
+            val result = repository.getWeatherData(
+                lat = latitude,
+                long = longitude,
+            )
+        ) {
+            is Result.Success -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        weatherInfo = result.data,
+                        isLoading = false,
                         errorMessage = null,
                     )
                 }
-                locationTracker.getCurrentLocation()?.let { location ->
-                    when (val result = repository.getWeatherData(location.latitude, location.longitude)) {
-                        is Result.Success -> {
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    weatherInfo = result.data,
-                                    isLoading = false,
-                                    errorMessage = null,
-                                )
-                            }
-                        }
-                        is Result.Error -> {
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    weatherInfo = null,
-                                    isLoading = false,
-                                    errorMessage =  result.error.toMessage(),
-                                )
-                            }
-                        }
-                    }
-                } ?: kotlin.run {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = WeatherError.LocationUnavailable.toMessage(),
-                        )
-                    }
+            }
+
+            is Result.Error -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isLoading = false,
+                        errorMessage = result.error.toMessage(),
+                    )
                 }
             }
         }
     }
+
+
+    fun onAction(action: WeatherAction) {
+        when (action) {
+            WeatherAction.LoadWeather,
+            WeatherAction.Retry,
+            WeatherAction.LocationPermissionGranted -> {
+                loadWeatherInfo()
+            }
+
+            WeatherAction.ErrorDismissed -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        errorMessage = null,
+                    )
+                }
+            }
+        }
+    }
+
+
+}

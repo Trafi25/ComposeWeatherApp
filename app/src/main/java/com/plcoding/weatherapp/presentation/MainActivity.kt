@@ -31,7 +31,7 @@ class MainActivity : ComponentActivity() {
         )
         setContent {
             WeatherAppTheme {
-               WeatherMainScreen(viewModel)
+               WeatherMainScreen(viewModel, viewModel::onAction)
             }
         }
     }

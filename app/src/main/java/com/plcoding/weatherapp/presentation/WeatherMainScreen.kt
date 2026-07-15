@@ -21,7 +21,7 @@ import com.plcoding.weatherapp.presentation.ui.theme.DarkGreen
 import com.plcoding.weatherapp.presentation.ui.theme.DeepGreenBackground
 
 @Composable
-fun WeatherMainScreen (viewModel: WeatherViewModel){
+fun WeatherMainScreen (viewModel: WeatherViewModel, onAction: (WeatherAction) -> Unit,){
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
     Box(
         modifier =
@@ -48,10 +48,13 @@ fun WeatherMainScreen (viewModel: WeatherViewModel){
             )
         }
         uiState.errorMessage?.let { error ->
-            Text(
-                text = error,
-                color = Color.Red,
-                textAlign = TextAlign.Center,
+            WeatherErrorContent(  message = error ,
+                onRetry = {
+                    onAction(WeatherAction.Retry)
+                },
+                onDismiss = {
+                    onAction(WeatherAction.ErrorDismissed)
+                },
                 modifier = Modifier.align(Alignment.Center),
             )
         }
