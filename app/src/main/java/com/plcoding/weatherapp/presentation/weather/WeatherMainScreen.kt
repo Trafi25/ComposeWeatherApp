@@ -37,6 +37,7 @@ fun WeatherMainScreen(
         ) {
             WeatherCard(
                 state = uiState,
+                locationName = uiState.locationName,
                 backgroundColor = DeepGreenBackground,
             )
             Spacer(modifier = Modifier.height(16.dp))

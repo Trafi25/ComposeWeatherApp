@@ -6,6 +6,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -18,14 +19,27 @@ import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.presentation.weather.WeatherState
 import java.time.format.DateTimeFormatter
+import java.util.Locale
 import kotlin.math.roundToInt
+import androidx.compose.ui.platform.LocalLocale
+import java.time.LocalDateTime
 
 @Composable
 fun WeatherCard(
     state: WeatherState,
     backgroundColor: Color,
+    locationName: String?,
     modifier: Modifier = Modifier,
 ) {
+    val formatter =
+        DateTimeFormatter.ofPattern(
+            "EEE, dd MMM • HH:mm",
+            LocalLocale.current.platformLocale,
+        )
+    val currentDateTime = remember {
+        LocalDateTime.now()
+    }
+
     state.weatherInfo?.currentWeatherData?.let { data ->
         Card(
             backgroundColor = backgroundColor,
@@ -41,10 +55,16 @@ fun WeatherCard(
             ) {
                 Text(
                     text = "Today ${
-                        data.time.format(
-                            DateTimeFormatter.ofPattern("HH:mm"),
+                        currentDateTime.format(
+                            formatter,
                         )
                     }",
+                    modifier = Modifier.align(Alignment.End),
+                    color = Color.White,
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = locationName ?: "Current location",
                     modifier = Modifier.align(Alignment.End),
                     color = Color.White,
                 )

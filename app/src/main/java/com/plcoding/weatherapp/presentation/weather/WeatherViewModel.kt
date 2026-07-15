@@ -1,7 +1,9 @@
 package com.plcoding.weatherapp.presentation.weather
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.Result
@@ -22,6 +24,7 @@ class WeatherViewModel
     constructor(
         private val repository: WeatherRepository,
         private val locationTracker: LocationTracker,
+        private val locationNameResolver: LocationNameResolver,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
@@ -41,6 +44,12 @@ class WeatherViewModel
 
                     val location = locationTracker.getCurrentLocation()
 
+                    Log.d(
+                        "WeatherLocation",
+                        "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}",
+                    )
+
+
                     if (location == null) {
                         _uiState.update { currentState ->
                             currentState.copy(
@@ -50,6 +59,18 @@ class WeatherViewModel
                         }
 
                         return@launch
+                    }
+
+                    val locationName =
+                        locationNameResolver.getLocationName(
+                            latitude = location.latitude,
+                            longitude = location.longitude,
+                        )
+
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            locationName = locationName,
+                        )
                     }
 
                     loadWeatherForLocation(

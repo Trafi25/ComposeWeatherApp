@@ -9,5 +9,4 @@ data class WeatherState(
     val locationName: String? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
-    val hasLocationPermission: Boolean = false,
 )
