@@ -6,11 +6,11 @@ import java.net.ConnectException
 import java.net.SocketTimeoutException
 import java.net.UnknownHostException
 
-fun Exception.toWeatherError(): WeatherError {
-    return when (this) {
+fun Exception.toWeatherError(): WeatherError =
+    when (this) {
         is UnknownHostException,
-        is ConnectException
-            -> WeatherError.NoInternet
+        is ConnectException,
+        -> WeatherError.NoInternet
         is SocketTimeoutException ->
             WeatherError.ServerError
         is HttpException -> {
@@ -22,4 +22,3 @@ fun Exception.toWeatherError(): WeatherError {
         }
         else -> WeatherError.Unknown(this)
     }
-}

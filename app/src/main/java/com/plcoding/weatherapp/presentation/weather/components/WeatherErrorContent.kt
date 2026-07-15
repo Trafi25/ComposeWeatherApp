@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation
+package com.plcoding.weatherapp.presentation.weather.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -49,7 +49,6 @@ fun WeatherErrorContent(
                 ) {
                     Text(text = "Dismiss")
                 }
-
                 Button(
                     onClick = onRetry,
                 ) {

@@ -2,15 +2,20 @@ package com.plcoding.weatherapp.domain.util
 
 sealed interface WeatherError {
     data object NoInternet : WeatherError
-    data object Unauthorized : WeatherError
-    data object LocationUnavailable : WeatherError
-    data object ServerError : WeatherError
-    data class Unknown(val cause: Throwable? = null) : WeatherError
 
+    data object Unauthorized : WeatherError
+
+    data object LocationUnavailable : WeatherError
+
+    data object ServerError : WeatherError
+
+    data class Unknown(
+        val cause: Throwable? = null,
+    ) : WeatherError
 }
 
-fun WeatherError.toMessage(): String {
-    return when (this) {
+fun WeatherError.toMessage(): String =
+    when (this) {
         WeatherError.NoInternet ->
             "No internet connection"
 
@@ -26,6 +31,3 @@ fun WeatherError.toMessage(): String {
         is WeatherError.Unknown ->
             "Something went wrong"
     }
-}
-
-

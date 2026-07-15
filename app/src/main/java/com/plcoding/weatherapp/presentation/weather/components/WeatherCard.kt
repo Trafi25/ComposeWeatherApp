@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation
+package com.plcoding.weatherapp.presentation.weather.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
@@ -16,6 +16,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.presentation.weather.WeatherState
 import java.time.format.DateTimeFormatter
 import kotlin.math.roundToInt
 
