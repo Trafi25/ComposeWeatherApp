@@ -31,11 +31,7 @@ fun WeatherCard(
     locationName: String?,
     modifier: Modifier = Modifier,
 ) {
-    val formatter =
-        DateTimeFormatter.ofPattern(
-            "EEE, dd MMM • HH:mm",
-            LocalLocale.current.platformLocale,
-        )
+
     val currentDateTime = remember {
         LocalDateTime.now()
     }
@@ -53,14 +49,8 @@ fun WeatherCard(
                         .padding(16.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
-                Text(
-                    text = "Today ${
-                        currentDateTime.format(
-                            formatter,
-                        )
-                    }",
-                    modifier = Modifier.align(Alignment.End),
-                    color = Color.White,
+                CurrentDayTime(
+                    modifier = Modifier.align(Alignment.End)
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
