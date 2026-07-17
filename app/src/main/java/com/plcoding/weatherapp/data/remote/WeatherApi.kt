@@ -4,9 +4,17 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface WeatherApi {
-    @GET("v1/forecast?hourly=temperature_2m,weathercode,relativehumidity_2m,windspeed_10m,pressure_msl")
+    @GET("v1/forecast")
     suspend fun getWeatherData(
         @Query("latitude") lat: Double,
         @Query("longitude") long: Double,
+        @Query("current") current: String =
+            "temperature_2m,relative_humidity_2m,weather_code," +
+                "pressure_msl,wind_speed_10m,is_day",
+        @Query("hourly") hourly: String =
+            "temperature_2m,relative_humidity_2m,weather_code," +
+                "pressure_msl,wind_speed_10m",
+        @Query("timezone")
+        timezone: String = "auto",
     ): WeatherDto
 }

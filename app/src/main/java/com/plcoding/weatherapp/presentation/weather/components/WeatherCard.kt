@@ -18,11 +18,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.presentation.weather.WeatherState
-import java.time.format.DateTimeFormatter
-import java.util.Locale
-import kotlin.math.roundToInt
-import androidx.compose.ui.platform.LocalLocale
 import java.time.LocalDateTime
+import kotlin.math.roundToInt
 
 @Composable
 fun WeatherCard(
@@ -31,10 +28,10 @@ fun WeatherCard(
     locationName: String?,
     modifier: Modifier = Modifier,
 ) {
-
-    val currentDateTime = remember {
-        LocalDateTime.now()
-    }
+    val currentDateTime =
+        remember {
+            LocalDateTime.now()
+        }
 
     state.weatherInfo?.currentWeatherData?.let { data ->
         Card(
@@ -50,7 +47,7 @@ fun WeatherCard(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 CurrentDayTime(
-                    modifier = Modifier.align(Alignment.End)
+                    modifier = Modifier.align(Alignment.End),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(

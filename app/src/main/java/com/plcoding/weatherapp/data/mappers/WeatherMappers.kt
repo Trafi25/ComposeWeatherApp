@@ -1,5 +1,6 @@
 package com.plcoding.weatherapp.data.mappers
 
+import com.plcoding.weatherapp.data.remote.CurrentWeatherDto
 import com.plcoding.weatherapp.data.remote.WeatherDataDto
 import com.plcoding.weatherapp.data.remote.WeatherDto
 import com.plcoding.weatherapp.domain.weather.WeatherData
@@ -31,6 +32,7 @@ fun WeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> =
                         windSpeed = windSpeed,
                         humidity = humidity,
                         weatherType = WeatherType.fromWMO(weatherCode),
+                        isDay = true,
                     ),
             )
         }.groupBy {
@@ -40,15 +42,21 @@ fun WeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> =
         }
 
 fun WeatherDto.toWeatherInfo(): WeatherInfo {
-    val weatherDataMap = weatherData.toWeatherDataMap()
-    val now = LocalDateTime.now()
-    val currentWeatherData =
-        weatherDataMap[0]?.find {
-            val hour = if (now.minute < 30) now.hour else now.hour + 1
-            it.time.hour == hour
-        }
+    val weatherDataMap =
+        hourlyWeatherData.toWeatherDataMap()
     return WeatherInfo(
         weatherDataPerDay = weatherDataMap,
-        currentWeatherData = currentWeatherData,
+        currentWeatherData = currentWeatherData.toWeatherData(),
     )
 }
+
+private fun CurrentWeatherDto.toWeatherData(): WeatherData =
+    WeatherData(
+        time = LocalDateTime.parse(time),
+        temperatureCelsius = temperature,
+        pressure = pressure,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        weatherType = WeatherType.fromWMO(weatherCode),
+        isDay = isDay == 1,
+    )

@@ -12,17 +12,30 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.plcoding.weatherapp.presentation.ui.theme.DarkGreen
-import com.plcoding.weatherapp.presentation.ui.theme.DeepGreenBackground
+import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
+import com.plcoding.weatherapp.presentation.ui.theme.DayCardBackground
+import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
+import com.plcoding.weatherapp.presentation.ui.theme.NightCardBackground
 import com.plcoding.weatherapp.presentation.weather.components.WeatherCard
 import com.plcoding.weatherapp.presentation.weather.components.WeatherErrorContent
 import com.plcoding.weatherapp.presentation.weather.components.WeatherForeCast
+import com.plcoding.weatherapp.presentation.weather.components.WeatherSystemBar
 
 @Composable
 fun WeatherMainScreen(
     uiState: WeatherState,
     onAction: (WeatherAction) -> Unit,
 ) {
+    val isDay = uiState.weatherInfo?.currentWeatherData?.isDay ?: true
+
+    val backgroundColor = if (isDay) DayBackground else NightBackground
+
+    val cardBackground = if (isDay) DayCardBackground else NightCardBackground
+    WeatherSystemBar(
+        backgroundColor = backgroundColor,
+        useDarkIcons = isDay,
+    )
+
     Box(
         modifier =
             Modifier
@@ -33,12 +46,12 @@ fun WeatherMainScreen(
             modifier =
                 Modifier
                     .fillMaxSize()
-                    .background(DarkGreen),
+                    .background(backgroundColor),
         ) {
             WeatherCard(
                 state = uiState,
                 locationName = uiState.locationName,
-                backgroundColor = DeepGreenBackground,
+                backgroundColor = cardBackground,
             )
             Spacer(modifier = Modifier.height(16.dp))
             WeatherForeCast(state = uiState)

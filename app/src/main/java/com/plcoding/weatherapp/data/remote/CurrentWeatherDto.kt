@@ -4,16 +4,18 @@ import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class WeatherDataDto(
-    val time: List<String>,
+data class CurrentWeatherDto(
+    val time: String,
     @field:Json(name = "temperature_2m")
-    val temperatures: List<Double>,
+    val temperature: Double,
     @field:Json(name = "weather_code")
-    val weatherCodes: List<Int>,
+    val weatherCode: Int,
     @field:Json(name = "pressure_msl")
-    val pressures: List<Double>,
+    val pressure: Double,
     @field:Json(name = "wind_speed_10m")
-    val windSpeeds: List<Double>,
+    val windSpeed: Double,
     @field:Json(name = "relative_humidity_2m")
-    val humidities: List<Double>,
+    val humidity: Double,
+    @field:Json(name = "is_day")
+    val isDay: Int,
 )

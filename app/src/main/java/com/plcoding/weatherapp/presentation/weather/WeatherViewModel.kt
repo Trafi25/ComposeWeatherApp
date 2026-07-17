@@ -49,7 +49,6 @@ class WeatherViewModel
                         "Latitude: ${location?.latitude}, Longitude: ${location?.longitude}",
                     )
 
-
                     if (location == null) {
                         _uiState.update { currentState ->
                             currentState.copy(
