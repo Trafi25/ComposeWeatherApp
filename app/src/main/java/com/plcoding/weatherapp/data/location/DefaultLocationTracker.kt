@@ -8,6 +8,8 @@ import android.location.Location
 import android.location.LocationManager
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.Priority
+import com.google.android.gms.tasks.CancellationTokenSource
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -39,20 +41,28 @@ class DefaultLocationTracker
                         LocationManager.GPS_PROVIDER,
                     )
             if (!hasAccessFineLocationPermission || !hasAccessCoarseLocationPermission || !isGpsEnabled) return null
-            return suspendCancellableCoroutine { cont ->
-                locationClient.lastLocation.apply {
-                    if (isComplete) {
-                        if (isSuccessful) {
-                            cont.resume(result)
-                        } else {
-                            cont.resume(null)
-                        }
-                        return@suspendCancellableCoroutine
+
+            val lastLocation =
+                suspendCancellableCoroutine { cont ->
+                    locationClient.lastLocation.apply {
+                        addOnSuccessListener { cont.resume(it) }
+                        addOnFailureListener { cont.resume(null) }
+                        addOnCanceledListener { cont.cancel() }
                     }
-                    addOnSuccessListener { cont.resume(it) }
-                    addOnFailureListener { cont.resume(null) }
-                    addOnCanceledListener { cont.cancel() }
                 }
+
+            if (lastLocation != null) return lastLocation
+
+            return suspendCancellableCoroutine { cont ->
+                locationClient
+                    .getCurrentLocation(
+                        Priority.PRIORITY_HIGH_ACCURACY,
+                        CancellationTokenSource().token,
+                    ).apply {
+                        addOnSuccessListener { cont.resume(it) }
+                        addOnFailureListener { cont.resume(null) }
+                        addOnCanceledListener { cont.cancel() }
+                    }
             }
         }
     }
