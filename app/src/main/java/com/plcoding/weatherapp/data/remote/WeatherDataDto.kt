@@ -16,4 +16,6 @@ data class WeatherDataDto(
     val windSpeeds: List<Double>,
     @field:Json(name = "relative_humidity_2m")
     val humidities: List<Double>,
+    @field:Json(name = "is_day")
+    val isDays: List<Int>,
 )

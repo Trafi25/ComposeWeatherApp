@@ -38,7 +38,7 @@ fun HourlyWeatherDisplay(
             color = Color.LightGray,
         )
         Image(
-            painter = painterResource(id = weatherData.weatherType.iconRes),
+            painter = painterResource(id = weatherData.weatherType.getIconRes(weatherData.isDay)),
             contentDescription = null,
             modifier = Modifier.width(40.dp),
         )

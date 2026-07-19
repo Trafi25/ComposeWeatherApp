@@ -28,11 +28,6 @@ fun WeatherCard(
     locationName: String?,
     modifier: Modifier = Modifier,
 ) {
-    val currentDateTime =
-        remember {
-            LocalDateTime.now()
-        }
-
     state.weatherInfo?.currentWeatherData?.let { data ->
         Card(
             backgroundColor = backgroundColor,
@@ -57,9 +52,9 @@ fun WeatherCard(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Image(
-                    painter = painterResource(id = data.weatherType.iconRes),
+                    painter = painterResource(id = data.weatherType.getIconRes(data.isDay)),
                     contentDescription = null,
-                    modifier = Modifier.width(200.dp),
+                    modifier = Modifier.size(170.dp),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
