@@ -3,11 +3,13 @@ package com.plcoding.weatherapp.data.mappers
 import com.plcoding.weatherapp.data.remote.CurrentWeatherDto
 import com.plcoding.weatherapp.data.remote.WeatherDataDto
 import com.plcoding.weatherapp.data.remote.WeatherDto
+import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
 import com.plcoding.weatherapp.domain.weather.WeatherData
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.domain.weather.WeatherType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import kotlin.math.roundToInt
 
 private data class IndexedWeatherData(
     val index: Int,
@@ -51,13 +53,38 @@ fun WeatherDto.toWeatherInfo(): WeatherInfo {
     )
 }
 
-private fun CurrentWeatherDto.toWeatherData(): WeatherData =
-    WeatherData(
-        time = LocalDateTime.parse(time),
+private fun CurrentWeatherDto.toWeatherData(): CurrentWeatherData =
+    CurrentWeatherData(
+        time = LocalDateTime.parse(time, DateTimeFormatter.ISO_DATE_TIME),
         temperatureCelsius = temperature,
-        pressure = pressure,
-        windSpeed = windSpeed,
+        apparentTemperatureCelsius = apparentTemperature,
         humidity = humidity,
-        weatherType = WeatherType.fromWMO(weatherCode),
+        pressure = pressure,
+        precipitationMm = precipitation,
+        cloudCoverPercent = cloudCover,
+        windSpeed = windSpeed,
+        windDirectionDegrees = windDirection,
+        windDirectionLabel = windDirection.toCompareDirection(),
+        windGustsKmh = windGusts,
         isDay = isDay == 1,
+        weatherType = WeatherType.fromWMO(
+            code = weatherCode
+        ),
     )
+
+fun Int.toCompareDirection() : String {
+    val normalizedDegrees = ((this % 360) + 360) % 360
+
+    return when(normalizedDegrees){
+        in 338..359, in 0..22 -> "N"
+        in 23..67 -> "NE"
+        in 68..112 -> "E"
+        in 113..157 -> "SE"
+        in 158..202 -> "S"
+        in 203..247 -> "SW"
+        in 248..292 -> "W"
+        in 293..337 -> "NW"
+        else -> "N"
+    }
+
+}

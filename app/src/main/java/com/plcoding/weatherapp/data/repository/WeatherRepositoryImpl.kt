@@ -28,6 +28,7 @@ class WeatherRepositoryImpl
 
                 Result.Success(weatherInfo)
             } catch (exception: Exception) {
+                exception.printStackTrace()
                 Result.Error(
                     error = exception.toWeatherError(),
                 )
