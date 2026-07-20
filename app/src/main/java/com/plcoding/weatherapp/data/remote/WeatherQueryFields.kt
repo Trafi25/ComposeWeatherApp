@@ -1,7 +1,6 @@
 package com.plcoding.weatherapp.data.remote
 
 internal object WeatherQueryFields {
-
     const val CURRENT =
         "temperature_2m," +
             "relative_humidity_2m," +

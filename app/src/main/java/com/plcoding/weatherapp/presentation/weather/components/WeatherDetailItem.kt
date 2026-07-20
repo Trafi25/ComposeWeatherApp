@@ -1,6 +1,5 @@
 package com.plcoding.weatherapp.presentation.weather.components
 
-import android.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -19,35 +18,33 @@ import androidx.compose.ui.unit.dp
 
 @Composable
 fun WeatherDetailItem(
-    iconResource : Int,
-    label : String,
+    iconResource: Int,
+    label: String,
     value: String,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
 ) {
     Row(
         modifier = modifier.padding(8.dp),
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(iconResource),
             contentDescription = label,
             tint = Color.White,
-            modifier = modifier.size(28.dp)
-
+            modifier = Modifier.size(28.dp),
         )
         Spacer(modifier = Modifier.width(10.dp))
         Column {
             Text(
                 text = label,
                 color = Color.White,
-                style = MaterialTheme.typography.body1
+                style = MaterialTheme.typography.body1,
             )
             Text(
                 text = value,
                 color = Color.White,
-                style = MaterialTheme.typography.body2
+                style = MaterialTheme.typography.body2,
             )
         }
-
     }
 }

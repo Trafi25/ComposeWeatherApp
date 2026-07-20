@@ -9,7 +9,6 @@ import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.domain.weather.WeatherType
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import kotlin.math.roundToInt
 
 private data class IndexedWeatherData(
     val index: Int,
@@ -67,15 +66,16 @@ private fun CurrentWeatherDto.toWeatherData(): CurrentWeatherData =
         windDirectionLabel = windDirection.toCompareDirection(),
         windGustsKmh = windGusts,
         isDay = isDay == 1,
-        weatherType = WeatherType.fromWMO(
-            code = weatherCode
-        ),
+        weatherType =
+            WeatherType.fromWMO(
+                code = weatherCode,
+            ),
     )
 
-fun Int.toCompareDirection() : String {
+fun Int.toCompareDirection(): String {
     val normalizedDegrees = ((this % 360) + 360) % 360
 
-    return when(normalizedDegrees){
+    return when (normalizedDegrees) {
         in 338..359, in 0..22 -> "N"
         in 23..67 -> "NE"
         in 68..112 -> "E"
@@ -86,5 +86,4 @@ fun Int.toCompareDirection() : String {
         in 293..337 -> "NW"
         else -> "N"
     }
-
 }

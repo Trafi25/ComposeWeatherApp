@@ -79,15 +79,15 @@ fun WeatherCard(
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = expandVertically() + fadeIn(),
-                    exit = shrinkVertically() + fadeOut()
+                    exit = shrinkVertically() + fadeOut(),
                 ) {
                     AdditionalWeatherDetails(
                         data = data,
                     )
                 }
                 IconButton(
-                    onClick = {isExpanded = !isExpanded},
-                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                    onClick = { isExpanded = !isExpanded },
+                    modifier = Modifier.align(Alignment.CenterHorizontally),
                 ) {
                     Icon(
                         painter =
@@ -103,8 +103,8 @@ fun WeatherCard(
                                 "Expand weather details"
                             },
                         tint = Color.White,
-                        modifier = Modifier.size(20.dp)
-                        )
+                        modifier = Modifier.size(15.dp),
+                    )
                 }
             }
         }

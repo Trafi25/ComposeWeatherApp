@@ -14,9 +14,7 @@ import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
 import kotlin.math.roundToInt
 
 @Composable
-fun CurrentWeatherSummary(
-    data: CurrentWeatherData
-) {
+fun CurrentWeatherSummary(data: CurrentWeatherData) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
@@ -43,5 +41,4 @@ fun CurrentWeatherSummary(
             textStyle = TextStyle(color = Color.White),
         )
     }
-
 }
