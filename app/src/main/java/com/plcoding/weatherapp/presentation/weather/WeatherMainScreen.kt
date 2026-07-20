@@ -18,7 +18,7 @@ import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightCardBackground
 import com.plcoding.weatherapp.presentation.weather.components.WeatherCard
 import com.plcoding.weatherapp.presentation.weather.components.WeatherErrorContent
-import com.plcoding.weatherapp.presentation.weather.components.WeatherForeCast
+import com.plcoding.weatherapp.presentation.weather.components.WeatherForecast
 import com.plcoding.weatherapp.presentation.weather.components.WeatherSystemBar
 
 @Composable
@@ -54,7 +54,7 @@ fun WeatherMainScreen(
                 backgroundColor = cardBackground,
             )
             Spacer(modifier = Modifier.height(16.dp))
-            WeatherForeCast(state = uiState)
+            WeatherForecast(state = uiState)
         }
         if (uiState.isLoading) {
             CircularProgressIndicator(

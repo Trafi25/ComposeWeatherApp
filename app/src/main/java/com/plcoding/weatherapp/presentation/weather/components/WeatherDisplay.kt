@@ -14,7 +14,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.domain.weather.WeatherData
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 
 @Composable
 fun HourlyWeatherDisplay(
@@ -22,11 +24,21 @@ fun HourlyWeatherDisplay(
     modifier: Modifier = Modifier,
     textColor: Color = Color.White,
 ) {
+    val isNow =
+        remember(weatherData) {
+            val now = LocalDateTime.now().truncatedTo(ChronoUnit.HOURS)
+            weatherData.time.truncatedTo(ChronoUnit.HOURS).isEqual(now)
+        }
+
     val formatedTime =
         remember(weatherData) {
-            weatherData.time.format(
-                DateTimeFormatter.ofPattern("HH:mm"),
-            )
+            if (isNow) {
+                "Now"
+            } else {
+                weatherData.time.format(
+                    DateTimeFormatter.ofPattern("HH:mm"),
+                )
+            }
         }
     Column(
         modifier = modifier,
@@ -35,7 +47,8 @@ fun HourlyWeatherDisplay(
     ) {
         Text(
             text = formatedTime,
-            color = Color.LightGray,
+            color = if (isNow) Color.White else Color.LightGray,
+            fontWeight = if (isNow) FontWeight.Bold else FontWeight.Normal,
         )
         Image(
             painter = painterResource(id = weatherData.weatherType.getIconRes(weatherData.isDay)),
