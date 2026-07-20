@@ -3,7 +3,7 @@ package com.plcoding.weatherapp.presentation.weather.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.size
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -40,7 +40,7 @@ fun HourlyWeatherDisplay(
         Image(
             painter = painterResource(id = weatherData.weatherType.getIconRes(weatherData.isDay)),
             contentDescription = null,
-            modifier = Modifier.width(40.dp),
+            modifier = Modifier.size(35.dp),
         )
         Text(
             text = "${weatherData.temperatureCelsius}°C",
