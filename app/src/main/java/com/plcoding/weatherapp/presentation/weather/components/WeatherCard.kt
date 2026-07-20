@@ -1,9 +1,16 @@
 package com.plcoding.weatherapp.presentation.weather.components
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Card
+import androidx.compose.material.Icon
+import androidx.compose.material.IconButton
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -13,15 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.vectorResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.presentation.weather.WeatherState
-import kotlin.math.roundToInt
 
 @Composable
 fun WeatherCard(
@@ -30,6 +33,7 @@ fun WeatherCard(
     locationName: String?,
     modifier: Modifier = Modifier,
 ) {
+    var isExpanded by rememberSaveable { mutableStateOf(false) }
     state.weatherInfo?.currentWeatherData?.let { data ->
         Card(
             backgroundColor = backgroundColor,
@@ -71,31 +75,36 @@ fun WeatherCard(
                     color = Color.White,
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround,
+                CurrentWeatherSummary(data)
+                AnimatedVisibility(
+                    visible = isExpanded,
+                    enter = expandVertically() + fadeIn(),
+                    exit = shrinkVertically() + fadeOut()
                 ) {
-                    WeatherDataDisplay(
-                        value = data.pressure.roundToInt(),
-                        unit = "hpa",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_pressure),
-                        iconTint = Color.White,
-                        textStyle = TextStyle(color = Color.White),
+                    AdditionalWeatherDetails(
+                        data = data,
                     )
-                    WeatherDataDisplay(
-                        value = data.humidity.roundToInt(),
-                        unit = "%",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_drop),
-                        iconTint = Color.White,
-                        textStyle = TextStyle(color = Color.White),
-                    )
-                    WeatherDataDisplay(
-                        value = data.windSpeed.roundToInt(),
-                        unit = "km/h",
-                        icon = ImageVector.vectorResource(id = R.drawable.ic_wind),
-                        iconTint = Color.White,
-                        textStyle = TextStyle(color = Color.White),
-                    )
+                }
+                IconButton(
+                    onClick = {isExpanded = !isExpanded},
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Icon(
+                        painter =
+                            if (isExpanded) {
+                                painterResource(R.drawable.up_arrow)
+                            } else {
+                                painterResource(R.drawable.down_arrow)
+                            },
+                        contentDescription =
+                            if (isExpanded) {
+                                "Collapse weather details"
+                            } else {
+                                "Expand weather details"
+                            },
+                        tint = Color.White,
+                        modifier = Modifier.size(20.dp)
+                        )
                 }
             }
         }
