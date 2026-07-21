@@ -1,12 +1,15 @@
 package com.plcoding.weatherapp.data.mappers
 
-import com.plcoding.weatherapp.data.remote.CurrentWeatherDto
-import com.plcoding.weatherapp.data.remote.WeatherDataDto
-import com.plcoding.weatherapp.data.remote.WeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.CurrentWeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.DailyWeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.WeatherDataDto
+import com.plcoding.weatherapp.data.remote.dtos.WeatherDto
 import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
+import com.plcoding.weatherapp.domain.weather.DailyWeatherData
 import com.plcoding.weatherapp.domain.weather.WeatherData
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.domain.weather.WeatherType
+import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
@@ -49,7 +52,28 @@ fun WeatherDto.toWeatherInfo(): WeatherInfo {
     return WeatherInfo(
         weatherDataPerDay = weatherDataMap,
         currentWeatherData = currentWeatherData.toWeatherData(),
+        dailyWeatherData = dailyWeatherData.toDailyWeatherData()
     )
+}
+
+private fun DailyWeatherDto.toDailyWeatherData(): List<DailyWeatherData>{
+    return time.indices.mapNotNull { index ->
+        val date = runCatching {
+            LocalDate.parse(time[index])
+        }.getOrNull()
+            ?: return@mapNotNull null
+        val weatherCode =
+            weatherCodes.getOrNull(index)
+                ?: return@mapNotNull null
+        DailyWeatherData(
+            date =  date,
+            weatherType = WeatherType.fromWMO(weatherCode),
+            minimumTemperature = minimumTemperatures.getOrNull(index) ?: return@mapNotNull null,
+            maximumTemperature = maximumTemperatures.getOrNull(index) ?: return@mapNotNull null,
+            precipitationProbabilityPercent = precipitationProbabilities.getOrNull(index) ?: 0,
+        )
+
+    }
 }
 
 private fun CurrentWeatherDto.toWeatherData(): CurrentWeatherData =

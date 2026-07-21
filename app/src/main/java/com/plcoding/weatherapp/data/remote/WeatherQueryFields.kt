@@ -23,10 +23,9 @@ internal object WeatherQueryFields {
             "wind_speed_10m," +
             "is_day"
 
-    const val DAILY =
+    const val DAILY_WEATHER_FIELDS =
         "weather_code," +
             "temperature_2m_max," +
             "temperature_2m_min," +
-            "sunrise," +
-            "sunset"
+            "precipitation_probability_max"
 }
