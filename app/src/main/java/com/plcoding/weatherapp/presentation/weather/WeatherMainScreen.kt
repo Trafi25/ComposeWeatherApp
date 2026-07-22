@@ -16,6 +16,7 @@ import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 import com.plcoding.weatherapp.presentation.ui.theme.DayCardBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightCardBackground
+import com.plcoding.weatherapp.presentation.weather.components.SevenDayForecast
 import com.plcoding.weatherapp.presentation.weather.components.WeatherCard
 import com.plcoding.weatherapp.presentation.weather.components.WeatherErrorContent
 import com.plcoding.weatherapp.presentation.weather.components.WeatherForecast
@@ -60,6 +61,9 @@ fun WeatherMainScreen(
                     state = uiState,
                 )
             }
+            item {
+                SevenDayForecast(dailyWeather = uiState.weatherInfo?.dailyWeatherData.orEmpty())
+            }
         }
         if (uiState.isLoading) {
             CircularProgressIndicator(
@@ -78,5 +82,6 @@ fun WeatherMainScreen(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
+
     }
 }
