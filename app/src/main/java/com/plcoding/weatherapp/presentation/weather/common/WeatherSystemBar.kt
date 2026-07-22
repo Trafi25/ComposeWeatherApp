@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.components
+package com.plcoding.weatherapp.presentation.weather.common
 
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle

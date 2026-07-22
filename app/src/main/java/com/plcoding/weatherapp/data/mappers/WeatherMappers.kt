@@ -52,27 +52,27 @@ fun WeatherDto.toWeatherInfo(): WeatherInfo {
     return WeatherInfo(
         weatherDataPerDay = weatherDataMap,
         currentWeatherData = currentWeatherData.toWeatherData(),
-        dailyWeatherData = dailyWeatherData.toDailyWeatherData()
+        dailyWeatherData = dailyWeatherData.toDailyWeatherData(),
     )
 }
 
-private fun DailyWeatherDto.toDailyWeatherData(): List<DailyWeatherData>{
+private fun DailyWeatherDto.toDailyWeatherData(): List<DailyWeatherData> {
     return time.indices.mapNotNull { index ->
-        val date = runCatching {
-            LocalDate.parse(time[index])
-        }.getOrNull()
-            ?: return@mapNotNull null
+        val date =
+            runCatching {
+                LocalDate.parse(time[index])
+            }.getOrNull()
+                ?: return@mapNotNull null
         val weatherCode =
             weatherCodes.getOrNull(index)
                 ?: return@mapNotNull null
         DailyWeatherData(
-            date =  date,
+            date = date,
             weatherType = WeatherType.fromWMO(weatherCode),
             minimumTemperature = minimumTemperatures.getOrNull(index) ?: return@mapNotNull null,
             maximumTemperature = maximumTemperatures.getOrNull(index) ?: return@mapNotNull null,
             precipitationProbabilityPercent = precipitationProbabilities.getOrNull(index) ?: 0,
         )
-
     }
 }
 
@@ -94,6 +94,17 @@ private fun CurrentWeatherDto.toWeatherData(): CurrentWeatherData =
             WeatherType.fromWMO(
                 code = weatherCode,
             ),
+    )
+
+fun CurrentWeatherData.toWeatherData(): WeatherData =
+    WeatherData(
+        time = time,
+        temperatureCelsius = temperatureCelsius,
+        pressure = pressure,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        weatherType = weatherType,
+        isDay = isDay,
     )
 
 fun Int.toCompareDirection(): String {

@@ -10,5 +10,5 @@ data class WeatherDto(
     @field:Json(name = "current")
     val currentWeatherData: CurrentWeatherDto,
     @field:Json(name = "daily")
-    val dailyWeatherData: DailyWeatherDto
+    val dailyWeatherData: DailyWeatherDto,
 )

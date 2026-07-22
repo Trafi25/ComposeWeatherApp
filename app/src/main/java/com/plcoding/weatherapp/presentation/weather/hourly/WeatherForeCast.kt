@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.components
+package com.plcoding.weatherapp.presentation.weather.hourly
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.plcoding.weatherapp.data.mappers.toWeatherData
 import com.plcoding.weatherapp.domain.weather.upcomingHours
 import com.plcoding.weatherapp.presentation.weather.WeatherState
 
@@ -26,13 +27,22 @@ fun WeatherForecast(
 ) {
     val upcomingHours =
         remember(state.weatherInfo) {
-            state.weatherInfo
-                ?.weatherDataPerDay
-                ?.values
-                ?.flatten()
-                ?.sortedBy { it.time }
-                ?.upcomingHours(count = 24)
-                .orEmpty()
+            val hourly =
+                state.weatherInfo
+                    ?.weatherDataPerDay
+                    ?.values
+                    ?.flatten()
+                    ?.sortedBy { it.time }
+                    ?.upcomingHours(count = 24)
+                    .orEmpty()
+
+            val current = state.weatherInfo?.currentWeatherData
+
+            if (current != null && hourly.isNotEmpty()) {
+                listOf(current.toWeatherData()) + hourly.drop(1)
+            } else {
+                hourly
+            }
         }
 
     if (upcomingHours.isEmpty()) {

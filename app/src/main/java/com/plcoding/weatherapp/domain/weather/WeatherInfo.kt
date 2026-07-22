@@ -3,5 +3,5 @@ package com.plcoding.weatherapp.domain.weather
 data class WeatherInfo(
     val weatherDataPerDay: Map<Int, List<WeatherData>>,
     val currentWeatherData: CurrentWeatherData?,
-    val dailyWeatherData: List<DailyWeatherData>
+    val dailyWeatherData: List<DailyWeatherData>,
 )

@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.components
+package com.plcoding.weatherapp.presentation.weather.curent
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.expandVertically

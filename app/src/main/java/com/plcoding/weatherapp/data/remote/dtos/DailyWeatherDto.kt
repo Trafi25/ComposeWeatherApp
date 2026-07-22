@@ -14,5 +14,4 @@ data class DailyWeatherDto(
     val minimumTemperatures: List<Double>,
     @Json(name = "precipitation_probability_max")
     val precipitationProbabilities: List<Int>,
-) {
-}
+)

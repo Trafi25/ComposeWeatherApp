@@ -1,12 +1,10 @@
-package com.plcoding.weatherapp.presentation.weather.components
+package com.plcoding.weatherapp.presentation.weather.daily
 
-import android.R
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
@@ -32,9 +30,9 @@ fun SevenDayForecast(
         Spacer(modifier = Modifier.height(12.dp))
         dailyWeather.forEachIndexed { index, weather ->
             DailyWeatherItem(weather = weather)
-            if (index < dailyWeather.lastIndex)
-            {
+            if (index < dailyWeather.lastIndex) {
                 HorizontalDivider(color = Color.White)
             }
         }
-    } }
+    }
+}

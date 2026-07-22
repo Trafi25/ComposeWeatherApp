@@ -16,11 +16,11 @@ import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 import com.plcoding.weatherapp.presentation.ui.theme.DayCardBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightCardBackground
-import com.plcoding.weatherapp.presentation.weather.components.SevenDayForecast
-import com.plcoding.weatherapp.presentation.weather.components.WeatherCard
-import com.plcoding.weatherapp.presentation.weather.components.WeatherErrorContent
-import com.plcoding.weatherapp.presentation.weather.components.WeatherForecast
-import com.plcoding.weatherapp.presentation.weather.components.WeatherSystemBar
+import com.plcoding.weatherapp.presentation.weather.common.WeatherErrorContent
+import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
+import com.plcoding.weatherapp.presentation.weather.curent.WeatherCard
+import com.plcoding.weatherapp.presentation.weather.daily.SevenDayForecast
+import com.plcoding.weatherapp.presentation.weather.hourly.WeatherForecast
 
 @Composable
 fun WeatherMainScreen(
@@ -82,6 +82,5 @@ fun WeatherMainScreen(
                 modifier = Modifier.align(Alignment.Center),
             )
         }
-
     }
 }
