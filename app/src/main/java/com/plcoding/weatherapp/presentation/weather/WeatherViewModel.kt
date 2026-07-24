@@ -128,185 +128,192 @@ class WeatherViewModel
         _uiState.update { state ->
             state.copy(
                 screenMode = WeatherScreenMode.SearchCity,
-                citySearch = CitySearchState()
+                citySearchState = state.citySearchState.copy(query = "", results = emptyList()),
             )
         }
     }
 
-    private fun onBackClicked() {
-        citySearchJob?.cancel()
-        _uiState.update { state ->
-            when (state.screenMode) {
-                WeatherScreenMode.SearchCity ->
-                    state.copy(
-                        screenMode = WeatherScreenMode.ManageCities,
-                        citySearch = CitySearchState(),
-                    )
-
-                WeatherScreenMode.ManageCities ->
-                    state.copy(
-                        screenMode = WeatherScreenMode.Weather,
-                    )
-
-                WeatherScreenMode.Weather ->
-                    state
-            }
+    private fun showWeatherScreen() {
+        _uiState.update { currentState ->
+            currentState.copy(
+                screenMode = WeatherScreenMode.Weather,
+            )
         }
     }
+
+//    private fun onBackClicked() {
+//        citySearchJob?.cancel()
+//        _uiState.update { state ->
+//            when (state.screenMode) {
+//                WeatherScreenMode.SearchCity ->
+//                    state.copy(
+//                        screenMode = WeatherScreenMode.ManageCities,
+//                        citySearch = CitySearchState(),
+//                    )
+//
+//                WeatherScreenMode.ManageCities ->
+//                    state.copy(
+//                        screenMode = WeatherScreenMode.Weather,
+//                    )
+//
+//                WeatherScreenMode.Weather ->
+//                    state
+//            }
+//        }
+//    }
 
     private fun updateSearchQuery(query: String) {
         _uiState.update { currentState ->
             currentState.copy(
-                citySearch = currentState.citySearch.copy(query = query, errorMessage = null),
+                citySearchState  = currentState.citySearchState.copy(query = query),
             )
         }
-        citySearchJob?.cancel()
-        val trimmedQuery = query.trim()
-
-        if (trimmedQuery.length < 2) {
-            _uiState.update { state ->
-                state.copy(
-                    citySearch =
-                        state.citySearch.copy(
-                            results = emptyList(),
-                            isLoading = false,
-                        ),
-                )
-            }
-            return
-        }
-        citySearchJob =
-            viewModelScope.launch {
-                delay(400)
-                searchCities(trimmedQuery)
-            }
+//        citySearchJob?.cancel()
+//        val trimmedQuery = query.trim()
+//
+//        if (trimmedQuery.length < 2) {
+//            _uiState.update { state ->
+//                state.copy(
+//                    citySearch =
+//                        state.citySearch.copy(
+//                            results = emptyList(),
+//                            isLoading = false,
+//                        ),
+//                )
+//            }
+//            return
+//        }
+//        citySearchJob =
+//            viewModelScope.launch {
+//                delay(400)
+//                searchCities(trimmedQuery)
+//            }
     }
 
-    private suspend fun searchCities(query: String) {
-        _uiState.update { state ->
-            state.copy(
-                citySearch =
-                    state.citySearch.copy(
-                        isLoading = true,
-                        errorMessage = null,
-                    ),
-            )
-        }
-        when (val result = cityRepository.searchCities(query)) {
-            is Result.Success -> {
-                _uiState.update { state ->
-                    state.copy(
-                        citySearch =
-                            state.citySearch.copy(
-                                results = result.data,
-                                isLoading = false,
-                            ),
-                    )
-                }
-            }
+//    private suspend fun searchCities(query: String) {
+//        _uiState.update { state ->
+//            state.copy(
+//                citySearch =
+//                    state.citySearch.copy(
+//                        isLoading = true,
+//                        errorMessage = null,
+//                    ),
+//            )
+//        }
+//        when (val result = cityRepository.searchCities(query)) {
+//            is Result.Success -> {
+//                _uiState.update { state ->
+//                    state.copy(
+//                        citySearch =
+//                            state.citySearch.copy(
+//                                results = result.data,
+//                                isLoading = false,
+//                            ),
+//                    )
+//                }
+//            }
+//
+//            is Result.Error -> {
+//                _uiState.update { state ->
+//                    state.copy(
+//                        citySearch =
+//                            state.citySearch.copy(
+//                                results = emptyList(),
+//                                isLoading = false,
+//                                errorMessage = result.error.toMessage(),
+//                            ),
+//                    )
+//                }
+//            }
+//        }
+//    }
 
-            is Result.Error -> {
-                _uiState.update { state ->
-                    state.copy(
-                        citySearch =
-                            state.citySearch.copy(
-                                results = emptyList(),
-                                isLoading = false,
-                                errorMessage = result.error.toMessage(),
-                            ),
-                    )
-                }
-            }
-        }
-    }
-
-    private fun closeCitySearch() {
-        citySearchJob?.cancel()
-        _uiState.update { state ->
-            state.copy(
-                citySearch = CitySearchState(),
-            )
-        }
-    }
-
-    private fun onCitySelected(city: City) {
-        citySearchJob?.cancel()
-        loadWeatherJob?.cancel()
-        val displayName = city.displayName()
-        _uiState.update { state ->
-            state.copy(
-                citySearch = CitySearchState(),
-                isLoading = true,
-                errorMessage = null
-            )
-        }
-        loadWeatherJob =
-            viewModelScope.launch {
-                when (val result = repository.getWeatherData(
-                    lat = city.latitude,
-                    long = city.longitude
-                )) {
-                    is Result.Success -> _uiState.update { state ->
-                        state.copy(
-                            weatherInfo = result.data,
-                            locationName = displayName,
-                            isLoading = false,
-                            errorMessage = null
-                        )
-                    }
-
-                    is Result.Error -> _uiState.update { state ->
-                        state.copy(
-                            isLoading = false,
-                            errorMessage = result.error.toMessage()
-                        )
-                    }
-                }
-            }
-    }
+//    private fun closeCitySearch() {
+//        citySearchJob?.cancel()
+//        _uiState.update { state ->
+//            state.copy(
+//                citySearch = CitySearchState(),
+//            )
+//        }
+//    }
+//
+//    private fun onCitySelected(city: City) {
+//        citySearchJob?.cancel()
+//        loadWeatherJob?.cancel()
+//        val displayName = city.displayName()
+//        _uiState.update { state ->
+//            state.copy(
+//                citySearch = CitySearchState(),
+//                isLoading = true,
+//                errorMessage = null
+//            )
+//        }
+//        loadWeatherJob =
+//            viewModelScope.launch {
+//                when (val result = repository.getWeatherData(
+//                    lat = city.latitude,
+//                    long = city.longitude
+//                )) {
+//                    is Result.Success -> _uiState.update { state ->
+//                        state.copy(
+//                            weatherInfo = result.data,
+//                            locationName = displayName,
+//                            isLoading = false,
+//                            errorMessage = null
+//                        )
+//                    }
+//
+//                    is Result.Error -> _uiState.update { state ->
+//                        state.copy(
+//                            isLoading = false,
+//                            errorMessage = result.error.toMessage()
+//                        )
+//                    }
+//                }
+//            }
+//    }
 
     fun onAction(action: WeatherAction) {
         when (action) {
-            WeatherAction.LoadWeather,
-            WeatherAction.Retry,
-            WeatherAction.LocationPermissionGranted,
-                -> loadWeatherInfo()
-
-            WeatherAction.ManageCitiesClicked ->
-                openManageCities()
-            WeatherAction.AddCityClicked ->
+            WeatherAction.SearchCityClicked -> {
                 openCitySearch()
-            WeatherAction.BackClicked ->
-                onBackClicked()
-            WeatherAction.UseCurrentLocationClicked -> {
-                _uiState.update { state ->
-                    state.copy(
-                        screenMode = WeatherScreenMode.Weather,
-                        citySearch = CitySearchState(),
-                    )
-                }
+            }
+            WeatherAction.ManageCitiesClicked -> {
+                openManageCities()
+            }
+            WeatherAction.CityScreenBackClicked -> {
+                showWeatherScreen()
+            }
+            WeatherAction.LoadWeather -> {
                 loadWeatherInfo()
             }
-            is WeatherAction.SearchQueryChanged ->
-                updateSearchQuery(action.query)
-            is WeatherAction.CitySelected ->
-                onCitySelected(action.city)
-            WeatherAction.LocationPermissionDenied -> {
-                _uiState.update { state ->
-                    state.copy(
-                        isLoading = false,
-                        errorMessage =
-                            "Location permission is required to load weather.",
+            WeatherAction.Retry -> {
+                loadWeatherInfo()
+            }
+            WeatherAction.ErrorDismissed -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        errorMessage = null,
                     )
                 }
             }
-            WeatherAction.ErrorDismissed -> {
-                _uiState.update { state ->
-                    state.copy(errorMessage = null)
+            WeatherAction.RequestLocationPermission -> {
+            }
+            WeatherAction.LocationPermissionGranted -> {
+                loadWeatherInfo()
+            }
+            WeatherAction.LocationPermissionDenied -> {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        errorMessage = "Location permission is required.",
+                    )
                 }
             }
+            is WeatherAction.SearchQueryChanged -> {
+                updateSearchQuery(action.query)
+            }
 
-            WeatherAction.RequestLocationPermission -> Unit
+            else -> {}
         }
     }
 }

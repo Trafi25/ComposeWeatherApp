@@ -12,10 +12,10 @@ sealed interface WeatherAction {
 
     data object ErrorDismissed : WeatherAction
 
+    // City navigation
+    data object SearchCityClicked : WeatherAction
     data object ManageCitiesClicked : WeatherAction
-    data object AddCityClicked : WeatherAction
-    data object BackClicked : WeatherAction
-    data object UseCurrentLocationClicked : WeatherAction
+    data object CityScreenBackClicked : WeatherAction
 
     data class SearchQueryChanged(
         val query: String,
@@ -24,4 +24,5 @@ sealed interface WeatherAction {
     data class CitySelected(
         val city: City,
     ) : WeatherAction
+
 }
