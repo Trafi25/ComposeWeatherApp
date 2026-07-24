@@ -5,6 +5,5 @@ import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.WeatherError
 
 interface CityRepository {
-
-    suspend fun searchCities(query: String) : Result<List<City>, WeatherError>
+    suspend fun searchCities(query: String): Result<List<City>, WeatherError>
 }

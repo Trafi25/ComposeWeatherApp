@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather
+package com.plcoding.weatherapp.presentation.weather.states
 
 import androidx.compose.runtime.Immutable
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
@@ -9,4 +9,6 @@ data class WeatherState(
     val locationName: String? = null,
     val isLoading: Boolean = false,
     val errorMessage: String? = null,
+    val citySearch: CitySearchState = CitySearchState(),
+    val screenMode: WeatherScreenMode = WeatherScreenMode.Weather
 )

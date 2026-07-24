@@ -19,6 +19,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindCityRepository(cityRepositoryImpl: CityRepositoryImpl) : CityRepository
-
+    abstract fun bindCityRepository(cityRepositoryImpl: CityRepositoryImpl): CityRepository
 }

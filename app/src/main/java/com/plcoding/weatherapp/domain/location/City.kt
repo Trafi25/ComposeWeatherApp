@@ -9,3 +9,13 @@ data class City(
     val adminArea: String?,
     val timezone: String?,
 )
+
+fun City.displayName(): String =
+    listOfNotNull(
+        name,
+        adminArea,
+        country,
+    )
+        .filter { it.isNotBlank() }
+        .distinct()
+        .joinToString(", ")

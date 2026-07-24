@@ -24,7 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
-import com.plcoding.weatherapp.presentation.weather.WeatherState
+import com.plcoding.weatherapp.presentation.weather.states.WeatherState
 
 @Composable
 fun WeatherCard(
@@ -60,7 +60,7 @@ fun WeatherCard(
                 Image(
                     painter = painterResource(id = data.weatherType.getIconRes(data.isDay)),
                     contentDescription = null,
-                    modifier = Modifier.size(170.dp),
+                    modifier = Modifier.size(100.dp),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
