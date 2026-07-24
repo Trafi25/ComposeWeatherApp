@@ -1,7 +1,7 @@
 package com.plcoding.weatherapp.presentation.weather.states
 
-enum class WeatherScreenMode {
-    Weather,
-    ManageCities,
-    SearchCity,
+sealed interface WeatherScreenMode {
+    data object Weather : WeatherScreenMode
+    data object SearchCity : WeatherScreenMode
+    data object ManageCities : WeatherScreenMode
 }

@@ -34,13 +34,13 @@ fun AdditionalWeatherDetails(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             WeatherDetailItem(
-                iconResource = R.drawable.feelsliketemoerature,
+                iconResource = R.drawable.ic_feels_like,
                 label = "Feels like",
                 value = "${data.apparentTemperatureCelsius.roundToInt()}°C",
                 modifier = Modifier.weight(1f),
             )
             WeatherDetailItem(
-                iconResource = R.drawable.presopatation,
+                iconResource = R.drawable.ic_precipitation,
                 label = "Precipitation",
                 value = "${data.precipitationMm} mm",
                 modifier = Modifier.weight(1f),
@@ -51,13 +51,13 @@ fun AdditionalWeatherDetails(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             WeatherDetailItem(
-                iconResource = R.drawable.cloudcover,
+                iconResource = R.drawable.ic_cloud_cover,
                 label = "Cloud cover",
                 value = "${data.cloudCoverPercent}%",
                 modifier = Modifier.weight(1f),
             )
             WeatherDetailItem(
-                iconResource = R.drawable.surfacepressure,
+                iconResource = R.drawable.ic_surface_pressure,
                 label = "Surface pressure",
                 value = "${data.pressure.roundToInt()} hPa",
                 modifier = Modifier.weight(1f),
@@ -68,13 +68,13 @@ fun AdditionalWeatherDetails(
             horizontalArrangement = Arrangement.SpaceEvenly,
         ) {
             WeatherDetailItem(
-                iconResource = R.drawable.winddirrection,
+                iconResource = R.drawable.ic_wind_direction,
                 label = "Wind direction",
                 value = "${data.windDirectionLabel} ${data.windDirectionDegrees}°",
                 modifier = Modifier.weight(1f),
             )
             WeatherDetailItem(
-                iconResource = R.drawable.windguts,
+                iconResource = R.drawable.ic_wind_gusts,
                 label = "Wind gusts",
                 value = "${data.windGustsKmh.roundToInt()} km/h",
                 modifier = Modifier.weight(1f),
