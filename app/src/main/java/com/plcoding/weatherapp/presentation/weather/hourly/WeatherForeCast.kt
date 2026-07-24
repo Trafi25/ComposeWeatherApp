@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.data.mappers.toWeatherData
 import com.plcoding.weatherapp.domain.weather.upcomingHours
-import com.plcoding.weatherapp.presentation.weather.WeatherState
+import com.plcoding.weatherapp.presentation.weather.states.WeatherState
 
 @Composable
 fun WeatherForecast(

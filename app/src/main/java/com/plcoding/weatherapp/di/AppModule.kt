@@ -17,13 +17,11 @@ import javax.inject.Singleton
 @Module
 @InstallIn(SingletonComponent::class)
 object AppModule {
-
     private const val WEATHER_BASE_URL =
         "https://api.open-meteo.com/"
 
     private const val GEOCODING_BASE_URL =
         "https://geocoding-api.open-meteo.com/"
-
 
     @Provides
     @Singleton
