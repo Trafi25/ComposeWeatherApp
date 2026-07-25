@@ -9,7 +9,7 @@ fun CityDto.toCityDomain(): City =
         name = name,
         latitude = latitude,
         longitude = longitude,
-        country = country,
+        country = country.orEmpty(),
         adminArea = adminArea,
-        timezone = timezone,
+        timezone = timezone.orEmpty(),
     )

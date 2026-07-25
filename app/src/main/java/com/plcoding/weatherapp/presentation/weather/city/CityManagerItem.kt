@@ -8,21 +8,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.material3.Icon
+import androidx.compose.material.Icon
+import androidx.compose.material.Text
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.location.City
 
 @Composable
-fun CitySearchResultItem(
+fun CityManagerItem(
     city: City,
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
@@ -32,40 +31,28 @@ fun CitySearchResultItem(
             modifier
                 .fillMaxWidth()
                 .clickable(onClick = onClick)
-                .padding(
-                    horizontal = 16.dp,
-                    vertical = 14.dp,
-                ),
+                .padding(horizontal = 16.dp, vertical = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(R.drawable.management),
             contentDescription = null,
             tint = Color.White,
-            modifier = Modifier.size(24.dp),
+            modifier = Modifier.size(28.dp),
         )
         Spacer(modifier = Modifier.width(16.dp))
-        Column(
-            modifier = Modifier.weight(1f),
-        ) {
+        Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = city.name,
                 style = MaterialTheme.typography.titleMedium,
                 color = Color.White,
-                fontWeight = FontWeight.Bold,
             )
-            val subTitle =
-                listOfNotNull(city.adminArea, city.country)
-                    .filter { it.isNotBlank() }
-                    .joinToString(", ")
 
-            if (subTitle.isNotEmpty()) {
-                Text(
-                    text = subTitle,
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f),
-                )
-            }
+            Text(
+                text = "${city.adminArea}, ${city.country}",
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White,
+            )
         }
     }
 }

@@ -47,8 +47,8 @@ fun CitySearchScreen(
                 title = {
                     Text(
                         text = "Search city",
-                        color = Color.White,
                         fontWeight = FontWeight.SemiBold,
+                        color = Color.White,
                     )
                 },
                 navigationIcon = {

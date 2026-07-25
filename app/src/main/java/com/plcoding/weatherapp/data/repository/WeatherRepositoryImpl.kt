@@ -4,8 +4,8 @@ import com.plcoding.weatherapp.data.mappers.toWeatherInfo
 import com.plcoding.weatherapp.data.remote.WeatherApi
 import com.plcoding.weatherapp.data.util.toWeatherError
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
+import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
-import com.plcoding.weatherapp.domain.util.WeatherError
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import javax.inject.Inject
 
@@ -17,7 +17,7 @@ class WeatherRepositoryImpl
         override suspend fun getWeatherData(
             lat: Double,
             long: Double,
-        ): Result<WeatherInfo, WeatherError> =
+        ): Result<WeatherInfo, DataError> =
             try {
                 val weatherInfo =
                     api

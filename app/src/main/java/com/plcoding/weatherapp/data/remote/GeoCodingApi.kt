@@ -5,7 +5,7 @@ import retrofit2.http.GET
 import retrofit2.http.Query
 
 interface GeoCodingApi {
-    @GET("v1/forecast")
+    @GET("v1/search")
     suspend fun searchCities(
         @Query("name") query: String,
         @Query("count") count: Int = 10,

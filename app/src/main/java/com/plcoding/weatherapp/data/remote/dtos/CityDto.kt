@@ -9,8 +9,8 @@ data class CityDto(
     val name: String,
     val latitude: Double,
     val longitude: Double,
-    val country: String?,
+    val country: String? = null,
     @Json(name = "admin1")
-    val adminArea: String?,
-    val timezone: String?,
+    val adminArea: String? = null,
+    val timezone: String? = null,
 )

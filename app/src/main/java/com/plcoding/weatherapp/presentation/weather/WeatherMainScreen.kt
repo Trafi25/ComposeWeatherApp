@@ -9,8 +9,8 @@ import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
 import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
+import com.plcoding.weatherapp.presentation.weather.city.CityManagerScreen
 import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
-import com.plcoding.weatherapp.presentation.weather.city.ManageCitiesScreen
 import com.plcoding.weatherapp.presentation.weather.curent.WeatherContent
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
@@ -67,14 +67,20 @@ fun WeatherMainScreen(
                 )
             }
             WeatherScreenMode.ManageCities -> {
-                ManageCitiesScreen(
-                    uiState = uiState,
-                    onBackClick = {
-                        onAction(WeatherAction.CityScreenBackClicked)
+                val isDay = uiState.weatherInfo?.currentWeatherData?.isDay ?: true
+                val backgroundColor = if (isDay) DayBackground else NightBackground
+                CityManagerScreen(
+                    cities = uiState.savedCities,
+                    backgroundColor = backgroundColor,
+                    onCityClick = { city ->
+                        onAction(
+                            WeatherAction.CitySelected(city),
+                        )
                     },
                     onAddCityClick = {
                         onAction(WeatherAction.SearchCityClicked)
                     },
+                    onBackClick = { onAction(WeatherAction.CityScreenBackClicked) },
                 )
             }
         }
