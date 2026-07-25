@@ -14,7 +14,6 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
@@ -52,7 +51,7 @@ fun ManageCitiesScreen(
                     Text(
                         text = "Manage cities",
                         color = Color.White,
-                        fontWeight = FontWeight.SemiBold
+                        fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
@@ -61,44 +60,47 @@ fun ManageCitiesScreen(
                             painter = painterResource(id = R.drawable.back_icon),
                             contentDescription = "Back",
                             tint = Color.White,
-                            modifier = Modifier.size(24.dp)
+                            modifier = Modifier.size(24.dp),
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = Color.Transparent
-                ),
-                modifier = Modifier.statusBarsPadding()
+                colors =
+                    TopAppBarDefaults.topAppBarColors(
+                        containerColor = Color.Transparent,
+                    ),
+                modifier = Modifier.statusBarsPadding(),
             )
         },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddCityClick,
                 containerColor = Color.White.copy(alpha = 0.9f),
-                contentColor = backgroundColor
+                contentColor = backgroundColor,
             ) {
                 Icon(
                     painter = painterResource(id = R.drawable.add_icon),
                     contentDescription = "Add city",
-                    modifier = Modifier.size(24.dp)
+                    modifier = Modifier.size(24.dp),
                 )
             }
         },
     ) { paddingValues ->
         Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(paddingValues)
-                .padding(horizontal = 16.dp)
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues)
+                    .padding(horizontal = 16.dp),
         ) {
             OutlinedTextField(
                 value = "",
                 onValueChange = {},
                 readOnly = true,
                 enabled = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { onAddCityClick() },
+                modifier =
+                    Modifier
+                        .fillMaxWidth()
+                        .clickable { onAddCityClick() },
                 placeholder = {
                     Text(text = "Search city", color = Color.White.copy(alpha = 0.7f))
                 },
@@ -107,17 +109,18 @@ fun ManageCitiesScreen(
                         painter = painterResource(id = R.drawable.search),
                         contentDescription = null,
                         tint = Color.White,
-                        modifier = Modifier.size(20.dp)
+                        modifier = Modifier.size(20.dp),
                     )
                 },
                 shape = RoundedCornerShape(12.dp),
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = Color.White,
-                    disabledBorderColor = Color.White.copy(alpha = 0.5f),
-                    disabledLeadingIconColor = Color.White,
-                    disabledPlaceholderColor = Color.White.copy(alpha = 0.7f),
-                    disabledContainerColor = Color.White.copy(alpha = 0.1f),
-                )
+                colors =
+                    OutlinedTextFieldDefaults.colors(
+                        disabledTextColor = Color.White,
+                        disabledBorderColor = Color.White.copy(alpha = 0.5f),
+                        disabledLeadingIconColor = Color.White,
+                        disabledPlaceholderColor = Color.White.copy(alpha = 0.7f),
+                        disabledContainerColor = Color.White.copy(alpha = 0.1f),
+                    ),
             )
             Spacer(modifier = Modifier.height(24.dp))
 
@@ -125,4 +128,3 @@ fun ManageCitiesScreen(
         }
     }
 }
-

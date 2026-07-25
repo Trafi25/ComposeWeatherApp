@@ -1,6 +1,5 @@
 package com.plcoding.weatherapp.presentation.weather.curent
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -26,12 +25,13 @@ fun WeatherTopBar(
     modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(
-                horizontal = 16.dp,
-                vertical = 4.dp,
-            ),
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(
+                    horizontal = 16.dp,
+                    vertical = 4.dp,
+                ),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         Text(
@@ -50,7 +50,7 @@ fun WeatherTopBar(
                 painter = painterResource(id = R.drawable.search),
                 contentDescription = "Search city",
                 tint = Color.White,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
         }
 
@@ -61,7 +61,7 @@ fun WeatherTopBar(
                 painter = painterResource(id = R.drawable.management),
                 contentDescription = "Manage cities",
                 tint = Color.White,
-                modifier = Modifier.size(24.dp)
+                modifier = Modifier.size(24.dp),
             )
         }
     }
