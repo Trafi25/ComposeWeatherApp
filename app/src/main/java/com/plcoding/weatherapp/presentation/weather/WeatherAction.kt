@@ -13,6 +13,8 @@ sealed interface WeatherAction {
 
     data object LocationPermissionGranted : WeatherAction
 
+    data object CurrentLocationSelected : WeatherAction
+
     data object ErrorDismissed : WeatherAction
 
     // City navigation
@@ -28,5 +30,9 @@ sealed interface WeatherAction {
 
     data class CitySelected(
         val city: City,
+    ) : WeatherAction
+
+    data class SavedCityDeleted(
+        val cityId: Int,
     ) : WeatherAction
 }

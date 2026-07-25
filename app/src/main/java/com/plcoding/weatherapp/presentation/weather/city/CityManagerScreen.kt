@@ -30,7 +30,10 @@ import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 fun CityManagerScreen(
     cities: List<City>,
     onCityClick: (City) -> Unit,
+    selectedCityId: Int?,
     onAddCityClick: () -> Unit,
+    onCurrentLocationClick: () -> Unit,
+    onCityDelete: (City) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = DayBackground,
@@ -78,30 +81,50 @@ fun CityManagerScreen(
             }
         },
     ) { paddingValues ->
-        if (cities.isEmpty()) {
-            EmptyCitiesContent(modifier = Modifier.fillMaxSize().padding(paddingValues))
-        } else {
+
             LazyColumn(
                 modifier =
                     Modifier
                         .fillMaxSize()
                         .padding(paddingValues),
             ) {
-                items(
-                    items = cities,
-                    key = { city ->
-                        city.id
-                    },
-                ) { city ->
-                    CityManagerItem(
-                        city = city,
-                        onClick = {
-                            onCityClick(city)
-                        },
+                item(
+                    key = "current-location",
+                ) {
+                    CurrentLocationItem(
+                        isSelected = selectedCityId == null,
+                        onClick = onCurrentLocationClick,
                     )
                     HorizontalDivider()
                 }
-            }
+                if (cities.isEmpty()) {
+                    item(
+                        key = "empty-cities",
+                    ) {
+                        EmptyCitiesContent(modifier = Modifier.fillParentMaxHeight().padding(24.dp))
+                    }
+                } else {
+
+                    items(
+                        items = cities,
+                        key = { city ->
+                            city.id
+                        },
+                    ) { city ->
+                        CityManagerItem(
+                            city = city,
+                            isSelected = city.id == selectedCityId,
+                            onClick = {
+                                onCityClick(city)
+                            },
+                            onDelete = {
+                                onCityDelete(city)
+                            },
+                        )
+                        HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+                    }
+                }
+
         }
     }
 }

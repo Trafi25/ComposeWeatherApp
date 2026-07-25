@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -54,74 +55,83 @@ fun WeatherContent(
         backgroundColor = backgroundColor,
         useDarkIcons = isDay,
     )
-    Column(
-        modifier =
-            modifier
-                .fillMaxSize()
-                .background(backgroundColor)
-                .statusBarsPadding(),
+
+    PullToRefreshBox(
+        isRefreshing = uiState.isLoading,
+        onRefresh = {
+            onAction(WeatherAction.CurrentLocationSelected)
+        },
+        modifier = modifier.fillMaxSize()
     ) {
-        WeatherTopBar(
-            locationName = uiState.locationName,
-            onSearchClick = {
-                onAction(WeatherAction.SearchCityClicked)
-            },
-            onManageCitiesClick = {
-                onAction(WeatherAction.ManageCitiesClicked)
-            },
-        )
-
-        Box(
+        Column(
             modifier =
-                Modifier
-                    .fillMaxSize(),
+                modifier
+                    .fillMaxSize()
+                    .background(backgroundColor)
+                    .statusBarsPadding(),
         ) {
-            LazyColumn(
-                modifier = Modifier.fillMaxSize(),
-                contentPadding = PaddingValues(bottom = 24.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
+            WeatherTopBar(
+                locationName = uiState.locationName,
+                onSearchClick = {
+                    onAction(WeatherAction.SearchCityClicked)
+                },
+                onManageCitiesClick = {
+                    onAction(WeatherAction.ManageCitiesClicked)
+                },
+            )
+
+            Box(
+                modifier =
+                    Modifier
+                        .fillMaxSize(),
             ) {
-                item {
-                    WeatherCard(
-                        state = uiState,
-                        locationName = uiState.locationName,
-                        backgroundColor = cardBackground,
+                LazyColumn(
+                    modifier = Modifier.fillMaxSize(),
+                    contentPadding = PaddingValues(bottom = 24.dp),
+                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                ) {
+                    item {
+                        WeatherCard(
+                            state = uiState,
+                            locationName = uiState.locationName,
+                            backgroundColor = cardBackground,
+                        )
+                    }
+
+                    item {
+                        WeatherForecast(
+                            state = uiState,
+                        )
+                    }
+
+                    item {
+                        SevenDayForecast(
+                            dailyWeather =
+                                uiState.weatherInfo
+                                    ?.dailyWeatherData
+                                    .orEmpty(),
+                        )
+                    }
+                }
+
+                if (uiState.isLoading) {
+                    CircularProgressIndicator(
+                        modifier = Modifier.align(Alignment.Center),
                     )
                 }
 
-                item {
-                    WeatherForecast(
-                        state = uiState,
+                uiState.errorMessage?.let { error ->
+                    WeatherErrorContent(
+                        message = error,
+                        onRetry = {
+                            onAction(WeatherAction.Retry)
+                        },
+                        onDismiss = {
+                            onAction(WeatherAction.ErrorDismissed)
+                        },
+                        modifier = Modifier.align(Alignment.Center),
                     )
                 }
-
-                item {
-                    SevenDayForecast(
-                        dailyWeather =
-                            uiState.weatherInfo
-                                ?.dailyWeatherData
-                                .orEmpty(),
-                    )
-                }
-            }
-
-            if (uiState.isLoading) {
-                CircularProgressIndicator(
-                    modifier = Modifier.align(Alignment.Center),
-                )
-            }
-
-            uiState.errorMessage?.let { error ->
-                WeatherErrorContent(
-                    message = error,
-                    onRetry = {
-                        onAction(WeatherAction.Retry)
-                    },
-                    onDismiss = {
-                        onAction(WeatherAction.ErrorDismissed)
-                    },
-                    modifier = Modifier.align(Alignment.Center),
-                )
             }
         }
     }

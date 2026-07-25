@@ -40,4 +40,5 @@ data class WeatherState(
     val screenMode: WeatherScreenMode = WeatherScreenMode.Weather,
     val citySearchState: CitySearchState = CitySearchState(),
     val savedCities: List<City> = emptyList(),
+    val selectedCityId: Int? = null,
 )

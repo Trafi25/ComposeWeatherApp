@@ -72,15 +72,26 @@ fun WeatherMainScreen(
                 CityManagerScreen(
                     cities = uiState.savedCities,
                     backgroundColor = backgroundColor,
+                    selectedCityId = uiState.selectedCityId,
                     onCityClick = { city ->
                         onAction(
                             WeatherAction.CitySelected(city),
+                        )
+                    },
+                    onCityDelete = { city ->
+                        onAction(
+                            WeatherAction.SavedCityDeleted(city.id),
                         )
                     },
                     onAddCityClick = {
                         onAction(WeatherAction.SearchCityClicked)
                     },
                     onBackClick = { onAction(WeatherAction.CityScreenBackClicked) },
+                    onCurrentLocationClick = {
+                        onAction(
+                            WeatherAction.CurrentLocationSelected,
+                        )
+                    },
                 )
             }
         }
