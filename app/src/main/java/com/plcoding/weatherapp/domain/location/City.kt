@@ -15,7 +15,6 @@ fun City.displayName(): String =
         name,
         adminArea,
         country,
-    )
-        .filter { it.isNotBlank() }
+    ).filter { it.isNotBlank() }
         .distinct()
         .joinToString(", ")

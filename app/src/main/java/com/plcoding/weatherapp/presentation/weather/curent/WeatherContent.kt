@@ -1,28 +1,18 @@
 package com.plcoding.weatherapp.presentation.weather.curent
 
-import android.graphics.Color
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material3.Icon
 import androidx.compose.material.CircularProgressIndicator
-import androidx.compose.material.IconButton
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 import com.plcoding.weatherapp.presentation.ui.theme.DayCardBackground
 import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
@@ -40,10 +30,11 @@ fun WeatherContent(
     onAction: (WeatherAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isDay = uiState.weatherInfo
-        ?.currentWeatherData
-        ?.isDay
-        ?: true
+    val isDay =
+        uiState.weatherInfo
+            ?.currentWeatherData
+            ?.isDay
+            ?: true
 
     val backgroundColor =
         if (isDay) {
@@ -64,10 +55,11 @@ fun WeatherContent(
         useDarkIcons = isDay,
     )
     Column(
-        modifier = modifier
-            .fillMaxSize()
-            .background(backgroundColor)
-            .statusBarsPadding(),
+        modifier =
+            modifier
+                .fillMaxSize()
+                .background(backgroundColor)
+                .statusBarsPadding(),
     ) {
         WeatherTopBar(
             locationName = uiState.locationName,
@@ -80,8 +72,9 @@ fun WeatherContent(
         )
 
         Box(
-            modifier = Modifier
-                .fillMaxSize(),
+            modifier =
+                Modifier
+                    .fillMaxSize(),
         ) {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),
@@ -104,9 +97,10 @@ fun WeatherContent(
 
                 item {
                     SevenDayForecast(
-                        dailyWeather = uiState.weatherInfo
-                            ?.dailyWeatherData
-                            .orEmpty(),
+                        dailyWeather =
+                            uiState.weatherInfo
+                                ?.dailyWeatherData
+                                .orEmpty(),
                     )
                 }
             }
@@ -131,6 +125,4 @@ fun WeatherContent(
             }
         }
     }
-
 }
-

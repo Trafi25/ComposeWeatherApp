@@ -20,29 +20,29 @@ fun WeatherMainScreen(
     uiState: WeatherState,
     onAction: (WeatherAction) -> Unit,
 ) {
-
     AnimatedContent(
         targetState = uiState.screenMode,
         transitionSpec =
-        {
-           when {
-               targetState == WeatherScreenMode.SearchCity -> {
-                   slideInHorizontally { width -> width } +
-                       fadeIn() togetherWith
-                       slideOutHorizontally { width -> -width / 3 } +
-                       fadeOut()
-               }
-               initialState == WeatherScreenMode.SearchCity -> {
-                   slideInHorizontally { width -> -width/3 } +
-                       fadeIn() togetherWith
-                       slideOutHorizontally { width -> width } +
-                       fadeOut()
-               }
-               else -> fadeIn() togetherWith fadeOut()
-           }
-        },
-        label = "Weather screen navigation") {
-        screenMode -> when (screenMode) {
+            {
+                when {
+                    targetState == WeatherScreenMode.SearchCity -> {
+                        slideInHorizontally { width -> width } +
+                            fadeIn() togetherWith
+                            slideOutHorizontally { width -> -width / 3 } +
+                            fadeOut()
+                    }
+                    initialState == WeatherScreenMode.SearchCity -> {
+                        slideInHorizontally { width -> -width / 3 } +
+                            fadeIn() togetherWith
+                            slideOutHorizontally { width -> width } +
+                            fadeOut()
+                    }
+                    else -> fadeIn() togetherWith fadeOut()
+                }
+            },
+        label = "Weather screen navigation",
+    ) { screenMode ->
+        when (screenMode) {
             WeatherScreenMode.Weather -> {
                 WeatherContent(
                     uiState = uiState,
@@ -78,7 +78,5 @@ fun WeatherMainScreen(
                 )
             }
         }
-
     }
-
 }
