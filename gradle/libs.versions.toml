@@ -20,6 +20,7 @@ playServicesLocation = "21.4.0"
 retrofit = "3.0.0"
 room = "2.8.4"
 spotless = "8.8.0"
+datastore = "1.2.0"
 
 [libraries]
 # AndroidX Core & Lifecycle
@@ -56,6 +57,7 @@ retrofit-converter-moshi = { group = "com.squareup.retrofit2", name = "converter
 androidx-room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 androidx-room-ktx = { module = "androidx.room:room-ktx", version.ref = "room" }
 androidx-room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 
 # Testing
 androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }

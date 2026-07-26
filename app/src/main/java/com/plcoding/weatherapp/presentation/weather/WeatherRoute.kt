@@ -48,7 +48,9 @@ fun WeatherRoute(viewModel: WeatherViewModel = hiltViewModel()) {
             ) == PackageManager.PERMISSION_GRANTED
 
         if (fineLocationGranted || coarseLocationGranted) {
-            viewModel.onAction(WeatherAction.LoadWeather)
+            viewModel.onAction(
+                WeatherAction.LocationPermissionGranted,
+            )
         } else {
             permissionLauncher.launch(
                 arrayOf(

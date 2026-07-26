@@ -41,4 +41,5 @@ data class WeatherState(
     val citySearchState: CitySearchState = CitySearchState(),
     val savedCities: List<City> = emptyList(),
     val selectedCityId: Int? = null,
+    val isLocationRestored: Boolean = false,
 )

@@ -7,6 +7,7 @@ import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.CityRepository
 import com.plcoding.weatherapp.domain.repository.SavedCityRepository
+import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -34,19 +36,67 @@ class WeatherViewModel
         private val savedCityRepository: SavedCityRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
+        private val selectedLocationRepository: SelectedLocationRepository,
     ) : ViewModel() {
-        init {
-            observeSavedCities()
-        }
+
 
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
-        private var loadWeatherJob: Job? = null
         private var citySearchJob: Job? = null
+
+    init {
+        observeSavedCities()
+        restoreSelectedLocation()
+    }
 
         private companion object {
             const val MIN_CITY_QUERY_LENGTH = 2
             const val CITY_SEARCH_DEBOUNCE = 500L
+        }
+
+        private fun restoreSelectedLocation() {
+            viewModelScope.launch {
+                val selectedCityId = selectedLocationRepository
+                    .observeSelectedCityId().first()
+                        if (selectedCityId == null) {
+                          _uiState.update { currentState ->
+                              currentState.copy(
+                                  selectedCityId = null,
+                                  isLocationRestored = true
+                              )
+                          }
+                            loadWeatherInfo()
+                            return@launch
+                        }
+                            val city =
+                                savedCityRepository.getCity(selectedCityId)
+
+                            if (city != null) {
+                                _uiState.update { currentState ->
+                                    currentState.copy(
+                                        selectedCityId = city.id,
+                                        isLocationRestored = true
+                                    )
+                                }
+                                loadWeatherForCity(
+                                    city = city,
+                                    savedSelection = false,
+                                )
+                            } else {
+                                selectedLocationRepository.selectCurrentLocation()
+
+                                _uiState.update { currentState ->
+                                    currentState.copy(
+                                        selectedCityId = null,
+                                        isLocationRestored = true,
+                                    )
+                                }
+
+                                loadWeatherInfo()
+                            }
+
+
+            }
         }
 
         private fun observeSavedCities() {
@@ -108,38 +158,6 @@ class WeatherViewModel
                         currentState.copy(
                             isLoading = false,
                             errorMessage = "Couldn't retrieve current location.",
-                        )
-                    }
-                }
-            }
-        }
-
-        private suspend fun loadWeatherForLocation(
-            latitude: Double,
-            longitude: Double,
-        ) {
-            when (
-                val result =
-                    weatherRepository.getWeatherData(
-                        lat = latitude,
-                        long = longitude,
-                    )
-            ) {
-                is Result.Success -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            weatherInfo = result.data,
-                            isLoading = false,
-                            errorMessage = null,
-                        )
-                    }
-                }
-
-                is Result.Error -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = result.error.toMessage(),
                         )
                     }
                 }
@@ -245,10 +263,16 @@ class WeatherViewModel
             }
         }
 
-        private fun loadWeatherForCity(city: City) {
+        private fun loadWeatherForCity(
+            city: City,
+            savedSelection: Boolean = true,
+        ) {
             citySearchJob?.cancel()
             viewModelScope.launch {
                 savedCityRepository.saveCity(city)
+                if (savedSelection) {
+                    selectedLocationRepository.saveSelectedCityId(city.id)
+                }
                 _uiState.update { currentState ->
                     currentState.copy(
                         locationName = city.name,
@@ -310,7 +334,7 @@ class WeatherViewModel
                 val selectedCity = savedCityRepository.getCity(selectedCityId)
 
                 if (selectedCity != null) {
-                    loadWeatherForCity(selectedCity)
+                    loadWeatherForCity(city = selectedCity, savedSelection = false)
                 } else {
                     selectCurrentLocation()
                 }
@@ -319,6 +343,9 @@ class WeatherViewModel
 
         private fun selectCurrentLocation() {
             citySearchJob?.cancel()
+            viewModelScope.launch {
+                selectedLocationRepository.selectCurrentLocation()
+            }
             _uiState.update { currentState ->
                 currentState.copy(
                     selectedCityId = null,
@@ -341,7 +368,7 @@ class WeatherViewModel
                     showWeatherScreen()
                 }
                 WeatherAction.LoadWeather -> {
-                    loadWeatherInfo()
+                    restoreSelectedLocation()
                 }
                 WeatherAction.Retry -> {
                     retryWeatherLoading()
@@ -359,7 +386,14 @@ class WeatherViewModel
                 WeatherAction.RequestLocationPermission -> {
                 }
                 WeatherAction.LocationPermissionGranted -> {
-                    loadWeatherInfo()
+                    val currentState = _uiState.value
+                    if (
+                        currentState.isLocationRestored &&
+                        currentState.selectedCityId == null &&
+                        currentState.weatherInfo == null
+                    ) {
+                        loadWeatherInfo()
+                    }
                 }
                 WeatherAction.LocationPermissionDenied -> {
                     _uiState.update { currentState ->

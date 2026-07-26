@@ -66,7 +66,7 @@ fun WeatherForecast(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp),
             content = {
-                items(items = upcomingHours, key = { weather -> weather.time }) { weatherData ->
+                items(items = upcomingHours) { weatherData ->
                     HourlyWeatherDisplay(
                         weatherData = weatherData,
                         modifier = Modifier.height(100.dp),
