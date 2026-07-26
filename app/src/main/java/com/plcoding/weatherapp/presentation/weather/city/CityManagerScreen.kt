@@ -1,6 +1,8 @@
 package com.plcoding.weatherapp.presentation.weather.city
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -81,50 +83,43 @@ fun CityManagerScreen(
             }
         },
     ) { paddingValues ->
+        Column(
+            modifier =
+                Modifier
+                    .fillMaxSize()
+                    .padding(paddingValues),
+        ) {
+            CurrentLocationItem(
+                isSelected = selectedCityId == null,
+                onClick = onCurrentLocationClick,
+            )
+            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
 
-            LazyColumn(
-                modifier =
-                    Modifier
-                        .fillMaxSize()
-                        .padding(paddingValues),
-            ) {
-                item(
-                    key = "current-location",
+            if (cities.isEmpty()) {
+                EmptyCitiesContent(
+                    modifier =
+                        Modifier
+                            .fillMaxWidth()
+                            .weight(1f),
+                )
+            } else {
+                LazyColumn(
+                    modifier = Modifier.fillMaxWidth().weight(1f),
                 ) {
-                    CurrentLocationItem(
-                        isSelected = selectedCityId == null,
-                        onClick = onCurrentLocationClick,
-                    )
-                    HorizontalDivider()
-                }
-                if (cities.isEmpty()) {
-                    item(
-                        key = "empty-cities",
-                    ) {
-                        EmptyCitiesContent(modifier = Modifier.fillParentMaxHeight().padding(24.dp))
-                    }
-                } else {
-
                     items(
                         items = cities,
-                        key = { city ->
-                            city.id
-                        },
+                        key = { city -> city.id },
                     ) { city ->
                         CityManagerItem(
                             city = city,
                             isSelected = city.id == selectedCityId,
-                            onClick = {
-                                onCityClick(city)
-                            },
-                            onDelete = {
-                                onCityDelete(city)
-                            },
+                            onClick = { onCityClick(city) },
+                            onDelete = { onCityDelete(city) },
                         )
                         HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
                     }
                 }
-
+            }
         }
     }
 }

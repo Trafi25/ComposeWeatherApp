@@ -1,8 +1,11 @@
 package com.plcoding.weatherapp.di
 
 import android.app.Application
+import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
+import com.plcoding.weatherapp.data.local.WeatherDatabase
+import com.plcoding.weatherapp.data.local.dao.SavedCityDao
 import com.plcoding.weatherapp.data.remote.GeoCodingApi
 import com.plcoding.weatherapp.data.remote.WeatherApi
 import dagger.Module
@@ -23,6 +26,9 @@ object AppModule {
     private const val GEOCODING_BASE_URL =
         "https://geocoding-api.open-meteo.com/"
 
+    private const val WEATHER_DATABASE_NAME =
+        "weather_database"
+
     @Provides
     @Singleton
     fun provideWeatherApi(): WeatherApi =
@@ -42,6 +48,20 @@ object AppModule {
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
             .create(GeoCodingApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideWeatherDatabase(app: Application): WeatherDatabase =
+        Room
+            .databaseBuilder(
+                app,
+                WeatherDatabase::class.java,
+                WEATHER_DATABASE_NAME,
+            ).build()
+
+    @Provides
+    @Singleton
+    fun providesSavedCityDao(database: WeatherDatabase): SavedCityDao = database.savedCityDao()
 
     @Provides
     @Singleton

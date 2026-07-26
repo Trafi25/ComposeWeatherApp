@@ -61,7 +61,7 @@ fun WeatherContent(
         onRefresh = {
             onAction(WeatherAction.CurrentLocationSelected)
         },
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
     ) {
         Column(
             modifier =

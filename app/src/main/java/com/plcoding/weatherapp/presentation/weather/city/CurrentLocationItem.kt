@@ -23,15 +23,16 @@ import com.plcoding.weatherapp.R
 @Composable
 fun CurrentLocationItem(
     isSelected: Boolean,
-    onClick: ()->  Unit,
-    modifier: Modifier = Modifier
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .clickable(onClick = onClick)
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .clickable(onClick = onClick)
+                .padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         Icon(
             painter = painterResource(R.drawable.management),
@@ -51,8 +52,8 @@ fun CurrentLocationItem(
             )
             Text(
                 text = "Use device location",
-            style = MaterialTheme.typography.bodyMedium,
-            color = Color.White.copy(alpha = 0.7f),
+                style = MaterialTheme.typography.bodyMedium,
+                color = Color.White.copy(alpha = 0.7f),
             )
         }
         if (isSelected) {
@@ -60,7 +61,7 @@ fun CurrentLocationItem(
                 painter = painterResource(R.drawable.select),
                 contentDescription = "Selected city",
                 tint = Color.White,
-                modifier = Modifier.size(28.dp)
+                modifier = Modifier.size(28.dp),
             )
         }
     }

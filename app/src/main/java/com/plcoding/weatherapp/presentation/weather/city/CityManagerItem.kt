@@ -47,7 +47,7 @@ fun CityManagerItem(
                     false
                 }
             },
-            positionalThreshold = { totalDistance -> totalDistance * 0.3f }
+            positionalThreshold = { totalDistance -> totalDistance * 0.3f },
         )
 
     SwipeToDismissBox(
@@ -102,7 +102,7 @@ fun CityManagerItem(
                         painter = painterResource(R.drawable.select),
                         contentDescription = "Selected city",
                         tint = Color.White,
-                        modifier = Modifier.size(28.dp)
+                        modifier = Modifier.size(28.dp),
                     )
                 }
             }
