@@ -8,10 +8,12 @@ import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.CityRepository
 import com.plcoding.weatherapp.domain.repository.SavedCityRepository
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
+import com.plcoding.weatherapp.domain.repository.SettingsRepository
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
+import com.plcoding.weatherapp.presentation.formatter.WeatherValueFormatter
 import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
@@ -33,10 +35,10 @@ class WeatherViewModel
     constructor(
         private val weatherRepository: WeatherRepository,
         private val cityRepository: CityRepository,
+        private val selectedLocationRepository: SelectedLocationRepository,
         private val savedCityRepository: SavedCityRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
-        private val selectedLocationRepository: SelectedLocationRepository,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
