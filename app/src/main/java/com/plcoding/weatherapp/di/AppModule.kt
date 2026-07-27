@@ -5,16 +5,22 @@ import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.plcoding.weatherapp.data.local.WeatherDatabase
+import com.plcoding.weatherapp.data.local.dao.CachedWeatherDao
 import com.plcoding.weatherapp.data.local.dao.SavedCityDao
+import com.plcoding.weatherapp.data.local.migration1To2
+import com.plcoding.weatherapp.data.local.util.LocalDateAdapter
+import com.plcoding.weatherapp.data.local.util.LocalDateTimeAdapter
+import com.plcoding.weatherapp.data.local.util.WeatherTypeAdapter
 import com.plcoding.weatherapp.data.remote.GeoCodingApi
 import com.plcoding.weatherapp.data.remote.WeatherApi
+import com.squareup.moshi.Moshi
+import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
-import retrofit2.create
 import javax.inject.Singleton
 
 @Module
@@ -31,21 +37,21 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideWeatherApi(): WeatherApi =
+    fun provideWeatherApi(moshi: Moshi): WeatherApi =
         Retrofit
             .Builder()
             .baseUrl(WEATHER_BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(WeatherApi::class.java)
 
     @Provides
     @Singleton
-    fun provideGeocodingApi(): GeoCodingApi =
+    fun provideGeocodingApi(moshi: Moshi): GeoCodingApi =
         Retrofit
             .Builder()
             .baseUrl(GEOCODING_BASE_URL)
-            .addConverterFactory(MoshiConverterFactory.create())
+            .addConverterFactory(MoshiConverterFactory.create(moshi))
             .build()
             .create(GeoCodingApi::class.java)
 
@@ -57,11 +63,27 @@ object AppModule {
                 app,
                 WeatherDatabase::class.java,
                 WEATHER_DATABASE_NAME,
-            ).build()
+            ).addMigrations(migration1To2)
+            .build()
 
     @Provides
     @Singleton
     fun providesSavedCityDao(database: WeatherDatabase): SavedCityDao = database.savedCityDao()
+
+    @Provides
+    @Singleton
+    fun provideCachedWeatherDao(database: WeatherDatabase): CachedWeatherDao = database.cachedWeatherDao()
+
+    @Provides
+    @Singleton
+    fun provideMoshi(): Moshi =
+        Moshi
+            .Builder()
+            .add(LocalDateTimeAdapter())
+            .add(LocalDateAdapter())
+            .add(WeatherTypeAdapter())
+            .addLast(KotlinJsonAdapterFactory())
+            .build()
 
     @Provides
     @Singleton

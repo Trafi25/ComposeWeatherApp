@@ -38,16 +38,14 @@ class WeatherViewModel
         private val locationNameResolver: LocationNameResolver,
         private val selectedLocationRepository: SelectedLocationRepository,
     ) : ViewModel() {
-
-
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
         private var citySearchJob: Job? = null
 
-    init {
-        observeSavedCities()
-        restoreSelectedLocation()
-    }
+        init {
+            observeSavedCities()
+            restoreSelectedLocation()
+        }
 
         private companion object {
             const val MIN_CITY_QUERY_LENGTH = 2
@@ -56,46 +54,46 @@ class WeatherViewModel
 
         private fun restoreSelectedLocation() {
             viewModelScope.launch {
-                val selectedCityId = selectedLocationRepository
-                    .observeSelectedCityId().first()
-                        if (selectedCityId == null) {
-                          _uiState.update { currentState ->
-                              currentState.copy(
-                                  selectedCityId = null,
-                                  isLocationRestored = true
-                              )
-                          }
-                            loadWeatherInfo()
-                            return@launch
-                        }
-                            val city =
-                                savedCityRepository.getCity(selectedCityId)
+                val selectedCityId =
+                    selectedLocationRepository
+                        .observeSelectedCityId()
+                        .first()
+                if (selectedCityId == null) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectedCityId = null,
+                            isLocationRestored = true,
+                        )
+                    }
+                    loadWeatherInfo()
+                    return@launch
+                }
+                val city =
+                    savedCityRepository.getCity(selectedCityId)
 
-                            if (city != null) {
-                                _uiState.update { currentState ->
-                                    currentState.copy(
-                                        selectedCityId = city.id,
-                                        isLocationRestored = true
-                                    )
-                                }
-                                loadWeatherForCity(
-                                    city = city,
-                                    savedSelection = false,
-                                )
-                            } else {
-                                selectedLocationRepository.selectCurrentLocation()
+                if (city != null) {
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectedCityId = city.id,
+                            isLocationRestored = true,
+                        )
+                    }
+                    loadWeatherForCity(
+                        city = city,
+                        savedSelection = false,
+                    )
+                } else {
+                    selectedLocationRepository.selectCurrentLocation()
 
-                                _uiState.update { currentState ->
-                                    currentState.copy(
-                                        selectedCityId = null,
-                                        isLocationRestored = true,
-                                    )
-                                }
+                    _uiState.update { currentState ->
+                        currentState.copy(
+                            selectedCityId = null,
+                            isLocationRestored = true,
+                        )
+                    }
 
-                                loadWeatherInfo()
-                            }
-
-
+                    loadWeatherInfo()
+                }
             }
         }
 
