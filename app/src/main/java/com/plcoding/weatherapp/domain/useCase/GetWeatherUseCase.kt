@@ -7,9 +7,6 @@ import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import javax.inject.Inject
 
 /**
- * Use Case to fetch weather data.
- *
- * Why: Encapsulates the core action of the app.
  * Any special sorting or filtering of weather data (like the 24-hour limit)
  * should live here, not in the ViewModel.
  */

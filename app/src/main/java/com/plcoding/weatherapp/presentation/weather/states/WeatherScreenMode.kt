@@ -6,4 +6,6 @@ sealed interface WeatherScreenMode {
     data object SearchCity : WeatherScreenMode
 
     data object ManageCities : WeatherScreenMode
+
+    data object Settings : WeatherScreenMode
 }

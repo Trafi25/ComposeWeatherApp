@@ -69,6 +69,7 @@ fun WeatherForecast(
                 items(items = upcomingHours) { weatherData ->
                     HourlyWeatherDisplay(
                         weatherData = weatherData,
+                        temperatureUnit = state.appSettings.temperatureUnit,
                         modifier = Modifier.height(100.dp),
                     )
                 }

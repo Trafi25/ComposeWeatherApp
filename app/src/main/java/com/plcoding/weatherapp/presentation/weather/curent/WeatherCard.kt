@@ -24,6 +24,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
 
 @Composable
@@ -33,6 +34,7 @@ fun WeatherCard(
     locationName: String?,
     modifier: Modifier = Modifier,
 ) {
+    val formatter = LocalWeatherValueFormatter.current
     var isExpanded by rememberSaveable { mutableStateOf(false) }
     state.weatherInfo?.currentWeatherData?.let { data ->
         Card(
@@ -64,7 +66,11 @@ fun WeatherCard(
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
-                    text = "${data.temperatureCelsius}°C",
+                    text =
+                        formatter.formatTemperature(
+                            data.temperatureCelsius,
+                            state.appSettings.temperatureUnit,
+                        ),
                     fontSize = 50.sp,
                     color = Color.White,
                 )
@@ -75,7 +81,10 @@ fun WeatherCard(
                     color = Color.White,
                 )
                 Spacer(modifier = Modifier.height(32.dp))
-                CurrentWeatherSummary(data)
+                CurrentWeatherSummary(
+                    data = data,
+                    settings = state.appSettings,
+                )
                 AnimatedVisibility(
                     visible = isExpanded,
                     enter = expandVertically() + fadeIn(),
@@ -83,6 +92,7 @@ fun WeatherCard(
                 ) {
                     AdditionalWeatherDetails(
                         data = data,
+                        settings = state.appSettings,
                     )
                 }
                 IconButton(

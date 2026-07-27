@@ -11,14 +11,18 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
+import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import kotlin.math.roundToInt
 
 @Composable
 fun AdditionalWeatherDetails(
     data: CurrentWeatherData,
+    settings: AppSettings,
     modifier: Modifier = Modifier,
 ) {
+    val formatter = LocalWeatherValueFormatter.current
     Column(
         modifier =
             modifier
@@ -27,7 +31,7 @@ fun AdditionalWeatherDetails(
         verticalArrangement = Arrangement.spacedBy(16.dp),
     ) {
         HorizontalDivider(
-            color = Color.White,
+            color = Color.White.copy(alpha = 0.3f),
         )
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -36,13 +40,13 @@ fun AdditionalWeatherDetails(
             WeatherDetailItem(
                 iconResource = R.drawable.ic_feels_like,
                 label = "Feels like",
-                value = "${data.apparentTemperatureCelsius.roundToInt()}°C",
+                value = formatter.formatTemperature(data.apparentTemperatureCelsius, settings.temperatureUnit),
                 modifier = Modifier.weight(1f),
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_precipitation,
                 label = "Precipitation",
-                value = "${data.precipitationMm} mm",
+                value = formatter.formatPrecipitation(data.precipitationMm, settings.precipitationUnit),
                 modifier = Modifier.weight(1f),
             )
         }
@@ -53,13 +57,13 @@ fun AdditionalWeatherDetails(
             WeatherDetailItem(
                 iconResource = R.drawable.ic_cloud_cover,
                 label = "Cloud cover",
-                value = "${data.cloudCoverPercent}%",
+                value = "${data.cloudCoverPercent.roundToInt()}%",
                 modifier = Modifier.weight(1f),
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_surface_pressure,
                 label = "Surface pressure",
-                value = "${data.pressure.roundToInt()} hPa",
+                value = formatter.formatPressure(data.pressure, settings.pressureUnit),
                 modifier = Modifier.weight(1f),
             )
         }
@@ -76,7 +80,7 @@ fun AdditionalWeatherDetails(
             WeatherDetailItem(
                 iconResource = R.drawable.ic_wind_gusts,
                 label = "Wind gusts",
-                value = "${data.windGustsKmh.roundToInt()} km/h",
+                value = formatter.formatWindSpeed(data.windGustsKmh, settings.windSpeedUnit),
                 modifier = Modifier.weight(1f),
             )
         }

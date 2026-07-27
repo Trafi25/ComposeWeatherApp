@@ -10,32 +10,36 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
+import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import kotlin.math.roundToInt
 
 @Composable
-fun CurrentWeatherSummary(data: CurrentWeatherData) {
+fun CurrentWeatherSummary(
+    data: CurrentWeatherData,
+    settings: AppSettings,
+    modifier: Modifier = Modifier,
+) {
+    val formatter = LocalWeatherValueFormatter.current
     Row(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         horizontalArrangement = Arrangement.SpaceAround,
     ) {
         WeatherDataDisplay(
-            value = data.pressure.roundToInt(),
-            unit = "hpa",
+            displayValue = formatter.formatPressure(data.pressure, settings.pressureUnit),
             icon = ImageVector.vectorResource(id = R.drawable.ic_pressure),
             iconTint = Color.White,
             textStyle = TextStyle(color = Color.White),
         )
         WeatherDataDisplay(
-            value = data.humidity.roundToInt(),
-            unit = "%",
+            displayValue = "${data.humidity.roundToInt()}%",
             icon = ImageVector.vectorResource(id = R.drawable.ic_drop),
             iconTint = Color.White,
             textStyle = TextStyle(color = Color.White),
         )
         WeatherDataDisplay(
-            value = data.windSpeed.roundToInt(),
-            unit = "km/h",
+            displayValue = formatter.formatWindSpeed(data.windSpeed, settings.windSpeedUnit),
             icon = ImageVector.vectorResource(id = R.drawable.ic_wind),
             iconTint = Color.White,
             textStyle = TextStyle(color = Color.White),
