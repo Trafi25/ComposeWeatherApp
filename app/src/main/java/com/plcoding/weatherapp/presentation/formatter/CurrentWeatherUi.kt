@@ -10,11 +10,12 @@ data class CurrentWeatherUi(
     val pressure: String,
     val precipitation: String,
 )
+
 fun CurrentWeatherData.toUi(
     settings: AppSettings,
     formatter: WeatherValueFormatter,
-): CurrentWeatherUi {
-    return CurrentWeatherUi(
+): CurrentWeatherUi =
+    CurrentWeatherUi(
         temperature =
             formatter.formatTemperature(
                 celsius = temperatureCelsius,
@@ -41,4 +42,3 @@ fun CurrentWeatherData.toUi(
                 unit = settings.precipitationUnit,
             ),
     )
-}

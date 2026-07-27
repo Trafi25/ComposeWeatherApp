@@ -2,7 +2,6 @@ package com.plcoding.weatherapp.presentation.weather.states
 
 import androidx.compose.runtime.Immutable
 import com.plcoding.weatherapp.domain.location.City
-import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 
 /**
