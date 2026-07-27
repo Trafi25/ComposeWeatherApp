@@ -16,3 +16,50 @@ data class AppSettings(
     val accentColor: AppAccentColor =
         AppAccentColor.Green,
 )
+
+fun TemperatureUnit.displayName(): String =
+    when (this) {
+        TemperatureUnit.Celsius -> "Celsius"
+        TemperatureUnit.Fahrenheit -> "Fahrenheit"
+    }
+
+fun WindSpeedUnit.displayName(): String =
+    when (this) {
+        WindSpeedUnit.KilometersPerHour -> "km/h"
+        WindSpeedUnit.MetersPerSecond -> "m/s"
+        WindSpeedUnit.MilesPerHour -> "mph"
+    }
+
+fun PressureUnit.displayName(): String =
+    when (this) {
+        PressureUnit.Hectopascal -> "hPa"
+        PressureUnit.MillimetersOfMercury -> "mmHg"
+        PressureUnit.InchesOfMercury -> "inHg"
+    }
+
+fun PrecipitationUnit.displayName(): String =
+    when (this) {
+        PrecipitationUnit.Millimeter -> "Millimeter"
+        PrecipitationUnit.Inch -> "Inch"
+    }
+
+fun AppTimeFormat.displayName(): String =
+    when (this) {
+        AppTimeFormat.SystemDefault -> "System Default"
+        AppTimeFormat.TwentyFourHour -> "24-hour"
+        AppTimeFormat.TwelveHour -> "12-hour"
+    }
+
+fun AppThemeMode.displayName(): String =
+    when (this) {
+        AppThemeMode.SystemDefault -> "System Default"
+        AppThemeMode.Light -> "Light"
+        AppThemeMode.Dark -> "Dark"
+    }
+
+fun AppAccentColor.displayName(): String =
+    when (this) {
+        AppAccentColor.Green -> "Green"
+        AppAccentColor.Blue -> "Blue"
+        AppAccentColor.Red -> "Red"
+    }

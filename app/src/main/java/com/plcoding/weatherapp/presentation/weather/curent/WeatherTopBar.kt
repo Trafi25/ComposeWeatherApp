@@ -22,6 +22,7 @@ fun WeatherTopBar(
     locationName: String?,
     onSearchClick: () -> Unit,
     onManageCitiesClick: () -> Unit,
+    onSettingsClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     Row(
@@ -60,6 +61,15 @@ fun WeatherTopBar(
             Icon(
                 painter = painterResource(id = R.drawable.management),
                 contentDescription = "Manage cities",
+                tint = Color.White,
+                modifier = Modifier.size(24.dp),
+            )
+        }
+
+        IconButton(onClick = onSettingsClick) {
+            Icon(
+                painter = painterResource(id = R.drawable.settings),
+                contentDescription = "Settings",
                 tint = Color.White,
                 modifier = Modifier.size(24.dp),
             )

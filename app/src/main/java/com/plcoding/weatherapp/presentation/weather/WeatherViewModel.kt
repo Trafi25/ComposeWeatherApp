@@ -6,9 +6,11 @@ import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
+import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.useCase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
+import com.plcoding.weatherapp.domain.useCase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
 import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
@@ -18,9 +20,11 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -32,6 +36,7 @@ class WeatherViewModel
         private val getWeatherUseCase: GetWeatherUseCase,
         private val searchCityUseCase: SearchCityUseCase,
         private val cityUseCases: SavedCityUseCases,
+        private val settingsUseCases: SettingsUseCases,
         private val selectedLocationRepository: SelectedLocationRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
@@ -42,6 +47,7 @@ class WeatherViewModel
         private var citySearchJob: Job? = null
 
         init {
+            observeSettings()
             observeSavedCities()
             restoreSelectedLocation()
         }
@@ -193,6 +199,15 @@ class WeatherViewModel
                     }
                 }
                 WeatherAction.LocationPermissionDenied -> _uiState.update { it.copy(errorMessage = "Permission required.") }
+                WeatherAction.SettingsClicked -> {
+                    _uiState.update { it.copy(screenMode = WeatherScreenMode.Settings) }
+                }
+                WeatherAction.SettingsBackClicked -> {
+                    _uiState.update { it.copy(screenMode = WeatherScreenMode.Weather) }
+                }
+                is WeatherAction.TemperatureUnitSelected -> {
+                    setTemperatureUnit(action.unit)
+                }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
@@ -205,17 +220,35 @@ class WeatherViewModel
             }
         }
 
-        private fun retryWeatherLoading() {
-            val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
+    private fun retryWeatherLoading() {
+        val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
+        viewModelScope.launch {
+            cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+        }
+    }
+
+    private fun selectCurrentLocation() {
+        citySearchJob?.cancel()
+        viewModelScope.launch { selectedLocationRepository.selectCurrentLocation() }
+        _uiState.update { it.copy(selectedCityId = null, screenMode = WeatherScreenMode.Weather, errorMessage = null) }
+        loadWeatherInfo()
+    }
+
+        private fun observeSettings() {
             viewModelScope.launch {
-                cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+                settingsUseCases.observeSettings().collect { settings ->
+                    _uiState.update { currentState ->
+                        currentState.copy(appSettings = settings)
+                    }
+                }
             }
         }
 
-        private fun selectCurrentLocation() {
-            citySearchJob?.cancel()
-            viewModelScope.launch { selectedLocationRepository.selectCurrentLocation() }
-            _uiState.update { it.copy(selectedCityId = null, screenMode = WeatherScreenMode.Weather, errorMessage = null) }
-            loadWeatherInfo()
-        }
+    private fun setTemperatureUnit(unit : TemperatureUnit){
+        viewModelScope.launch { settingsUseCases.setTemperatureUnit(unit) }
+    }
+
+
+
+
     }

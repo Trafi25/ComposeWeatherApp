@@ -2,6 +2,7 @@ package com.plcoding.weatherapp.presentation.weather.states
 
 import androidx.compose.runtime.Immutable
 import com.plcoding.weatherapp.domain.location.City
+import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 
 /**
@@ -42,4 +43,5 @@ data class WeatherState(
     val savedCities: List<City> = emptyList(),
     val selectedCityId: Int? = null,
     val isLocationRestored: Boolean = false,
+    val appSettings: AppSettings = AppSettings(),
 )

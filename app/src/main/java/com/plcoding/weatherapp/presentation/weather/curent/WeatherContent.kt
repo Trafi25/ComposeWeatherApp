@@ -78,6 +78,7 @@ fun WeatherContent(
                 onManageCitiesClick = {
                     onAction(WeatherAction.ManageCitiesClicked)
                 },
+                onSettingsClick = { onAction(WeatherAction.SettingsClicked) },
             )
 
             Box(
