@@ -5,15 +5,12 @@ import androidx.lifecycle.viewModelScope
 import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
-import com.plcoding.weatherapp.domain.repository.CityRepository
-import com.plcoding.weatherapp.domain.repository.SavedCityRepository
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
-import com.plcoding.weatherapp.domain.repository.SettingsRepository
-import com.plcoding.weatherapp.domain.repository.WeatherRepository
-import com.plcoding.weatherapp.domain.util.DataError
+import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
+import com.plcoding.weatherapp.domain.useCase.SavedCityUseCases
+import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
-import com.plcoding.weatherapp.presentation.formatter.WeatherValueFormatter
 import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
@@ -23,7 +20,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -33,15 +29,16 @@ import javax.inject.Inject
 class WeatherViewModel
     @Inject
     constructor(
-        private val weatherRepository: WeatherRepository,
-        private val cityRepository: CityRepository,
+        private val getWeatherUseCase: GetWeatherUseCase,
+        private val searchCityUseCase: SearchCityUseCase,
+        private val cityUseCases: SavedCityUseCases,
         private val selectedLocationRepository: SelectedLocationRepository,
-        private val savedCityRepository: SavedCityRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
+
         private var citySearchJob: Job? = null
 
         init {
@@ -54,159 +51,84 @@ class WeatherViewModel
             const val CITY_SEARCH_DEBOUNCE = 500L
         }
 
-        private fun restoreSelectedLocation() {
+        private fun observeSavedCities() {
             viewModelScope.launch {
-                val selectedCityId =
-                    selectedLocationRepository
-                        .observeSelectedCityId()
-                        .first()
-                if (selectedCityId == null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectedCityId = null,
-                            isLocationRestored = true,
-                        )
-                    }
-                    loadWeatherInfo()
-                    return@launch
-                }
-                val city =
-                    savedCityRepository.getCity(selectedCityId)
-
-                if (city != null) {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectedCityId = city.id,
-                            isLocationRestored = true,
-                        )
-                    }
-                    loadWeatherForCity(
-                        city = city,
-                        savedSelection = false,
-                    )
-                } else {
-                    selectedLocationRepository.selectCurrentLocation()
-
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            selectedCityId = null,
-                            isLocationRestored = true,
-                        )
-                    }
-
-                    loadWeatherInfo()
+                cityUseCases.observeSavedCities().collect { cities ->
+                    _uiState.update { it.copy(savedCities = cities) }
                 }
             }
         }
 
-        private fun observeSavedCities() {
+        private fun restoreSelectedLocation() {
             viewModelScope.launch {
-                savedCityRepository.observeSavedCities().collect { cities ->
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            savedCities = cities,
-                        )
-                    }
+                val selectedCityId = selectedLocationRepository.observeSelectedCityId().first()
+                if (selectedCityId == null) {
+                    _uiState.update { it.copy(selectedCityId = null, isLocationRestored = true) }
+                    loadWeatherInfo()
+                    return@launch
+                }
+                val city = cityUseCases.getCity(selectedCityId)
+                if (city != null) {
+                    _uiState.update { it.copy(selectedCityId = city.id, isLocationRestored = true) }
+                    loadWeatherForCity(city = city, savedSelection = false)
+                } else {
+                    selectedLocationRepository.selectCurrentLocation()
+                    _uiState.update { it.copy(selectedCityId = null, isLocationRestored = true) }
+                    loadWeatherInfo()
                 }
             }
         }
 
         private fun loadWeatherInfo() {
             viewModelScope.launch {
-                _uiState.update { currentState ->
-                    currentState.copy(
+                _uiState.update { it.copy(isLoading = true, errorMessage = null, selectedCityId = null) }
+
+                locationTracker.getCurrentLocation()?.let { location ->
+                    when (val result = getWeatherUseCase(location.latitude, location.longitude)) {
+                        is Result.Success -> {
+                            val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
+                            _uiState.update { it.copy(weatherInfo = result.data, isLoading = false, locationName = name) }
+                        }
+                        is Result.Error -> {
+                            _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
+                        }
+                    }
+                } ?: _uiState.update { it.copy(isLoading = false, errorMessage = "Location unavailable.") }
+            }
+        }
+
+        private fun loadWeatherForCity(
+            city: City,
+            savedSelection: Boolean = true,
+        ) {
+            citySearchJob?.cancel()
+            viewModelScope.launch {
+                cityUseCases.saveCity(city)
+                if (savedSelection) selectedLocationRepository.saveSelectedCityId(city.id)
+
+                _uiState.update {
+                    it.copy(
+                        locationName = city.name,
+                        screenMode = WeatherScreenMode.Weather,
+                        citySearchState = CitySearchState(),
                         isLoading = true,
                         errorMessage = null,
-                        selectedCityId = null,
+                        selectedCityId = city.id,
                     )
                 }
 
-                locationTracker.getCurrentLocation()?.let { location ->
-                    when (
-                        val result =
-                            weatherRepository.getWeatherData(
-                                lat = location.latitude,
-                                long = location.longitude,
-                            )
-                    ) {
-                        is Result.Success -> {
-                            val locationName =
-                                locationNameResolver.getLocationName(
-                                    latitude = location.latitude,
-                                    longitude = location.longitude,
-                                )
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    weatherInfo = result.data,
-                                    isLoading = false,
-                                    locationName = locationName,
-                                    selectedCityId = null,
-                                )
-                            }
-                        }
-                        is Result.Error -> {
-                            _uiState.update { currentState ->
-                                currentState.copy(
-                                    isLoading = false,
-                                    errorMessage = DataError.LocationUnavailable.toMessage(),
-                                )
-                            }
-                        }
-                    }
-                } ?: run {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            isLoading = false,
-                            errorMessage = "Couldn't retrieve current location.",
-                        )
-                    }
+                when (val result = getWeatherUseCase(city.latitude, city.longitude)) {
+                    is Result.Success -> _uiState.update { it.copy(weatherInfo = result.data, isLoading = false) }
+                    is Result.Error -> _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
                 }
-            }
-        }
-
-        private fun openManageCities() {
-            _uiState.update { state -> state.copy(screenMode = WeatherScreenMode.ManageCities) }
-        }
-
-        private fun openCitySearch() {
-            _uiState.update { state ->
-                state.copy(
-                    screenMode = WeatherScreenMode.SearchCity,
-                    citySearchState = state.citySearchState.copy(query = "", results = emptyList()),
-                )
-            }
-        }
-
-        private fun showWeatherScreen() {
-            citySearchJob?.cancel()
-            _uiState.update { currentState ->
-                currentState.copy(
-                    screenMode = WeatherScreenMode.Weather,
-                )
             }
         }
 
         private fun updateSearchQuery(query: String) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    citySearchState =
-                        currentState.citySearchState.copy(
-                            query = query,
-                            errorMessage = null,
-                        ),
-                )
-            }
+            _uiState.update { it.copy(citySearchState = it.citySearchState.copy(query = query, errorMessage = null)) }
             citySearchJob?.cancel()
             if (query.length < MIN_CITY_QUERY_LENGTH) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        citySearchState =
-                            currentState.citySearchState.copy(
-                                results = emptyList(),
-                                isLoading = false,
-                            ),
-                    )
-                }
+                _uiState.update { it.copy(citySearchState = it.citySearchState.copy(results = emptyList(), isLoading = false)) }
                 return
             }
             citySearchJob =
@@ -217,41 +139,25 @@ class WeatherViewModel
         }
 
         private suspend fun searchCities(query: String) {
-            _uiState.update { currentState ->
-                currentState.copy(
-                    citySearchState =
-                        currentState.citySearchState.copy(
-                            isLoading = true,
-                            errorMessage = null,
-                        ),
-                )
-            }
-            when (val result = cityRepository.searchCities(query = query)) {
+            _uiState.update { it.copy(citySearchState = it.citySearchState.copy(isLoading = true)) }
+            when (val result = searchCityUseCase(query)) {
                 is Result.Success -> {
-                    _uiState.update { currentState ->
-                        if (currentState.citySearchState.query != query) {
-                            currentState
+                    _uiState.update { state ->
+                        if (state.citySearchState.query != query) {
+                            state
                         } else {
-                            currentState.copy(
-                                citySearchState =
-                                    currentState.citySearchState.copy(
-                                        results = result.data,
-                                        isLoading = false,
-                                        errorMessage = null,
-                                    ),
-                            )
+                            state.copy(citySearchState = state.citySearchState.copy(results = result.data, isLoading = false))
                         }
                     }
                 }
-
                 is Result.Error -> {
-                    _uiState.update { currentState ->
-                        if (currentState.citySearchState.query != query) {
-                            currentState
+                    _uiState.update { state ->
+                        if (state.citySearchState.query != query) {
+                            state
                         } else {
-                            currentState.copy(
+                            state.copy(
                                 citySearchState =
-                                    currentState.citySearchState.copy(
+                                    state.citySearchState.copy(
                                         results = emptyList(),
                                         isLoading = false,
                                         errorMessage = result.error.toMessage(),
@@ -263,154 +169,53 @@ class WeatherViewModel
             }
         }
 
-        private fun loadWeatherForCity(
-            city: City,
-            savedSelection: Boolean = true,
-        ) {
-            citySearchJob?.cancel()
-            viewModelScope.launch {
-                savedCityRepository.saveCity(city)
-                if (savedSelection) {
-                    selectedLocationRepository.saveSelectedCityId(city.id)
-                }
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        locationName = city.name,
-                        screenMode = WeatherScreenMode.Weather,
-                        citySearchState = CitySearchState(),
-                        isLoading = true,
-                        errorMessage = null,
-                        selectedCityId = city.id,
-                    )
-                }
-                when (
-                    val result =
-                        weatherRepository.getWeatherData(
-                            lat = city.latitude,
-                            long = city.longitude,
-                        )
-                ) {
-                    is Result.Success -> {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                weatherInfo = result.data,
-                                isLoading = false,
-                                locationName = city.name,
-                            )
-                        }
+        fun onAction(action: WeatherAction) {
+            when (action) {
+                WeatherAction.SearchCityClicked ->
+                    _uiState.update {
+                        it.copy(screenMode = WeatherScreenMode.SearchCity, citySearchState = CitySearchState())
                     }
-                    is Result.Error -> {
-                        _uiState.update { currentState ->
-                            currentState.copy(
-                                isLoading = false,
-                                errorMessage = result.error.toMessage(),
-                            )
-                        }
+                WeatherAction.ManageCitiesClicked -> _uiState.update { it.copy(screenMode = WeatherScreenMode.ManageCities) }
+                WeatherAction.CityScreenBackClicked -> {
+                    citySearchJob?.cancel()
+                    _uiState.update { it.copy(screenMode = WeatherScreenMode.Weather) }
+                }
+                WeatherAction.LoadWeather -> restoreSelectedLocation()
+                WeatherAction.Retry -> retryWeatherLoading()
+                WeatherAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
+                WeatherAction.CurrentLocationSelected -> selectCurrentLocation()
+                WeatherAction.LocationPermissionGranted -> {
+                    if (_uiState.value.isLocationRestored &&
+                        _uiState.value.selectedCityId == null &&
+                        _uiState.value.weatherInfo == null
+                    ) {
+                        loadWeatherInfo()
                     }
                 }
-            }
-        }
-
-        private fun deleteSavedCity(cityId: Int) {
-            val isSelectedCity =
-                _uiState.value.selectedCityId == cityId
-
-            viewModelScope.launch {
-                savedCityRepository.deleteCity(cityId)
-
-                if (isSelectedCity) {
-                    selectCurrentLocation()
+                WeatherAction.LocationPermissionDenied -> _uiState.update { it.copy(errorMessage = "Permission required.") }
+                is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
+                is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
+                is WeatherAction.SavedCityDeleted -> {
+                    viewModelScope.launch {
+                        cityUseCases.deleteCity(action.cityId)
+                        if (_uiState.value.selectedCityId == action.cityId) selectCurrentLocation()
+                    }
                 }
+                else -> {}
             }
         }
 
         private fun retryWeatherLoading() {
-            val selectedCityId = _uiState.value.selectedCityId
-            if (selectedCityId == null) {
-                loadWeatherInfo()
-                return
-            }
+            val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
             viewModelScope.launch {
-                val selectedCity = savedCityRepository.getCity(selectedCityId)
-
-                if (selectedCity != null) {
-                    loadWeatherForCity(city = selectedCity, savedSelection = false)
-                } else {
-                    selectCurrentLocation()
-                }
+                cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
             }
         }
 
         private fun selectCurrentLocation() {
             citySearchJob?.cancel()
-            viewModelScope.launch {
-                selectedLocationRepository.selectCurrentLocation()
-            }
-            _uiState.update { currentState ->
-                currentState.copy(
-                    selectedCityId = null,
-                    screenMode = WeatherScreenMode.Weather,
-                    errorMessage = null,
-                )
-            }
+            viewModelScope.launch { selectedLocationRepository.selectCurrentLocation() }
+            _uiState.update { it.copy(selectedCityId = null, screenMode = WeatherScreenMode.Weather, errorMessage = null) }
             loadWeatherInfo()
-        }
-
-        fun onAction(action: WeatherAction) {
-            when (action) {
-                WeatherAction.SearchCityClicked -> {
-                    openCitySearch()
-                }
-                WeatherAction.ManageCitiesClicked -> {
-                    openManageCities()
-                }
-                WeatherAction.CityScreenBackClicked -> {
-                    showWeatherScreen()
-                }
-                WeatherAction.LoadWeather -> {
-                    restoreSelectedLocation()
-                }
-                WeatherAction.Retry -> {
-                    retryWeatherLoading()
-                }
-                WeatherAction.ErrorDismissed -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            errorMessage = null,
-                        )
-                    }
-                }
-                WeatherAction.CurrentLocationSelected -> {
-                    selectCurrentLocation()
-                }
-                WeatherAction.RequestLocationPermission -> {
-                }
-                WeatherAction.LocationPermissionGranted -> {
-                    val currentState = _uiState.value
-                    if (
-                        currentState.isLocationRestored &&
-                        currentState.selectedCityId == null &&
-                        currentState.weatherInfo == null
-                    ) {
-                        loadWeatherInfo()
-                    }
-                }
-                WeatherAction.LocationPermissionDenied -> {
-                    _uiState.update { currentState ->
-                        currentState.copy(
-                            errorMessage = "Location permission is required.",
-                        )
-                    }
-                }
-                is WeatherAction.SearchQueryChanged -> {
-                    updateSearchQuery(action.query)
-                }
-                is WeatherAction.CitySelected -> {
-                    loadWeatherForCity(action.city)
-                }
-                is WeatherAction.SavedCityDeleted -> {
-                    deleteSavedCity(action.cityId)
-                }
-            }
         }
     }
