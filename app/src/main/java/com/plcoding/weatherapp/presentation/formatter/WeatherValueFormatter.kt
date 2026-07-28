@@ -1,15 +1,31 @@
 package com.plcoding.weatherapp.presentation.formatter
 
+import com.plcoding.weatherapp.domain.settings.AppTimeFormat
 import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
 import com.plcoding.weatherapp.domain.settings.PressureUnit
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 import kotlin.math.roundToInt
 
 class WeatherValueFormatter
     @Inject
     constructor() {
+        fun formatTime(
+            time: LocalDateTime,
+            format: AppTimeFormat,
+        ): String {
+            val pattern =
+                when (format) {
+                    AppTimeFormat.TwentyFourHour -> "HH:mm"
+                    AppTimeFormat.TwelveHour -> "h:mm a"
+                    AppTimeFormat.SystemDefault -> "HH:mm"
+                }
+            return time.format(DateTimeFormatter.ofPattern(pattern))
+        }
+
         fun formatTemperature(
             celsius: Double,
             unit: TemperatureUnit,

@@ -24,4 +24,7 @@ interface CachedWeatherDao {
     """,
     )
     suspend fun deleteOlderThan(oldestAllowedTimestamp: Long)
+
+    @Query("DELETE FROM cached_weather")
+    suspend fun clearAll()
 }

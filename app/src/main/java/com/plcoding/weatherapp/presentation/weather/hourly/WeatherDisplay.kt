@@ -13,17 +13,18 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.plcoding.weatherapp.domain.settings.AppTimeFormat
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.weather.WeatherData
 import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
 
 @Composable
 fun HourlyWeatherDisplay(
     weatherData: WeatherData,
     temperatureUnit: TemperatureUnit,
+    timeFormat: AppTimeFormat,
     modifier: Modifier = Modifier,
     textColor: Color = Color.White,
 ) {
@@ -35,13 +36,11 @@ fun HourlyWeatherDisplay(
         }
 
     val formatedTime =
-        remember(weatherData) {
+        remember(weatherData, timeFormat) {
             if (isNow) {
                 "Now"
             } else {
-                weatherData.time.format(
-                    DateTimeFormatter.ofPattern("HH:mm"),
-                )
+                formatter.formatTime(weatherData.time, timeFormat)
             }
         }
     Column(

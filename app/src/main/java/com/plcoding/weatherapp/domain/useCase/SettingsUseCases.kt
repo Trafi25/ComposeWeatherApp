@@ -1,6 +1,7 @@
 package com.plcoding.weatherapp.domain.useCase
 
 import com.plcoding.weatherapp.domain.repository.SettingsRepository
+import com.plcoding.weatherapp.domain.repository.WeatherCacheRepository
 import com.plcoding.weatherapp.domain.settings.*
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
@@ -16,7 +17,8 @@ class SettingsUseCases @Inject constructor(
     val setPrecipitationUnit: SetPrecipitationUnitUseCase,
     val setTimeFormat: SetTimeFormatUseCase,
     val setThemeMode: SetThemeModeUseCase,
-    val setAccentColor: SetAccentColorUseCase
+    val setAccentColor: SetAccentColorUseCase,
+    val clearWeatherCache: ClearWeatherCacheUseCase
 )
 
 class ObserveSettingsUseCase @Inject constructor(
@@ -65,4 +67,10 @@ class SetAccentColorUseCase @Inject constructor(
     private val repository: SettingsRepository
 ) {
     suspend operator fun invoke(color: AppAccentColor) = repository.setAccentColor(color)
+}
+
+class ClearWeatherCacheUseCase @Inject constructor(
+    private val repository: WeatherCacheRepository
+) {
+    suspend operator fun invoke() = repository.clearWeatherCache()
 }

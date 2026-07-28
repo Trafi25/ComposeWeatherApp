@@ -33,6 +33,11 @@ import com.plcoding.weatherapp.presentation.weather.settings.components.Settings
 fun SettingsScreen(
     settings: AppSettings,
     onTemperatureUnitClick: () -> Unit,
+    onWindSpeedUnitClick: () -> Unit,
+    onPressureUnitClick: () -> Unit,
+    onPrecipitationUnitClick: () -> Unit,
+    onTimeFormatClick: () -> Unit,
+    onClearCacheClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
     backgroundColor: Color = DayBackground,
@@ -82,22 +87,22 @@ fun SettingsScreen(
                 SettingsItem(
                     title = "Wind speed",
                     description = settings.windSpeedUnit.displayName(),
-                    onClick = {}
+                    onClick = onWindSpeedUnitClick
                 )
                 SettingsItem(
                     title = "Pressure",
                     description = settings.pressureUnit.displayName(),
-                    onClick = {}
+                    onClick = onPressureUnitClick
                 )
                 SettingsItem(
                     title = "Precipitation",
                     description = settings.precipitationUnit.displayName(),
-                    onClick = {}
+                    onClick = onPrecipitationUnitClick
                 )
                 SettingsItem(
                     title = "Time format",
                     description = settings.timeFormat.displayName(),
-                    onClick = {}
+                    onClick = onTimeFormatClick
                 )
             }
 
@@ -128,7 +133,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = "Clear weather cache",
                     description = "Remove all offline data",
-                    onClick = {},
+                    onClick = onClearCacheClick,
                     trailingContent = null
                 )
             }
