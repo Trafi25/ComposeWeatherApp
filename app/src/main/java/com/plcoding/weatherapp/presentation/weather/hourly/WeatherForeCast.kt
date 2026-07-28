@@ -70,6 +70,7 @@ fun WeatherForecast(
                     HourlyWeatherDisplay(
                         weatherData = weatherData,
                         temperatureUnit = state.appSettings.temperatureUnit,
+                        timeFormat = state.appSettings.timeFormat,
                         modifier = Modifier.height(100.dp),
                     )
                 }

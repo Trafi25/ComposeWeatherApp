@@ -6,7 +6,11 @@ import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
+import com.plcoding.weatherapp.domain.settings.AppTimeFormat
+import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
+import com.plcoding.weatherapp.domain.settings.PressureUnit
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
+import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
 import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.useCase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
@@ -20,11 +24,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -208,6 +210,21 @@ class WeatherViewModel
                 is WeatherAction.TemperatureUnitSelected -> {
                     setTemperatureUnit(action.unit)
                 }
+                is WeatherAction.WindSpeedUnitSelected -> {
+                    setWindSpeedUnit(action.unit)
+                }
+                is WeatherAction.PressureUnitSelected -> {
+                    setPressureUnit(action.unit)
+                }
+                is WeatherAction.PrecipitationUnitSelected -> {
+                    setPrecipitationUnit(action.unit)
+                }
+                WeatherAction.ClearCacheClicked -> {
+                    clearCache()
+                }
+                is WeatherAction.TimeFormatSelected -> {
+                    setTimeFormat(action.format)
+                }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
@@ -246,6 +263,28 @@ class WeatherViewModel
 
     private fun setTemperatureUnit(unit : TemperatureUnit){
         viewModelScope.launch { settingsUseCases.setTemperatureUnit(unit) }
+    }
+
+    private fun setWindSpeedUnit(unit: WindSpeedUnit) {
+        viewModelScope.launch { settingsUseCases.setWindSpeedUnit(unit) }
+    }
+
+    private fun setPressureUnit(unit: PressureUnit) {
+        viewModelScope.launch { settingsUseCases.setPressureUnit(unit) }
+    }
+
+    private fun setPrecipitationUnit(unit: PrecipitationUnit){
+        viewModelScope.launch { settingsUseCases.setPrecipitationUnit(unit) }
+    }
+
+    private fun setTimeFormat(format: AppTimeFormat) {
+        viewModelScope.launch { settingsUseCases.setTimeFormat(format) }
+    }
+
+    private fun clearCache() {
+        viewModelScope.launch {
+            settingsUseCases.clearWeatherCache()
+        }
     }
 
 
