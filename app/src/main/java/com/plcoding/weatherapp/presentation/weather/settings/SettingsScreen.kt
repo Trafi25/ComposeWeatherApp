@@ -7,10 +7,13 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.DrawerDefaults.backgroundColor
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.ListItemDefaults.contentColor
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -22,9 +25,11 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.domain.settings.AppAccentColor
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.displayName
 import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
+import com.plcoding.weatherapp.presentation.weather.settings.components.ColorSelectionRow
 import com.plcoding.weatherapp.presentation.weather.settings.components.SettingsItem
 import com.plcoding.weatherapp.presentation.weather.settings.components.SettingsSection
 
@@ -37,10 +42,11 @@ fun SettingsScreen(
     onPressureUnitClick: () -> Unit,
     onPrecipitationUnitClick: () -> Unit,
     onTimeFormatClick: () -> Unit,
+    onThemeModeClick: () -> Unit,
+    onAccentColorSelected: (AppAccentColor) -> Unit,
     onClearCacheClick: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = DayBackground,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
@@ -113,14 +119,20 @@ fun SettingsScreen(
 
             SettingsSection(title = "APPEARANCE") {
                 SettingsItem(
-                    title = "Accent Color",
-                    description = settings.accentColor.displayName(),
-                    onClick = {}
-                )
-                SettingsItem(
                     title = "Theme",
                     description = settings.themeMode.displayName(),
-                    onClick = {}
+                    onClick = onThemeModeClick
+                )
+
+                Text(
+                    text = "Accent Color",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = contentColor,
+                    modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+                )
+                ColorSelectionRow(
+                    selectedColor = settings.accentColor,
+                    onColorSelected = onAccentColorSelected
                 )
             }
 

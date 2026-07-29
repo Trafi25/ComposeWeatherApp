@@ -6,11 +6,7 @@ import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
-import com.plcoding.weatherapp.domain.settings.AppTimeFormat
-import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
-import com.plcoding.weatherapp.domain.settings.PressureUnit
-import com.plcoding.weatherapp.domain.settings.TemperatureUnit
-import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
+import com.plcoding.weatherapp.domain.settings.*
 import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.useCase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
@@ -225,6 +221,12 @@ class WeatherViewModel
                 is WeatherAction.TimeFormatSelected -> {
                     setTimeFormat(action.format)
                 }
+                is WeatherAction.ThemeModeSelected -> {
+                    setThemeMode(action.mode)
+                }
+                is WeatherAction.AccentColorSelected -> {
+                    setAccentColor(action.color)
+                }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
@@ -279,6 +281,14 @@ class WeatherViewModel
 
     private fun setTimeFormat(format: AppTimeFormat) {
         viewModelScope.launch { settingsUseCases.setTimeFormat(format) }
+    }
+
+    private fun setThemeMode(mode: AppThemeMode) {
+        viewModelScope.launch { settingsUseCases.setThemeMode(mode) }
+    }
+
+    private fun setAccentColor(color: AppAccentColor) {
+        viewModelScope.launch { settingsUseCases.setAccentColor(color) }
     }
 
     private fun clearCache() {

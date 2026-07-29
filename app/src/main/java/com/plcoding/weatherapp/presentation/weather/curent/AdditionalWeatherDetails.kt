@@ -23,6 +23,7 @@ fun AdditionalWeatherDetails(
     modifier: Modifier = Modifier,
 ) {
     val formatter = LocalWeatherValueFormatter.current
+
     Column(
         modifier =
             modifier
@@ -42,12 +43,18 @@ fun AdditionalWeatherDetails(
                 label = "Feels like",
                 value = formatter.formatTemperature(data.apparentTemperatureCelsius, settings.temperatureUnit),
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_precipitation,
                 label = "Precipitation",
                 value = formatter.formatPrecipitation(data.precipitationMm, settings.precipitationUnit),
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
         }
         Row(
@@ -59,12 +66,18 @@ fun AdditionalWeatherDetails(
                 label = "Cloud cover",
                 value = "${data.cloudCoverPercent.roundToInt()}%",
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_surface_pressure,
                 label = "Surface pressure",
                 value = formatter.formatPressure(data.pressure, settings.pressureUnit),
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
         }
         Row(
@@ -76,12 +89,18 @@ fun AdditionalWeatherDetails(
                 label = "Wind direction",
                 value = "${data.windDirectionLabel} ${data.windDirectionDegrees}°",
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_wind_gusts,
                 label = "Wind gusts",
                 value = formatter.formatWindSpeed(data.windGustsKmh, settings.windSpeedUnit),
                 modifier = Modifier.weight(1f),
+                iconTint = Color.White,
+                labelColor = Color.White.copy(alpha = 0.7f),
+                valueColor = Color.White
             )
         }
     }

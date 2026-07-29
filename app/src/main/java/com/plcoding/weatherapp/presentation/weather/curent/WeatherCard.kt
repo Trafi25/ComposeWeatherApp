@@ -30,8 +30,8 @@ import com.plcoding.weatherapp.presentation.weather.states.WeatherState
 @Composable
 fun WeatherCard(
     state: WeatherState,
-    backgroundColor: Color,
     locationName: String?,
+    backgroundColor: Color,
     modifier: Modifier = Modifier,
 ) {
     val formatter = LocalWeatherValueFormatter.current
@@ -62,7 +62,7 @@ fun WeatherCard(
                 Image(
                     painter = painterResource(id = data.weatherType.getIconRes(data.isDay)),
                     contentDescription = null,
-                    modifier = Modifier.size(100.dp),
+                    modifier = Modifier.size(150.dp),
                 )
                 Spacer(modifier = Modifier.height(16.dp))
                 Text(
