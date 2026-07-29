@@ -1,37 +1,27 @@
 package com.plcoding.weatherapp.presentation.ui.theme
 
-import androidx.compose.foundation.isSystemInDarkTheme
-import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.darkColorScheme
 import androidx.compose.material3.lightColorScheme
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import com.plcoding.weatherapp.domain.settings.AppAccentColor
-import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.AppThemeMode
 
-@Composable
-fun WeatherAppTheme(
-    settings: AppSettings,
-    content: @Composable () -> Unit
-) {
-    val darkTheme = when (settings.themeMode) {
+
+fun getThemeColorScheme(themeMode: AppThemeMode, accentColor: AppAccentColor, isSystemDark: Boolean): ColorScheme
+{
+    val useDarkMode = when (themeMode){
         AppThemeMode.Light -> false
         AppThemeMode.Dark -> true
-        AppThemeMode.SystemDefault -> isSystemInDarkTheme()
+        AppThemeMode.SystemDefault -> isSystemDark
     }
 
-    val colorScheme = when (settings.accentColor) {
-        AppAccentColor.Green -> if (darkTheme) DarkGreenScheme else LightGreenScheme
-        AppAccentColor.Blue -> if (darkTheme) DarkBlueScheme else LightBlueScheme
-        AppAccentColor.Red -> if (darkTheme) DarkRedScheme else LightRedScheme
+    return when (accentColor){
+        AppAccentColor.Green -> if (useDarkMode) DarkGreenScheme else LightGreenScheme
+        AppAccentColor.Blue -> if (useDarkMode) DarkBlueScheme else LightBlueScheme
+        AppAccentColor.Red -> if (useDarkMode) DarkRedScheme else LightRedScheme
     }
 
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
 }
 
 private val DarkGreenScheme = darkColorScheme(

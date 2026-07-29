@@ -7,6 +7,7 @@ import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
 import androidx.compose.runtime.Composable
+import com.plcoding.weatherapp.domain.settings.AppThemeMode
 import com.plcoding.weatherapp.domain.settings.AppTimeFormat
 import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
 import com.plcoding.weatherapp.domain.settings.PressureUnit
@@ -133,13 +134,21 @@ fun WeatherMainScreen(
                         val nextIndex = (currentIndex + 1) % formats.size
                         onAction(WeatherAction.TimeFormatSelected(formats[nextIndex]))
                     },
+                    onThemeModeClick = {
+                        val modes = AppThemeMode.entries
+                        val currentIndex = modes.indexOf(uiState.appSettings.themeMode)
+                        val nextIndex = (currentIndex + 1) % modes.size
+                        onAction(WeatherAction.ThemeModeSelected(modes[nextIndex]))
+                    },
+                    onAccentColorSelected = { color ->
+                        onAction(WeatherAction.AccentColorSelected(color))
+                    },
                     onClearCacheClick = {
                         onAction(WeatherAction.ClearCacheClicked)
                     },
                     onBackClick = {
                         onAction(WeatherAction.SettingsBackClicked)
                     },
-                    backgroundColor = backgroundColor,
                 )
             }
         }
