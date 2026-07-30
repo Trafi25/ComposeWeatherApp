@@ -17,19 +17,20 @@ import androidx.compose.ui.unit.dp
 fun SettingsSection(
     title: String,
     modifier: Modifier = Modifier,
-    content: @Composable () -> Unit
+    content: @Composable () -> Unit,
 ) {
     Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(top = 16.dp)
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(top = 16.dp),
     ) {
         Text(
             text = title,
             style = MaterialTheme.typography.labelLarge,
             color = Color.White.copy(alpha = 0.6f),
             fontWeight = FontWeight.Bold,
-            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
         )
         content()
         Spacer(modifier = Modifier.height(8.dp))

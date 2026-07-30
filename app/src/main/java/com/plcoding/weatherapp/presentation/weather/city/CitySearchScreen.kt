@@ -12,6 +12,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -26,7 +27,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.location.City
-import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -37,11 +37,10 @@ fun CitySearchScreen(
     onCityClick: (City) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = DayBackground,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -107,13 +106,10 @@ fun CitySearchScreen(
                 shape = RoundedCornerShape(12.dp),
                 colors =
                     OutlinedTextFieldDefaults.colors(
-                        focusedTextColor = Color.White,
-                        unfocusedTextColor = Color.White,
-                        cursorColor = Color.White,
-                        focusedBorderColor = Color.White,
-                        unfocusedBorderColor = Color.White.copy(alpha = 0.5f),
-                        focusedContainerColor = Color.White.copy(alpha = 0.1f),
-                        unfocusedContainerColor = Color.White.copy(alpha = 0.1f),
+                        focusedContainerColor = MaterialTheme.colorScheme.surface,
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                        focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
                     ),
             )
             Spacer(modifier = Modifier.height(16.dp))

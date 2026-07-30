@@ -9,18 +9,14 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
-import com.plcoding.weatherapp.presentation.ui.theme.DayCardBackground
-import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
-import com.plcoding.weatherapp.presentation.ui.theme.NightCardBackground
+import com.plcoding.weatherapp.presentation.ui.theme.spacing
 import com.plcoding.weatherapp.presentation.weather.WeatherAction
 import com.plcoding.weatherapp.presentation.weather.common.WeatherErrorContent
-import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
 import com.plcoding.weatherapp.presentation.weather.daily.SevenDayForecast
 import com.plcoding.weatherapp.presentation.weather.hourly.WeatherForecast
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
@@ -31,30 +27,7 @@ fun WeatherContent(
     onAction: (WeatherAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val isDay =
-        uiState.weatherInfo
-            ?.currentWeatherData
-            ?.isDay
-            ?: true
-
-    val backgroundColor =
-        if (isDay) {
-            DayBackground
-        } else {
-            NightBackground
-        }
-
-    val cardBackground =
-        if (isDay) {
-            DayCardBackground
-        } else {
-            NightCardBackground
-        }
-
-    WeatherSystemBar(
-        backgroundColor = backgroundColor,
-        useDarkIcons = isDay,
-    )
+    val backgroundColor = MaterialTheme.colorScheme.background
 
     PullToRefreshBox(
         isRefreshing = uiState.isLoading,
@@ -88,14 +61,14 @@ fun WeatherContent(
             ) {
                 LazyColumn(
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(bottom = 24.dp),
-                    verticalArrangement = Arrangement.spacedBy(16.dp),
+                    contentPadding = PaddingValues(bottom = MaterialTheme.spacing.large),
+                    verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
                 ) {
                     item {
                         WeatherCard(
                             state = uiState,
                             locationName = uiState.locationName,
-                            backgroundColor = cardBackground,
+                            backgroundColor = MaterialTheme.colorScheme.surface,
                         )
                     }
 

@@ -13,6 +13,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -25,7 +26,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.location.City
-import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,11 +38,10 @@ fun CityManagerScreen(
     onCityDelete: (City) -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
-    backgroundColor: Color = DayBackground,
 ) {
     Scaffold(
         modifier = modifier.fillMaxSize(),
-        containerColor = backgroundColor,
+        containerColor = MaterialTheme.colorScheme.background,
         topBar = {
             TopAppBar(
                 title = {
@@ -72,8 +71,8 @@ fun CityManagerScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = onAddCityClick,
-                containerColor = Color.White.copy(alpha = 0.9f),
-                contentColor = backgroundColor,
+                containerColor = MaterialTheme.colorScheme.surface,
+                contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add_icon),
