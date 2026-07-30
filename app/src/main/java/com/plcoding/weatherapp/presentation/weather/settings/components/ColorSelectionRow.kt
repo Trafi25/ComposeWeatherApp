@@ -20,25 +20,34 @@ import com.plcoding.weatherapp.domain.settings.AppAccentColor
 @Composable
 fun ColorSelectionRow(
     selectedColor: AppAccentColor,
-    onColorSelected: (AppAccentColor) -> Unit
+    onColorSelected: (AppAccentColor) -> Unit,
 ) {
     Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+        modifier =
+            Modifier
+                .fillMaxWidth()
+                .padding(16.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
     ) {
-        AppAccentColor.entries.forEach {
-            accent ->
-            val color = when(accent) {
-                AppAccentColor.Green -> Color.Green
-                AppAccentColor.Blue -> Color.Blue
-                AppAccentColor.Red -> Color.Red
-            }
-            Box(modifier = Modifier.size(40.dp).clip(CircleShape).background(color).border(
-                width = 3.dp, color = if (selectedColor == accent) Color.White else Color.Transparent,
-                shape = CircleShape
-            ).clickable(onClick = { onColorSelected(accent) }))
+        AppAccentColor.entries.forEach { accent ->
+            val color =
+                when (accent) {
+                    AppAccentColor.Green -> Color.Green
+                    AppAccentColor.Blue -> Color.Blue
+                    AppAccentColor.Red -> Color.Red
+                }
+            Box(
+                modifier =
+                    Modifier
+                        .size(40.dp)
+                        .clip(CircleShape)
+                        .background(color)
+                        .border(
+                            width = 3.dp,
+                            color = if (selectedColor == accent) Color.White else Color.Transparent,
+                            shape = CircleShape,
+                        ).clickable(onClick = { onColorSelected(accent) }),
+            )
         }
     }
 }

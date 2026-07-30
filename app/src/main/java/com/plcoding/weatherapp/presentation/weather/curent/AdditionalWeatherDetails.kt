@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -14,6 +15,7 @@ import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
 import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
+import com.plcoding.weatherapp.presentation.ui.theme.spacing
 import kotlin.math.roundToInt
 
 @Composable
@@ -29,7 +31,7 @@ fun AdditionalWeatherDetails(
             modifier
                 .fillMaxWidth()
                 .padding(top = 20.dp),
-        verticalArrangement = Arrangement.spacedBy(16.dp),
+        verticalArrangement = Arrangement.spacedBy(MaterialTheme.spacing.medium),
     ) {
         HorizontalDivider(
             color = Color.White.copy(alpha = 0.3f),
@@ -45,7 +47,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_precipitation,
@@ -54,7 +56,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
         }
         Row(
@@ -68,7 +70,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_surface_pressure,
@@ -77,7 +79,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
         }
         Row(
@@ -91,7 +93,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
             WeatherDetailItem(
                 iconResource = R.drawable.ic_wind_gusts,
@@ -100,7 +102,7 @@ fun AdditionalWeatherDetails(
                 modifier = Modifier.weight(1f),
                 iconTint = Color.White,
                 labelColor = Color.White.copy(alpha = 0.7f),
-                valueColor = Color.White
+                valueColor = Color.White,
             )
         }
     }

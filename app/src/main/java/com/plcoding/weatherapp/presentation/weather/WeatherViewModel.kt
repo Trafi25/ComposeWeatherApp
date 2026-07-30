@@ -239,19 +239,19 @@ class WeatherViewModel
             }
         }
 
-    private fun retryWeatherLoading() {
-        val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
-        viewModelScope.launch {
-            cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+        private fun retryWeatherLoading() {
+            val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
+            viewModelScope.launch {
+                cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+            }
         }
-    }
 
-    private fun selectCurrentLocation() {
-        citySearchJob?.cancel()
-        viewModelScope.launch { selectedLocationRepository.selectCurrentLocation() }
-        _uiState.update { it.copy(selectedCityId = null, screenMode = WeatherScreenMode.Weather, errorMessage = null) }
-        loadWeatherInfo()
-    }
+        private fun selectCurrentLocation() {
+            citySearchJob?.cancel()
+            viewModelScope.launch { selectedLocationRepository.selectCurrentLocation() }
+            _uiState.update { it.copy(selectedCityId = null, screenMode = WeatherScreenMode.Weather, errorMessage = null) }
+            loadWeatherInfo()
+        }
 
         private fun observeSettings() {
             viewModelScope.launch {
@@ -263,41 +263,37 @@ class WeatherViewModel
             }
         }
 
-    private fun setTemperatureUnit(unit : TemperatureUnit){
-        viewModelScope.launch { settingsUseCases.setTemperatureUnit(unit) }
-    }
-
-    private fun setWindSpeedUnit(unit: WindSpeedUnit) {
-        viewModelScope.launch { settingsUseCases.setWindSpeedUnit(unit) }
-    }
-
-    private fun setPressureUnit(unit: PressureUnit) {
-        viewModelScope.launch { settingsUseCases.setPressureUnit(unit) }
-    }
-
-    private fun setPrecipitationUnit(unit: PrecipitationUnit){
-        viewModelScope.launch { settingsUseCases.setPrecipitationUnit(unit) }
-    }
-
-    private fun setTimeFormat(format: AppTimeFormat) {
-        viewModelScope.launch { settingsUseCases.setTimeFormat(format) }
-    }
-
-    private fun setThemeMode(mode: AppThemeMode) {
-        viewModelScope.launch { settingsUseCases.setThemeMode(mode) }
-    }
-
-    private fun setAccentColor(color: AppAccentColor) {
-        viewModelScope.launch { settingsUseCases.setAccentColor(color) }
-    }
-
-    private fun clearCache() {
-        viewModelScope.launch {
-            settingsUseCases.clearWeatherCache()
+        private fun setTemperatureUnit(unit: TemperatureUnit) {
+            viewModelScope.launch { settingsUseCases.setTemperatureUnit(unit) }
         }
-    }
 
+        private fun setWindSpeedUnit(unit: WindSpeedUnit) {
+            viewModelScope.launch { settingsUseCases.setWindSpeedUnit(unit) }
+        }
 
+        private fun setPressureUnit(unit: PressureUnit) {
+            viewModelScope.launch { settingsUseCases.setPressureUnit(unit) }
+        }
 
+        private fun setPrecipitationUnit(unit: PrecipitationUnit) {
+            viewModelScope.launch { settingsUseCases.setPrecipitationUnit(unit) }
+        }
 
+        private fun setTimeFormat(format: AppTimeFormat) {
+            viewModelScope.launch { settingsUseCases.setTimeFormat(format) }
+        }
+
+        private fun setThemeMode(mode: AppThemeMode) {
+            viewModelScope.launch { settingsUseCases.setThemeMode(mode) }
+        }
+
+        private fun setAccentColor(color: AppAccentColor) {
+            viewModelScope.launch { settingsUseCases.setAccentColor(color) }
+        }
+
+        private fun clearCache() {
+            viewModelScope.launch {
+                settingsUseCases.clearWeatherCache()
+            }
+        }
     }

@@ -36,27 +36,28 @@ fun SettingsItem(
             imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
             contentDescription = null,
             modifier = Modifier.size(24.dp),
-            tint = Color.White.copy(alpha = 0.4f)
+            tint = Color.White.copy(alpha = 0.4f),
         )
-    }
+    },
 ) {
     Row(
-        modifier = modifier
-            .fillMaxWidth()
-            .then(
-                if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier
-            )
-            .padding(horizontal = 16.dp, vertical = 16.dp),
-        verticalAlignment = Alignment.CenterVertically
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .then(
+                    if (onClick != null) Modifier.clickable(onClick = onClick) else Modifier,
+                ).padding(horizontal = 16.dp, vertical = 16.dp),
+        verticalAlignment = Alignment.CenterVertically,
     ) {
         if (icon != null) {
             Icon(
                 painter = icon,
                 contentDescription = null,
-                modifier = Modifier
-                    .size(24.dp)
-                    .padding(end = 16.dp),
-                tint = Color.White
+                modifier =
+                    Modifier
+                        .size(24.dp)
+                        .padding(end = 16.dp),
+                tint = Color.White,
             )
         } else {
             Spacer(modifier = Modifier.width(0.dp))
@@ -64,19 +65,19 @@ fun SettingsItem(
 
         Column(
             modifier = Modifier.weight(1f),
-            verticalArrangement = Arrangement.Center
+            verticalArrangement = Arrangement.Center,
         ) {
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
             )
             if (description != null) {
                 Text(
                     text = description,
                     style = MaterialTheme.typography.bodyMedium,
-                    color = Color.White.copy(alpha = 0.7f)
+                    color = Color.White.copy(alpha = 0.7f),
                 )
             }
         }

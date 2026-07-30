@@ -6,6 +6,7 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.togetherWith
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import com.plcoding.weatherapp.domain.settings.AppThemeMode
 import com.plcoding.weatherapp.domain.settings.AppTimeFormat
@@ -13,10 +14,9 @@ import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
 import com.plcoding.weatherapp.domain.settings.PressureUnit
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
-import com.plcoding.weatherapp.presentation.ui.theme.DayBackground
-import com.plcoding.weatherapp.presentation.ui.theme.NightBackground
 import com.plcoding.weatherapp.presentation.weather.city.CityManagerScreen
 import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
+import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
 import com.plcoding.weatherapp.presentation.weather.curent.WeatherContent
 import com.plcoding.weatherapp.presentation.weather.settings.SettingsScreen
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
@@ -27,6 +27,15 @@ fun WeatherMainScreen(
     uiState: WeatherState,
     onAction: (WeatherAction) -> Unit,
 ) {
+    val backgroundColor = MaterialTheme.colorScheme.background
+
+    val isDarkTheme = backgroundColor.red + backgroundColor.green + backgroundColor.blue < 1.5f
+
+    WeatherSystemBar(
+        backgroundColor = backgroundColor,
+        useDarkIcons = !isDarkTheme,
+    )
+
     AnimatedContent(
         targetState = uiState.screenMode,
         transitionSpec =
@@ -49,8 +58,6 @@ fun WeatherMainScreen(
             },
         label = "Weather screen navigation",
     ) { screenMode ->
-        val isDay = uiState.weatherInfo?.currentWeatherData?.isDay ?: true
-        val backgroundColor = if (isDay) DayBackground else NightBackground
         when (screenMode) {
             WeatherScreenMode.Weather -> {
                 WeatherContent(
@@ -61,7 +68,6 @@ fun WeatherMainScreen(
             WeatherScreenMode.SearchCity -> {
                 CitySearchScreen(
                     state = uiState.citySearchState,
-                    backgroundColor = backgroundColor,
                     onQueryChanged = { query ->
                         onAction(WeatherAction.SearchQueryChanged(query))
                     },
@@ -76,7 +82,6 @@ fun WeatherMainScreen(
             WeatherScreenMode.ManageCities -> {
                 CityManagerScreen(
                     cities = uiState.savedCities,
-                    backgroundColor = backgroundColor,
                     selectedCityId = uiState.selectedCityId,
                     onCityClick = { city ->
                         onAction(
@@ -103,11 +108,12 @@ fun WeatherMainScreen(
                 SettingsScreen(
                     settings = uiState.appSettings,
                     onTemperatureUnitClick = {
-                        val newUnit = if (uiState.appSettings.temperatureUnit == TemperatureUnit.Celsius) {
-                            TemperatureUnit.Fahrenheit
-                        } else {
-                            TemperatureUnit.Celsius
-                        }
+                        val newUnit =
+                            if (uiState.appSettings.temperatureUnit == TemperatureUnit.Celsius) {
+                                TemperatureUnit.Fahrenheit
+                            } else {
+                                TemperatureUnit.Celsius
+                            }
                         onAction(WeatherAction.TemperatureUnitSelected(newUnit))
                     },
                     onWindSpeedUnitClick = {
