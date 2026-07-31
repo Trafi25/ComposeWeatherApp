@@ -9,8 +9,7 @@ import javax.inject.Inject
 /**
  * Use Case for searching cities.
  *
- * Suggestion: Use Cases (Interactors)
- * Why: This encapsulates the specific "Business Rule" of searching.
+ * This encapsulates the specific "Business Rule" of searching.
  * The ViewModel shouldn't care about query length or trimming strings; it should just say "search".
  */
 class SearchCityUseCase
