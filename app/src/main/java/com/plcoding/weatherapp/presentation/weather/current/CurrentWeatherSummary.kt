@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.curent
+package com.plcoding.weatherapp.presentation.weather.current
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row

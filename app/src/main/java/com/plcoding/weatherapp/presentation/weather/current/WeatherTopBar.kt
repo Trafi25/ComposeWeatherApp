@@ -1,5 +1,6 @@
-package com.plcoding.weatherapp.presentation.weather.curent
+package com.plcoding.weatherapp.presentation.weather.current
 
+import androidx.compose.foundation.basicMarquee
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -37,11 +38,13 @@ fun WeatherTopBar(
     ) {
         Text(
             text = locationName ?: "Current location",
-            modifier = Modifier.weight(1f),
+            modifier =
+                Modifier
+                    .weight(1f)
+                    .basicMarquee(),
             style = MaterialTheme.typography.titleLarge,
             color = Color.White,
             maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
         )
 
         IconButton(

@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.domain.useCase
+package com.plcoding.weatherapp.domain.usecase
 
 import com.plcoding.weatherapp.domain.repository.SettingsRepository
 import com.plcoding.weatherapp.domain.repository.WeatherCacheRepository

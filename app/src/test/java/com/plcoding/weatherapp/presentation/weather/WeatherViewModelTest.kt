@@ -6,10 +6,10 @@ import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
-import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
-import com.plcoding.weatherapp.domain.useCase.SavedCityUseCases
-import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
-import com.plcoding.weatherapp.domain.useCase.SettingsUseCases
+import com.plcoding.weatherapp.domain.usecase.GetWeatherUseCase
+import com.plcoding.weatherapp.domain.usecase.SavedCityUseCases
+import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
+import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
 import io.mockk.coEvery

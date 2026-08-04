@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.curent
+package com.plcoding.weatherapp.presentation.weather.current
 
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable

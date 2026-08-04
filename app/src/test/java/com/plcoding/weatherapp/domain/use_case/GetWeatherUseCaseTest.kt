@@ -2,7 +2,7 @@ package com.plcoding.weatherapp.domain.use_case
 
 import com.google.common.truth.Truth.assertThat
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
-import com.plcoding.weatherapp.domain.useCase.GetWeatherUseCase
+import com.plcoding.weatherapp.domain.usecase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import io.mockk.coEvery

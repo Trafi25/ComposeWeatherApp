@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.domain.useCase
+package com.plcoding.weatherapp.domain.usecase
 
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.DataError

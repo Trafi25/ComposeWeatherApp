@@ -3,7 +3,7 @@ package com.plcoding.weatherapp.domain.use_case
 import com.google.common.truth.Truth.assertThat
 import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.repository.CityRepository
-import com.plcoding.weatherapp.domain.useCase.SearchCityUseCase
+import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
 import io.mockk.coEvery

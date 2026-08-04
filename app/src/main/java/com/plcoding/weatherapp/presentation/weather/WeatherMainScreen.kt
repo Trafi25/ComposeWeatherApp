@@ -23,7 +23,7 @@ import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
 import com.plcoding.weatherapp.presentation.weather.city.CityManagerScreen
 import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
 import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
-import com.plcoding.weatherapp.presentation.weather.curent.WeatherContent
+import com.plcoding.weatherapp.presentation.weather.current.WeatherContent
 import com.plcoding.weatherapp.presentation.weather.settings.SettingsScreen
 import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.states.WeatherState
