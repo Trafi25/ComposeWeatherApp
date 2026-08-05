@@ -64,7 +64,7 @@ com.plcoding.weatherapp
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/your-username/WeatherApp.git
+   git clone https://github.com/Trafi25/ComposeWeatherApp.git
    ```
 2. **Open in Android Studio**:
    Import the project and wait for Gradle sync.
