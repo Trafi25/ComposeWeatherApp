@@ -16,7 +16,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.domain.location.City
-import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
+import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 
 @Composable
 fun CitySearchResults(

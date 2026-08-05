@@ -19,7 +19,7 @@ import com.plcoding.weatherapp.presentation.weather.WeatherAction
 import com.plcoding.weatherapp.presentation.weather.common.WeatherErrorContent
 import com.plcoding.weatherapp.presentation.weather.daily.SevenDayForecast
 import com.plcoding.weatherapp.presentation.weather.hourly.WeatherForecast
-import com.plcoding.weatherapp.presentation.weather.states.WeatherState
+import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 
 @Composable
 fun WeatherContent(

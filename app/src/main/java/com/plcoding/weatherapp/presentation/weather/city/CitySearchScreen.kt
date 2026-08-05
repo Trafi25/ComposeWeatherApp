@@ -27,7 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.location.City
-import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
+import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

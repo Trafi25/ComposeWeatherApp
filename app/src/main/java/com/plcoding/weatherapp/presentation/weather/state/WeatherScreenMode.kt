@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.states
+package com.plcoding.weatherapp.presentation.weather.state
 
 sealed interface WeatherScreenMode {
     data object Weather : WeatherScreenMode

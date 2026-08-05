@@ -13,9 +13,9 @@ import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
-import com.plcoding.weatherapp.presentation.weather.states.CitySearchState
-import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
-import com.plcoding.weatherapp.presentation.weather.states.WeatherState
+import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
+import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
+import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay

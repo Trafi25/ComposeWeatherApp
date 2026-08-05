@@ -25,8 +25,8 @@ import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
 import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
 import com.plcoding.weatherapp.presentation.weather.current.WeatherContent
 import com.plcoding.weatherapp.presentation.weather.settings.SettingsScreen
-import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
-import com.plcoding.weatherapp.presentation.weather.states.WeatherState
+import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
+import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 
 @Composable
 fun WeatherMainScreen(

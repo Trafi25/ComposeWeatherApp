@@ -26,7 +26,7 @@ import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import com.plcoding.weatherapp.presentation.ui.theme.sizes
 import com.plcoding.weatherapp.presentation.ui.theme.spacing
-import com.plcoding.weatherapp.presentation.weather.states.WeatherState
+import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 
 @Composable
 fun WeatherCard(

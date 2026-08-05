@@ -11,7 +11,7 @@ import com.plcoding.weatherapp.domain.usecase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
-import com.plcoding.weatherapp.presentation.weather.states.WeatherScreenMode
+import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk

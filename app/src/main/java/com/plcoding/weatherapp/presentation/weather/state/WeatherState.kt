@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.weather.states
+package com.plcoding.weatherapp.presentation.weather.state
 
 import androidx.compose.runtime.Immutable
 import com.plcoding.weatherapp.domain.location.City
