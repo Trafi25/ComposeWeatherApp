@@ -30,10 +30,13 @@ jobs:
       - name: Make Gradle executable
         run: chmod +x ./gradlew
 
-      - name: Run unit tests
+      - name: Check Formatting
+        run: ./gradlew spotlessCheck
+
+      - name: Run Unit Tests
         run: ./gradlew testDebugUnitTest
 
-      - name: Run lint
+      - name: Run Lint
         run: ./gradlew lintDebug
 
       - name: Build debug APK
