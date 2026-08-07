@@ -1,5 +1,7 @@
 # WeatherApp
 
+![Android CI](https://github.com/Trafi25/ComposeWeatherApp/actions/workflows/android-ci.yml/badge.svg)
+
 A modern, clean, and feature-rich weather application built with **Jetpack Compose**. This app provides real-time weather data, forecasts, and city management with a focus on smooth animations and a premium user experience.
 
 ## Screenshots

@@ -13,49 +13,52 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SavedCityUseCasesTest {
-
     private lateinit var savedCityUseCases: SavedCityUseCases
     private val repository: SavedCityRepository = mockk()
 
     @BeforeEach
     fun setUp() {
-        savedCityUseCases = SavedCityUseCases(
-            observeSavedCities = ObserveSavedCitiesUseCase(repository),
-            saveCity = SaveCityUseCase(repository),
-            deleteCity = DeleteCityUseCase(repository),
-            getCity = GetCityUseCase(repository)
-        )
+        savedCityUseCases =
+            SavedCityUseCases(
+                observeSavedCities = ObserveSavedCitiesUseCase(repository),
+                saveCity = SaveCityUseCase(repository),
+                deleteCity = DeleteCityUseCase(repository),
+                getCity = GetCityUseCase(repository),
+            )
     }
 
     @Test
-    fun `observeSavedCities returns flow from repository`() = runTest {
-        val cities = listOf(mockk<City>())
-        every { repository.observeSavedCities() } returns flowOf(cities)
+    fun `observeSavedCities returns flow from repository`() =
+        runTest {
+            val cities = listOf(mockk<City>())
+            every { repository.observeSavedCities() } returns flowOf(cities)
 
-        val result = savedCityUseCases.observeSavedCities()
+            val result = savedCityUseCases.observeSavedCities()
 
-        result.collect {
-            assertThat(it).isEqualTo(cities)
+            result.collect {
+                assertThat(it).isEqualTo(cities)
+            }
         }
-    }
 
     @Test
-    fun `saveCity calls repository`() = runTest {
-        val city = mockk<City>()
-        coEvery { repository.saveCity(city) } returns Unit
+    fun `saveCity calls repository`() =
+        runTest {
+            val city = mockk<City>()
+            coEvery { repository.saveCity(city) } returns Unit
 
-        savedCityUseCases.saveCity(city)
+            savedCityUseCases.saveCity(city)
 
-        coVerify { repository.saveCity(city) }
-    }
+            coVerify { repository.saveCity(city) }
+        }
 
     @Test
-    fun `deleteCity calls repository`() = runTest {
-        val cityId = 1
-        coEvery { repository.deleteCity(cityId) } returns Unit
+    fun `deleteCity calls repository`() =
+        runTest {
+            val cityId = 1
+            coEvery { repository.deleteCity(cityId) } returns Unit
 
-        savedCityUseCases.deleteCity(cityId)
+            savedCityUseCases.deleteCity(cityId)
 
-        coVerify { repository.deleteCity(cityId) }
-    }
+            coVerify { repository.deleteCity(cityId) }
+        }
 }

@@ -15,54 +15,57 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
 class SettingsUseCasesTest {
-
     private lateinit var settingsUseCases: SettingsUseCases
     private val settingsRepository: SettingsRepository = mockk()
     private val cacheRepository: WeatherCacheRepository = mockk()
 
     @BeforeEach
     fun setUp() {
-        settingsUseCases = SettingsUseCases(
-            observeSettings = ObserveSettingsUseCase(settingsRepository),
-            setTemperatureUnit = SetTemperatureUnitUseCase(settingsRepository),
-            setWindSpeedUnit = SetWindSpeedUnitUseCase(settingsRepository),
-            setPressureUnit = SetPressureUnitUseCase(settingsRepository),
-            setPrecipitationUnit = SetPrecipitationUnitUseCase(settingsRepository),
-            setTimeFormat = SetTimeFormatUseCase(settingsRepository),
-            setThemeMode = SetThemeModeUseCase(settingsRepository),
-            setAccentColor = SetAccentColorUseCase(settingsRepository),
-            clearWeatherCache = ClearWeatherCacheUseCase(cacheRepository)
-        )
+        settingsUseCases =
+            SettingsUseCases(
+                observeSettings = ObserveSettingsUseCase(settingsRepository),
+                setTemperatureUnit = SetTemperatureUnitUseCase(settingsRepository),
+                setWindSpeedUnit = SetWindSpeedUnitUseCase(settingsRepository),
+                setPressureUnit = SetPressureUnitUseCase(settingsRepository),
+                setPrecipitationUnit = SetPrecipitationUnitUseCase(settingsRepository),
+                setTimeFormat = SetTimeFormatUseCase(settingsRepository),
+                setThemeMode = SetThemeModeUseCase(settingsRepository),
+                setAccentColor = SetAccentColorUseCase(settingsRepository),
+                clearWeatherCache = ClearWeatherCacheUseCase(cacheRepository),
+            )
     }
 
     @Test
-    fun `observeSettings returns flow from repository`() = runTest {
-        val settings = AppSettings()
-        every { settingsRepository.observeSettings() } returns flowOf(settings)
+    fun `observeSettings returns flow from repository`() =
+        runTest {
+            val settings = AppSettings()
+            every { settingsRepository.observeSettings() } returns flowOf(settings)
 
-        val result = settingsUseCases.observeSettings()
+            val result = settingsUseCases.observeSettings()
 
-        result.collect {
-            assertThat(it).isEqualTo(settings)
+            result.collect {
+                assertThat(it).isEqualTo(settings)
+            }
         }
-    }
 
     @Test
-    fun `setTemperatureUnit calls repository`() = runTest {
-        val unit = TemperatureUnit.Fahrenheit
-        coEvery { settingsRepository.setTemperatureUnit(unit) } returns Unit
+    fun `setTemperatureUnit calls repository`() =
+        runTest {
+            val unit = TemperatureUnit.Fahrenheit
+            coEvery { settingsRepository.setTemperatureUnit(unit) } returns Unit
 
-        settingsUseCases.setTemperatureUnit(unit)
+            settingsUseCases.setTemperatureUnit(unit)
 
-        coVerify { settingsRepository.setTemperatureUnit(unit) }
-    }
+            coVerify { settingsRepository.setTemperatureUnit(unit) }
+        }
 
     @Test
-    fun `clearWeatherCache calls cache repository`() = runTest {
-        coEvery { cacheRepository.clearWeatherCache() } returns Unit
+    fun `clearWeatherCache calls cache repository`() =
+        runTest {
+            coEvery { cacheRepository.clearWeatherCache() } returns Unit
 
-        settingsUseCases.clearWeatherCache()
+            settingsUseCases.clearWeatherCache()
 
-        coVerify { cacheRepository.clearWeatherCache() }
-    }
+            coVerify { cacheRepository.clearWeatherCache() }
+        }
 }

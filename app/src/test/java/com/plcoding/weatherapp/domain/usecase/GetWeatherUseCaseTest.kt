@@ -2,7 +2,6 @@ package com.plcoding.weatherapp.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
 import com.plcoding.weatherapp.domain.repository.WeatherRepository
-import com.plcoding.weatherapp.domain.usecase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import io.mockk.coEvery
@@ -13,7 +12,6 @@ import org.junit.jupiter.api.Test
 
 class
 GetWeatherUseCaseTest {
-
     private lateinit var getWeatherUseCase: GetWeatherUseCase
     private lateinit var weatherRepository: WeatherRepository
 
@@ -24,18 +22,19 @@ GetWeatherUseCaseTest {
     }
 
     @Test
-    fun `UseCase calls repository with correct coordinates`() = runTest {
-        // Arrange
-        val lat = 52.5
-        val long = 13.4
-        val expectedWeatherInfo = mockk<WeatherInfo>()
-        coEvery { weatherRepository.getWeatherData(lat, long) } returns Result.Success(expectedWeatherInfo)
+    fun `UseCase calls repository with correct coordinates`() =
+        runTest {
+            // Arrange
+            val lat = 52.5
+            val long = 13.4
+            val expectedWeatherInfo = mockk<WeatherInfo>()
+            coEvery { weatherRepository.getWeatherData(lat, long) } returns Result.Success(expectedWeatherInfo)
 
-        // Act
-        val result = getWeatherUseCase(lat, long)
+            // Act
+            val result = getWeatherUseCase(lat, long)
 
-        // Assert
-        assertThat(result is Result.Success).isTrue()
-        assertThat((result as Result.Success).data).isEqualTo(expectedWeatherInfo)
-    }
+            // Assert
+            assertThat(result is Result.Success).isTrue()
+            assertThat((result as Result.Success).data).isEqualTo(expectedWeatherInfo)
+        }
 }

@@ -8,7 +8,6 @@ import com.plcoding.weatherapp.domain.settings.*
  *
  */
 sealed interface WeatherAction {
-
     // --- Lifecycle & System Actions ---
 
     /** Triggered when the screen first opens to restore previous state. */

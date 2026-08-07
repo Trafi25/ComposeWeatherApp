@@ -7,7 +7,6 @@ import org.junit.jupiter.api.Test
 import java.util.Locale
 
 class WeatherValueFormatterTest {
-
     private val formatter = WeatherValueFormatter()
 
     @Test

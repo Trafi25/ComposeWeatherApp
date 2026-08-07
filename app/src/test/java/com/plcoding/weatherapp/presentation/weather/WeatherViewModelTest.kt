@@ -11,6 +11,7 @@ import com.plcoding.weatherapp.domain.usecase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
+import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -20,19 +21,17 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.test.UnconfinedTestDispatcher
+import kotlinx.coroutines.test.advanceTimeBy
+import kotlinx.coroutines.test.advanceUntilIdle
 import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import com.plcoding.weatherapp.domain.util.Result
-import kotlinx.coroutines.test.advanceTimeBy
-import kotlinx.coroutines.test.advanceUntilIdle
 
 @OptIn(ExperimentalCoroutinesApi::class)
 class WeatherViewModelTest {
-
     private lateinit var viewModel: WeatherViewModel
     private val getWeatherUseCase: GetWeatherUseCase = mockk()
     private val searchCityUseCase: SearchCityUseCase = mockk()
@@ -56,15 +55,16 @@ class WeatherViewModelTest {
         // Mock current location behavior (triggered during init)
         coEvery { locationTracker.getCurrentLocation() } returns null
 
-        viewModel = WeatherViewModel(
-            getWeatherUseCase,
-            searchCityUseCase,
-            cityUseCases,
-            settingsUseCases,
-            selectedLocationRepository,
-            locationTracker,
-            locationNameResolver
-        )
+        viewModel =
+            WeatherViewModel(
+                getWeatherUseCase,
+                searchCityUseCase,
+                cityUseCases,
+                settingsUseCases,
+                selectedLocationRepository,
+                locationTracker,
+                locationNameResolver,
+            )
     }
 
     @AfterEach
@@ -73,104 +73,110 @@ class WeatherViewModelTest {
     }
 
     @Test
-    fun `Initial state is correct`() = runTest {
-        val state = viewModel.uiState.value
-        assertThat(state.screenMode).isEqualTo(WeatherScreenMode.Weather)
-        assertThat(state.isLoading).isFalse()
-    }
+    fun `Initial state is correct`() =
+        runTest {
+            val state = viewModel.uiState.value
+            assertThat(state.screenMode).isEqualTo(WeatherScreenMode.Weather)
+            assertThat(state.isLoading).isFalse()
+        }
 
     @Test
-    fun `Action SearchCityClicked updates screen mode`() = runTest {
-        viewModel.uiState.test {
-            // Initial state
-            assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.Weather)
+    fun `Action SearchCityClicked updates screen mode`() =
+        runTest {
+            viewModel.uiState.test {
+                // Initial state
+                assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.Weather)
 
-            // Act
+                // Act
+                viewModel.onAction(WeatherAction.SearchCityClicked)
+
+                // Assert
+                assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.SearchCity)
+            }
+        }
+
+    @Test
+    fun `CityScreenBackClicked returns to weather screen`() =
+        runTest {
             viewModel.onAction(WeatherAction.SearchCityClicked)
 
-            // Assert
-            assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.SearchCity)
+            viewModel.onAction(WeatherAction.CityScreenBackClicked)
+
+            assertThat(viewModel.uiState.value.screenMode).isEqualTo(WeatherScreenMode.Weather)
         }
-    }
-
 
     @Test
-    fun `CityScreenBackClicked returns to weather screen`() = runTest {
-        viewModel.onAction(WeatherAction.SearchCityClicked)
+    fun `Short search query clears results and does not search`() =
+        runTest {
+            viewModel.onAction(WeatherAction.SearchQueryChanged("B"))
 
-        viewModel.onAction(WeatherAction.CityScreenBackClicked)
+            val searchState = viewModel.uiState.value.citySearchState
 
-        assertThat(viewModel.uiState.value.screenMode).isEqualTo(WeatherScreenMode.Weather)
-
-    }
-
-
-    @Test
-    fun `Short search query clears results and does not search`() = runTest {
-        viewModel.onAction(WeatherAction.SearchQueryChanged("B"))
-
-        val searchState = viewModel.uiState.value.citySearchState
-
-        assertThat(searchState.query).isEqualTo("B")
-        assertThat(searchState.results).isEmpty()
-    }
+            assertThat(searchState.query).isEqualTo("B")
+            assertThat(searchState.results).isEmpty()
+        }
 
     @Test
-    fun `Valid search query updates city results`() = runTest(testDispatcher) {
-        val cities = listOf(
-            City(
-                id = 1,
-                name = "Berlin",
-                latitude = 52.5,
-                longitude = 13.4,
-                country = "Germany",
-                adminArea = "Berlin",
-                timezone = "Europe/Berlin",
-            ),
-        )
+    fun `Valid search query updates city results`() =
+        runTest(testDispatcher) {
+            val cities =
+                listOf(
+                    City(
+                        id = 1,
+                        name = "Berlin",
+                        latitude = 52.5,
+                        longitude = 13.4,
+                        country = "Germany",
+                        adminArea = "Berlin",
+                        timezone = "Europe/Berlin",
+                    ),
+                )
 
-        coEvery { searchCityUseCase("Berlin") } returns Result.Success(cities)
-        viewModel.onAction(WeatherAction.SearchQueryChanged("Berlin"))
+            coEvery { searchCityUseCase("Berlin") } returns Result.Success(cities)
+            viewModel.onAction(WeatherAction.SearchQueryChanged("Berlin"))
 
-        advanceTimeBy(500)
-        advanceUntilIdle()
+            advanceTimeBy(500)
+            advanceUntilIdle()
 
-        val searchState = viewModel.uiState.value.citySearchState
+            val searchState = viewModel.uiState.value.citySearchState
 
-        assertThat(searchState.results).isEqualTo(cities)
-        assertThat(searchState.isLoading).isFalse()
-        assertThat(searchState.errorMessage).isNull()
-    }
-
-    @Test
-    fun `Search error updates city search error`() = runTest(testDispatcher) {
-        coEvery { searchCityUseCase("Berlin") } returns Result.Error(DataError.NoInternet)
-
-        viewModel.onAction(WeatherAction.SearchQueryChanged("Berlin"))
-
-        advanceTimeBy(500)
-        advanceUntilIdle()
-
-        val searchState = viewModel.uiState.value.citySearchState
-        assertThat(searchState.errorMessage).isNotNull()
-        assertThat(searchState.results).isEmpty()
-    }
+            assertThat(searchState.results).isEqualTo(cities)
+            assertThat(searchState.isLoading).isFalse()
+            assertThat(searchState.errorMessage).isNull()
+        }
 
     @Test
-    fun `Action Refresh calls retryWeatherLoading`() = runTest {
-        viewModel.onAction(WeatherAction.Refresh)
+    fun `Search error updates city search error`() =
+        runTest(testDispatcher) {
+            coEvery { searchCityUseCase("Berlin") } returns Result.Error(DataError.NoInternet)
 
-        coVerify { locationTracker.getCurrentLocation() }
-    }
+            viewModel.onAction(WeatherAction.SearchQueryChanged("Berlin"))
+
+            advanceTimeBy(500)
+            advanceUntilIdle()
+
+            val searchState = viewModel.uiState.value.citySearchState
+            assertThat(searchState.errorMessage).isNotNull()
+            assertThat(searchState.results).isEmpty()
+        }
 
     @Test
-    fun `Action CitySelected loads weather for city`() = runTest {
-        val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
-        coEvery { getWeatherUseCase(any(), any()) } returns Result.Error(DataError.NoInternet)
+    fun `Action Refresh calls retryWeatherLoading`() =
+        runTest {
+            viewModel.onAction(WeatherAction.Refresh)
 
-        viewModel.onAction(WeatherAction.CitySelected(city))
+            coVerify { locationTracker.getCurrentLocation() }
+        }
 
-        assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
-        coVerify { getWeatherUseCase(city.latitude, city.longitude) }
-    }
+    @Test
+    fun `Action CitySelected loads weather for city`() =
+        runTest {
+            val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
+            coEvery { getWeatherUseCase(any(), any()) } returns Result.Error(DataError.NoInternet)
+
+            viewModel.onAction(WeatherAction.CitySelected(city))
+
+            assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
+            coVerify { getWeatherUseCase(city.latitude, city.longitude) }
+        }
 }

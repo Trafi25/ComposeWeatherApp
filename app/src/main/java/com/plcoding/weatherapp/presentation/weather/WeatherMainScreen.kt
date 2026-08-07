@@ -179,11 +179,10 @@ fun WeatherMainScreen(
     }
 }
 
-private fun WeatherScreenMode.toOrder(): Int {
-    return when (this) {
+private fun WeatherScreenMode.toOrder(): Int =
+    when (this) {
         WeatherScreenMode.Weather -> 0
         WeatherScreenMode.ManageCities -> 1
         WeatherScreenMode.SearchCity -> 2
         WeatherScreenMode.Settings -> 3
     }
-}
