@@ -13,6 +13,7 @@ import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.Dispatchers
@@ -143,9 +144,33 @@ class WeatherViewModelTest {
 
     @Test
     fun `Search error updates city search error`() = runTest(testDispatcher) {
-
         coEvery { searchCityUseCase("Berlin") } returns Result.Error(DataError.NoInternet)
 
+        viewModel.onAction(WeatherAction.SearchQueryChanged("Berlin"))
+
+        advanceTimeBy(500)
+        advanceUntilIdle()
+
+        val searchState = viewModel.uiState.value.citySearchState
+        assertThat(searchState.errorMessage).isNotNull()
+        assertThat(searchState.results).isEmpty()
     }
 
+    @Test
+    fun `Action Refresh calls retryWeatherLoading`() = runTest {
+        viewModel.onAction(WeatherAction.Refresh)
+
+        coVerify { locationTracker.getCurrentLocation() }
+    }
+
+    @Test
+    fun `Action CitySelected loads weather for city`() = runTest {
+        val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
+        coEvery { getWeatherUseCase(any(), any()) } returns Result.Error(DataError.NoInternet)
+
+        viewModel.onAction(WeatherAction.CitySelected(city))
+
+        assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
+        coVerify { getWeatherUseCase(city.latitude, city.longitude) }
+    }
 }

@@ -188,6 +188,7 @@ class WeatherViewModel
                 WeatherAction.Retry -> retryWeatherLoading()
                 WeatherAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
                 WeatherAction.CurrentLocationSelected -> selectCurrentLocation()
+                WeatherAction.Refresh -> retryWeatherLoading()
                 WeatherAction.LocationPermissionGranted -> {
                     if (_uiState.value.isLocationRestored &&
                         _uiState.value.selectedCityId == null &&

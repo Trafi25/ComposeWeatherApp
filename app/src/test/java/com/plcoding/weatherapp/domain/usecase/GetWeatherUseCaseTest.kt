@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.domain.use_case
+package com.plcoding.weatherapp.domain.usecase
 
 import com.google.common.truth.Truth.assertThat
 import com.plcoding.weatherapp.domain.repository.WeatherRepository

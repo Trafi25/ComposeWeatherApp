@@ -29,6 +29,9 @@ sealed interface WeatherAction {
     /** Manually switches back to GPS-based weather from a saved city. */
     data object CurrentLocationSelected : WeatherAction
 
+    /** Refreshes weather for the current selection. */
+    data object Refresh : WeatherAction
+
     /** Clears the current error message from the screen. */
     data object ErrorDismissed : WeatherAction
 
