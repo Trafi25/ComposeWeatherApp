@@ -15,6 +15,7 @@ data class AppSettings(
         AppThemeMode.SystemDefault,
     val accentColor: AppAccentColor =
         AppAccentColor.Green,
+    val weatherNotificationEnabled: Boolean = false,
 )
 
 fun TemperatureUnit.displayName(): String =

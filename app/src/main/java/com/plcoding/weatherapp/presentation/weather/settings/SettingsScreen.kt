@@ -42,6 +42,7 @@ fun SettingsScreen(
     onThemeModeClick: () -> Unit,
     onAccentColorSelected: (AppAccentColor) -> Unit,
     onClearCacheClick: () -> Unit,
+    onNotificationToggle: () -> Unit,
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
@@ -139,7 +140,19 @@ fun SettingsScreen(
                 color = Color.White.copy(alpha = 0.2f),
             )
 
+            HorizontalDivider(
+                modifier = Modifier.padding(horizontal = 16.dp),
+                color = Color.White.copy(alpha = 0.2f),
+            )
+
             SettingsSection(title = "DATA") {
+                SettingsItem(
+                    title = "Weather Notifications",
+                    description = if (settings.weatherNotificationEnabled) "Enabled" else "Disabled",
+                    onClick = onNotificationToggle,
+                    trailingContent = null,
+                )
+
                 SettingsItem(
                     title = "Clear weather cache",
                     description = "Remove all offline data",

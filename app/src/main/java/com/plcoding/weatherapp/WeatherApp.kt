@@ -1,7 +1,28 @@
 package com.plcoding.weatherapp
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import com.plcoding.weatherapp.notification.WeatherNotificationManager
 import dagger.hilt.android.HiltAndroidApp
+import javax.inject.Inject
 
 @HiltAndroidApp
-class WeatherApp : Application()
+class WeatherApp :
+    Application(),
+    Configuration.Provider {
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() =
+            Configuration
+                .Builder()
+                .setWorkerFactory(workerFactory)
+                .build()
+
+    override fun onCreate() {
+        super.onCreate()
+        WeatherNotificationManager.createChannel(this)
+    }
+}

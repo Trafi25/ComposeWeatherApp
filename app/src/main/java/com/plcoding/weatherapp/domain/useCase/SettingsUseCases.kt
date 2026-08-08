@@ -3,6 +3,7 @@ package com.plcoding.weatherapp.domain.usecase
 import com.plcoding.weatherapp.domain.repository.SettingsRepository
 import com.plcoding.weatherapp.domain.repository.WeatherCacheRepository
 import com.plcoding.weatherapp.domain.settings.*
+import com.plcoding.weatherapp.notification.WeatherNotificationScheduler
 import kotlinx.coroutines.flow.Flow
 import javax.inject.Inject
 
@@ -21,6 +22,7 @@ class SettingsUseCases
         val setThemeMode: SetThemeModeUseCase,
         val setAccentColor: SetAccentColorUseCase,
         val clearWeatherCache: ClearWeatherCacheUseCase,
+        val setNotificationEnabled: SetNotificationEnabledUseCase,
     )
 
 class ObserveSettingsUseCase
@@ -93,4 +95,20 @@ class ClearWeatherCacheUseCase
         private val repository: WeatherCacheRepository,
     ) {
         suspend operator fun invoke() = repository.clearWeatherCache()
+    }
+
+class SetNotificationEnabledUseCase
+    @Inject
+    constructor(
+        private val repository: SettingsRepository,
+        private val scheduler: WeatherNotificationScheduler,
+    ) {
+        suspend operator fun invoke(isEnabled: Boolean) {
+            repository.setNotificationEnabled(isEnabled)
+            if (isEnabled) {
+                scheduler.schedule()
+            } else {
+                scheduler.cancel()
+            }
+        }
     }

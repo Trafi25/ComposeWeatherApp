@@ -1,6 +1,7 @@
 package com.plcoding.weatherapp.data.repository
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import com.plcoding.weatherapp.data.preferences.settingsDataStore
@@ -47,6 +48,7 @@ class SettingsRepositoryImpl
                     accentColor =
                         preferences[ACCENT_COLOR_KEY]
                             .toEnumOrDefault(default = AppAccentColor.Green),
+                    weatherNotificationEnabled = preferences[NOTIFICATION_KEY] ?: false,
                 )
             }
 
@@ -92,6 +94,12 @@ class SettingsRepositoryImpl
             }
         }
 
+        override suspend fun setNotificationEnabled(isEnabled: Boolean) {
+            context.settingsDataStore.edit { preferences ->
+                preferences[NOTIFICATION_KEY] = isEnabled
+            }
+        }
+
         private inline fun <reified T : Enum<T>> String?.toEnumOrDefault(default: T): T =
             enumValues<T>().firstOrNull { enumValue ->
                 enumValue.name == this
@@ -105,5 +113,6 @@ class SettingsRepositoryImpl
             val TIME_FORMAT_KEY = stringPreferencesKey("time_format")
             val THEME_MODE_KEY = stringPreferencesKey("theme_mode")
             val ACCENT_COLOR_KEY = stringPreferencesKey("accent_color")
+            val NOTIFICATION_KEY = booleanPreferencesKey("notification_enabled")
         }
     }

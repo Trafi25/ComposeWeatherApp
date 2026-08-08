@@ -172,6 +172,13 @@ fun WeatherMainScreen(
                         onBackClick = {
                             onAction(WeatherAction.SettingsBackClicked)
                         },
+                        onNotificationToggle = {
+                            onAction(
+                                WeatherAction.NotificationToggleClicked(
+                                    !uiState.appSettings.weatherNotificationEnabled,
+                                ),
+                            )
+                        },
                     )
                 }
             }

@@ -26,4 +26,6 @@ interface SettingsRepository {
     suspend fun setThemeMode(mode: AppThemeMode)
 
     suspend fun setAccentColor(color: AppAccentColor)
+
+    suspend fun setNotificationEnabled(isEnabled: Boolean)
 }

@@ -228,6 +228,9 @@ class WeatherViewModel
                 is WeatherAction.AccentColorSelected -> {
                     setAccentColor(action.color)
                 }
+                is WeatherAction.NotificationToggleClicked -> {
+                    notificationCall(action.isEnabled)
+                }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
@@ -290,6 +293,12 @@ class WeatherViewModel
 
         private fun setAccentColor(color: AppAccentColor) {
             viewModelScope.launch { settingsUseCases.setAccentColor(color) }
+        }
+
+        private fun notificationCall(isSelected: Boolean) {
+            viewModelScope.launch {
+                settingsUseCases.setNotificationEnabled(isSelected)
+            }
         }
 
         private fun clearCache() {

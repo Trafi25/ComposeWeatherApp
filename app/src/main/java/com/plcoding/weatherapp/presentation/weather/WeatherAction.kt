@@ -100,4 +100,8 @@ sealed interface WeatherAction {
     data class AccentColorSelected(
         val color: AppAccentColor,
     ) : WeatherAction
+
+    data class NotificationToggleClicked(
+        val isEnabled: Boolean,
+    ) : WeatherAction
 }
