@@ -179,4 +179,28 @@ class WeatherViewModelTest {
             assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
             coVerify { getWeatherUseCase(city.latitude, city.longitude) }
         }
+
+    @Test
+    fun `Action ToggleTemperatureUnitRequested calls setTemperatureUnit`() =
+        runTest {
+            viewModel.onAction(WeatherAction.ToggleTemperatureUnitRequested)
+
+            coVerify { settingsUseCases.setTemperatureUnit(any()) }
+        }
+
+    @Test
+    fun `Action ToggleThemeModeRequested calls setThemeMode`() =
+        runTest {
+            viewModel.onAction(WeatherAction.ToggleThemeModeRequested)
+
+            coVerify { settingsUseCases.setThemeMode(any()) }
+        }
+
+    @Test
+    fun `Action NotificationToggleClicked calls setNotificationEnabled`() =
+        runTest {
+            viewModel.onAction(WeatherAction.NotificationToggleClicked(true))
+
+            coVerify { settingsUseCases.setNotificationEnabled(true) }
+        }
 }

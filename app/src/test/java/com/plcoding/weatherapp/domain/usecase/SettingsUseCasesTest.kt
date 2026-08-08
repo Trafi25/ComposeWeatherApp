@@ -5,6 +5,7 @@ import com.plcoding.weatherapp.domain.repository.SettingsRepository
 import com.plcoding.weatherapp.domain.repository.WeatherCacheRepository
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
+import com.plcoding.weatherapp.notification.WeatherNotificationScheduler
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
@@ -18,6 +19,7 @@ class SettingsUseCasesTest {
     private lateinit var settingsUseCases: SettingsUseCases
     private val settingsRepository: SettingsRepository = mockk()
     private val cacheRepository: WeatherCacheRepository = mockk()
+    private val scheduler: WeatherNotificationScheduler = mockk(relaxed = true)
 
     @BeforeEach
     fun setUp() {
@@ -32,6 +34,7 @@ class SettingsUseCasesTest {
                 setThemeMode = SetThemeModeUseCase(settingsRepository),
                 setAccentColor = SetAccentColorUseCase(settingsRepository),
                 clearWeatherCache = ClearWeatherCacheUseCase(cacheRepository),
+                setNotificationEnabled = SetNotificationEnabledUseCase(settingsRepository, scheduler),
             )
     }
 
@@ -67,5 +70,27 @@ class SettingsUseCasesTest {
             settingsUseCases.clearWeatherCache()
 
             coVerify { cacheRepository.clearWeatherCache() }
+        }
+
+    @Test
+    fun `setNotificationEnabled true calls repository and schedules`() =
+        runTest {
+            coEvery { settingsRepository.setNotificationEnabled(true) } returns Unit
+
+            settingsUseCases.setNotificationEnabled(true)
+
+            coVerify { settingsRepository.setNotificationEnabled(true) }
+            coVerify { scheduler.schedule() }
+        }
+
+    @Test
+    fun `setNotificationEnabled false calls repository and cancels`() =
+        runTest {
+            coEvery { settingsRepository.setNotificationEnabled(false) } returns Unit
+
+            settingsUseCases.setNotificationEnabled(false)
+
+            coVerify { settingsRepository.setNotificationEnabled(false) }
+            coVerify { scheduler.cancel() }
         }
 }
