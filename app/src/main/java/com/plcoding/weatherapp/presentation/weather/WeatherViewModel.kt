@@ -231,6 +231,46 @@ class WeatherViewModel
                 is WeatherAction.NotificationToggleClicked -> {
                     notificationCall(action.isEnabled)
                 }
+                WeatherAction.ToggleTemperatureUnitRequested -> {
+                    val currentUnit = _uiState.value.appSettings.temperatureUnit
+                    val newUnit =
+                        if (currentUnit == TemperatureUnit.Celsius) {
+                            TemperatureUnit.Fahrenheit
+                        } else {
+                            TemperatureUnit.Celsius
+                        }
+                    setTemperatureUnit(newUnit)
+                }
+                WeatherAction.ToggleWindSpeedUnitRequested -> {
+                    val units = WindSpeedUnit.entries
+                    val currentIndex = units.indexOf(_uiState.value.appSettings.windSpeedUnit)
+                    val nextIndex = (currentIndex + 1) % units.size
+                    setWindSpeedUnit(units[nextIndex])
+                }
+                WeatherAction.TogglePressureUnitRequested -> {
+                    val units = PressureUnit.entries
+                    val currentIndex = units.indexOf(_uiState.value.appSettings.pressureUnit)
+                    val nextIndex = (currentIndex + 1) % units.size
+                    setPressureUnit(units[nextIndex])
+                }
+                WeatherAction.TogglePrecipitationUnitRequested -> {
+                    val units = PrecipitationUnit.entries
+                    val currentIndex = units.indexOf(_uiState.value.appSettings.precipitationUnit)
+                    val nextIndex = (currentIndex + 1) % units.size
+                    setPrecipitationUnit(units[nextIndex])
+                }
+                WeatherAction.ToggleTimeFormatRequested -> {
+                    val formats = AppTimeFormat.entries
+                    val currentIndex = formats.indexOf(_uiState.value.appSettings.timeFormat)
+                    val nextIndex = (currentIndex + 1) % formats.size
+                    setTimeFormat(formats[nextIndex])
+                }
+                WeatherAction.ToggleThemeModeRequested -> {
+                    val modes = AppThemeMode.entries
+                    val currentIndex = modes.indexOf(_uiState.value.appSettings.themeMode)
+                    val nextIndex = (currentIndex + 1) % modes.size
+                    setThemeMode(modes[nextIndex])
+                }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
