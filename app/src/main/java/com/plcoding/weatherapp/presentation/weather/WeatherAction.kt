@@ -68,6 +68,21 @@ sealed interface WeatherAction {
         val cityId: Int,
     ) : WeatherAction
 
+    // --- Settings Intent Actions ---
+    // These actions are triggered by user interaction in the settings screen
+
+    data object ToggleTemperatureUnitRequested : WeatherAction
+
+    data object ToggleWindSpeedUnitRequested : WeatherAction
+
+    data object TogglePressureUnitRequested : WeatherAction
+
+    data object TogglePrecipitationUnitRequested : WeatherAction
+
+    data object ToggleTimeFormatRequested : WeatherAction
+
+    data object ToggleThemeModeRequested : WeatherAction
+
     // --- Settings Update Actions ---
 
     /** Deletes all offline data from the Room database. */

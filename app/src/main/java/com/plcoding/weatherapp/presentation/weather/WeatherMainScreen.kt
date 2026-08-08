@@ -14,12 +14,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
-import com.plcoding.weatherapp.domain.settings.AppThemeMode
-import com.plcoding.weatherapp.domain.settings.AppTimeFormat
-import com.plcoding.weatherapp.domain.settings.PrecipitationUnit
-import com.plcoding.weatherapp.domain.settings.PressureUnit
-import com.plcoding.weatherapp.domain.settings.TemperatureUnit
-import com.plcoding.weatherapp.domain.settings.WindSpeedUnit
 import com.plcoding.weatherapp.presentation.weather.city.CityManagerScreen
 import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
 import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
@@ -125,43 +119,22 @@ fun WeatherMainScreen(
                     SettingsScreen(
                         settings = uiState.appSettings,
                         onTemperatureUnitClick = {
-                            val newUnit =
-                                if (uiState.appSettings.temperatureUnit == TemperatureUnit.Celsius) {
-                                    TemperatureUnit.Fahrenheit
-                                } else {
-                                    TemperatureUnit.Celsius
-                                }
-                            onAction(WeatherAction.TemperatureUnitSelected(newUnit))
+                            onAction(WeatherAction.ToggleTemperatureUnitRequested)
                         },
                         onWindSpeedUnitClick = {
-                            val units = WindSpeedUnit.entries
-                            val currentIndex = units.indexOf(uiState.appSettings.windSpeedUnit)
-                            val nextIndex = (currentIndex + 1) % units.size
-                            onAction(WeatherAction.WindSpeedUnitSelected(units[nextIndex]))
+                            onAction(WeatherAction.ToggleWindSpeedUnitRequested)
                         },
                         onPressureUnitClick = {
-                            val units = PressureUnit.entries
-                            val currentIndex = units.indexOf(uiState.appSettings.pressureUnit)
-                            val nextIndex = (currentIndex + 1) % units.size
-                            onAction(WeatherAction.PressureUnitSelected(units[nextIndex]))
+                            onAction(WeatherAction.TogglePressureUnitRequested)
                         },
                         onPrecipitationUnitClick = {
-                            val units = PrecipitationUnit.entries
-                            val currentIndex = units.indexOf(uiState.appSettings.precipitationUnit)
-                            val nextIndex = (currentIndex + 1) % units.size
-                            onAction(WeatherAction.PrecipitationUnitSelected(units[nextIndex]))
+                            onAction(WeatherAction.TogglePrecipitationUnitRequested)
                         },
                         onTimeFormatClick = {
-                            val formats = AppTimeFormat.entries
-                            val currentIndex = formats.indexOf(uiState.appSettings.timeFormat)
-                            val nextIndex = (currentIndex + 1) % formats.size
-                            onAction(WeatherAction.TimeFormatSelected(formats[nextIndex]))
+                            onAction(WeatherAction.ToggleTimeFormatRequested)
                         },
                         onThemeModeClick = {
-                            val modes = AppThemeMode.entries
-                            val currentIndex = modes.indexOf(uiState.appSettings.themeMode)
-                            val nextIndex = (currentIndex + 1) % modes.size
-                            onAction(WeatherAction.ThemeModeSelected(modes[nextIndex]))
+                            onAction(WeatherAction.ToggleThemeModeRequested)
                         },
                         onAccentColorSelected = { color ->
                             onAction(WeatherAction.AccentColorSelected(color))
