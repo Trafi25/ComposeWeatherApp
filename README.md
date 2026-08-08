@@ -6,16 +6,17 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
 
 ## Screenshots
 
-|                 Main Screen                  | City Search | Settings | 7-Day Forecast |
-|:--------------------------------------------:| :---: | :---: | :---: |
-| ![Main Scree n](screenshots/main_screen_screenshot.jpg) | ![City Search](screenshots/cities_screenshot.jpg) | ![Settings](screenshots/settings_screenshot.jpg) | ![7-Day Forecast](screenshots/7days_screenshot.jpg) |
+| Main Screen | City Search | Settings | 7-Day Forecast |
+| :---: | :---: | :---: | :---: |
+| ![Main Screen](screenshots/main_screen_screenshot.jpg) | ![City Search](screenshots/cities_screenshot.jpg) | ![Settings](screenshots/settings_screenshot.jpg) | ![7-Day Forecast](screenshots/7days_screenshot.jpg) |
 
-## Features
+## ✨ Features
 
 - **Real-time Weather**: Current temperature, weather conditions, humidity, wind speed, and pressure.
 - **7-Day Forecast**: Long-term weather outlook.
 - **City Management**: Search for any city globally and save your favorites for quick access.
 - **Location Awareness**: Automatic weather detection based on your current GPS location.
+- **Daily Notifications**: Smart background updates that notify you of the weather every morning at **7:00 AM** using **WorkManager**.
 - **Highly Customizable**:
   - Toggle between Celsius and Fahrenheit.
   - Choose preferred units for Wind Speed, Pressure, and Precipitation.
@@ -26,20 +27,26 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
   - **Auto-Scrolling Title**: Long location names automatically scroll (Marquee) in the top bar.
   - **Pull-to-Refresh**: Easily sync the latest data and reset forecast timelines.
 
+## Testing & CI/CD
+
+- **Unit Testing**: Over **29 comprehensive unit tests** covering ViewModels, Use Cases, Mappers, and API parsing.
+- **Automated CI**: Full **GitHub Actions** pipeline (`android-ci.yml`) that automatically checks code formatting (Spotless), runs all unit tests, and verifies the build on every push.
+- **Mocking**: Robust test environment using **MockK** for dependency behavior and **MockWebServer** for network layer verification.
+
 ## Tech Stack
 
-- **UI**: Jetpack Compose for a fully declarative UI.
-- **Architecture**: Clean Architecture with MVVM.
-- **Dependency Injection**:Hilt for robust DI.
-- **Networking**: Retrofit Moshi for API communication.
-- **Local Database**: Room for caching weather data and saving cities.
+- **UI**: Jetpack Compose for a modern declarative UI.
+- **Architecture**: Clean Architecture with MVVM + MVI pattern.
+- **Dependency Injection**: Hilt + Hilt-Work for background injection.
+- **Networking**: Retrofit + Moshi for API communication.
+- **Background Tasks**: WorkManager for scheduled notifications.
+- **Local Database**: Room for caching and storage.
 - **Preferences**: DataStore for persistent settings.
-- **Location**: Google Play Services Location API.
-- **Animations**: Compose Animation APIs with custom Spring specs.
+- **Animations**: Compose Animation APIs with custom Spring physics.
 
 ## Project Structure
 
-The project follows a modular package-by-feature structure within clean architecture layers:
+The project follows a strict package-by-feature organization within clean architecture layers:
 
 ```text
 com.plcoding.weatherapp
@@ -50,7 +57,7 @@ com.plcoding.weatherapp
 ├── domain              # Domain layer (Models, Repository Interfaces, Use Cases)
 │   ├── location        # Location-related entities
 │   ├── repository      # Repository definitions
-│   ├── usecase         # Business logic (Use Cases)
+│   ├── usecase         # Business logic (Pure Kotlin Use Cases)
 │   └── weather         # Weather domain models
 ├── presentation        # UI layer (Composables, ViewModels, State)
 │   ├── ui.theme        # Color, Type, and Theme definitions
@@ -58,7 +65,8 @@ com.plcoding.weatherapp
 │       ├── current     # Current weather components
 │       ├── hourly      # Hourly forecast components
 │       ├── daily       # Daily forecast components
-│       └── state       # UI State and Actions
+│       └── state       # MVI State and Actions
+├── notification        # WorkManager Workers and Notification logic
 └── di                  # Dependency Injection modules
 ```
 

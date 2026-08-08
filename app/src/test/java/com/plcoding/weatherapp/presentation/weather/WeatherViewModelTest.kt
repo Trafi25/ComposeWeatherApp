@@ -12,6 +12,12 @@ import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.CityScreenBackClicked
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.NotificationToggleClicked
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.Refresh
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.SearchCityClicked
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.ToggleTemperatureUnitRequested
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.ToggleThemeModeRequested
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -88,7 +94,7 @@ class WeatherViewModelTest {
                 assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.Weather)
 
                 // Act
-                viewModel.onAction(WeatherAction.SearchCityClicked)
+                viewModel.onAction(SearchCityClicked)
 
                 // Assert
                 assertThat(awaitItem().screenMode).isEqualTo(WeatherScreenMode.SearchCity)
@@ -98,9 +104,9 @@ class WeatherViewModelTest {
     @Test
     fun `CityScreenBackClicked returns to weather screen`() =
         runTest {
-            viewModel.onAction(WeatherAction.SearchCityClicked)
+            viewModel.onAction(SearchCityClicked)
 
-            viewModel.onAction(WeatherAction.CityScreenBackClicked)
+            viewModel.onAction(CityScreenBackClicked)
 
             assertThat(viewModel.uiState.value.screenMode).isEqualTo(WeatherScreenMode.Weather)
         }
@@ -163,7 +169,7 @@ class WeatherViewModelTest {
     @Test
     fun `Action Refresh calls retryWeatherLoading`() =
         runTest {
-            viewModel.onAction(WeatherAction.Refresh)
+            viewModel.onAction(Refresh)
 
             coVerify { locationTracker.getCurrentLocation() }
         }
@@ -183,7 +189,7 @@ class WeatherViewModelTest {
     @Test
     fun `Action ToggleTemperatureUnitRequested calls setTemperatureUnit`() =
         runTest {
-            viewModel.onAction(WeatherAction.ToggleTemperatureUnitRequested)
+            viewModel.onAction(ToggleTemperatureUnitRequested)
 
             coVerify { settingsUseCases.setTemperatureUnit(any()) }
         }
@@ -191,7 +197,7 @@ class WeatherViewModelTest {
     @Test
     fun `Action ToggleThemeModeRequested calls setThemeMode`() =
         runTest {
-            viewModel.onAction(WeatherAction.ToggleThemeModeRequested)
+            viewModel.onAction(ToggleThemeModeRequested)
 
             coVerify { settingsUseCases.setThemeMode(any()) }
         }
@@ -199,7 +205,7 @@ class WeatherViewModelTest {
     @Test
     fun `Action NotificationToggleClicked calls setNotificationEnabled`() =
         runTest {
-            viewModel.onAction(WeatherAction.NotificationToggleClicked(true))
+            viewModel.onAction(NotificationToggleClicked(true))
 
             coVerify { settingsUseCases.setNotificationEnabled(true) }
         }
