@@ -44,4 +44,7 @@ data class WeatherState(
     val selectedCityId: Int? = null,
     val isLocationRestored: Boolean = false,
     val appSettings: AppSettings = AppSettings(),
+    val aiSummary: String? = null,
+    val isAiLoading: Boolean = false,
+    val aiErrorMessage: String? = null,
 )
