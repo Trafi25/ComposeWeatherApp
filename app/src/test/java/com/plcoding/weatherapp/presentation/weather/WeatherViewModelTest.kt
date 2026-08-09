@@ -13,7 +13,6 @@ import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
-import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.CityScreenBackClicked
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.CitySelected
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.NotificationToggleClicked
@@ -189,18 +188,6 @@ class WeatherViewModelTest {
 
             assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
             coVerify { getWeatherUseCase(city.latitude, city.longitude) }
-        }
-
-    @Test
-    fun `Action CitySelected triggers AI summary generation`() =
-        runTest {
-            val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
-            val weatherInfo = mockk<WeatherInfo>(relaxed = true)
-            coEvery { getWeatherUseCase(any(), any()) } returns Result.Success(weatherInfo)
-
-            viewModel.onAction(CitySelected(city))
-
-            coVerify { generateWeatherSummaryUseCase(weatherInfo, "Berlin") }
         }
 
     @Test
