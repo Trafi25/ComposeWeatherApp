@@ -7,12 +7,14 @@ import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
 import com.plcoding.weatherapp.domain.settings.*
+import com.plcoding.weatherapp.domain.usecase.GenerateWeatherSummaryUseCase
 import com.plcoding.weatherapp.domain.usecase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.usecase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
+import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.state.WeatherState
@@ -38,8 +40,10 @@ class WeatherViewModel
         private val selectedLocationRepository: SelectedLocationRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
+        private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
+    private var aiSummaryJob: Job? = null
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
 
         private var citySearchJob: Job? = null
@@ -91,7 +95,10 @@ class WeatherViewModel
                     when (val result = getWeatherUseCase(location.latitude, location.longitude)) {
                         is Result.Success -> {
                             val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
-                            _uiState.update { it.copy(weatherInfo = result.data, isLoading = false, locationName = name) }
+                            _uiState.update { it.copy(weatherInfo = result.data,
+                                isLoading = false, locationName = name,
+                                aiSummary = null, aiErrorMessage = null,) }
+                            generateAiSummary(result.data, name ?: "Current location")
                         }
                         is Result.Error -> {
                             _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
@@ -122,7 +129,12 @@ class WeatherViewModel
                 }
 
                 when (val result = getWeatherUseCase(city.latitude, city.longitude)) {
-                    is Result.Success -> _uiState.update { it.copy(weatherInfo = result.data, isLoading = false) }
+                    is Result.Success -> {
+                        _uiState.update { it.copy(weatherInfo = result.data, isLoading = false,
+                            aiSummary = null, aiErrorMessage = null,)
+                        }
+                        generateAiSummary(result.data, city.name)
+                    }
                     is Result.Error -> _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
                 }
             }
@@ -172,6 +184,35 @@ class WeatherViewModel
                 }
             }
         }
+
+    private fun generateAiSummary(
+        weatherInfo: WeatherInfo,
+        locationName: String,
+    ) {
+        aiSummaryJob?.cancel()
+        aiSummaryJob = viewModelScope.launch {
+
+            _uiState.update { currentState ->
+                currentState.copy(isAiLoading = true, aiErrorMessage = null)
+            }
+
+            try {
+                val summary = generateWeatherSummaryUseCase(weatherInfo, locationName)
+                _uiState.update { currentState ->
+                    currentState.copy(aiSummary = summary, isAiLoading = false)
+                }
+
+            } catch (_: Exception) {
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        isAiLoading = false,
+                        aiSummary = null,
+                        aiErrorMessage = "Couldn't generate weather recommendation.",
+                    )
+                }
+            }
+        }
+    }
 
         fun onAction(action: WeatherAction) {
             when (action) {

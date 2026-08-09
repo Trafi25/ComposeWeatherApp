@@ -86,6 +86,19 @@ fun WeatherContent(
                                     .orEmpty(),
                         )
                     }
+
+                    item {
+                        if (uiState.aiSummary != null || uiState.isAiLoading || uiState.aiErrorMessage != null) {
+                            AiWeatherCard(
+                                summary = uiState.aiSummary,
+                                isLoading = uiState.isAiLoading,
+                                errorMessage = uiState.aiErrorMessage,
+                            )
+                        }
+                    }
+
+
+
                 }
 
                 if (uiState.isLoading) {
