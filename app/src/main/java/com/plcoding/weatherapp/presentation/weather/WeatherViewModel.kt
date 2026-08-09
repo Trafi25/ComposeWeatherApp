@@ -40,10 +40,10 @@ class WeatherViewModel
         private val selectedLocationRepository: SelectedLocationRepository,
         private val locationTracker: LocationTracker,
         private val locationNameResolver: LocationNameResolver,
-        private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase
+        private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
-    private var aiSummaryJob: Job? = null
+        private var aiSummaryJob: Job? = null
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
 
         private var citySearchJob: Job? = null
@@ -95,9 +95,15 @@ class WeatherViewModel
                     when (val result = getWeatherUseCase(location.latitude, location.longitude)) {
                         is Result.Success -> {
                             val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
-                            _uiState.update { it.copy(weatherInfo = result.data,
-                                isLoading = false, locationName = name,
-                                aiSummary = null, aiErrorMessage = null,) }
+                            _uiState.update {
+                                it.copy(
+                                    weatherInfo = result.data,
+                                    isLoading = false,
+                                    locationName = name,
+                                    aiSummary = null,
+                                    aiErrorMessage = null,
+                                )
+                            }
                             generateAiSummary(result.data, name ?: "Current location")
                         }
                         is Result.Error -> {
@@ -130,8 +136,13 @@ class WeatherViewModel
 
                 when (val result = getWeatherUseCase(city.latitude, city.longitude)) {
                     is Result.Success -> {
-                        _uiState.update { it.copy(weatherInfo = result.data, isLoading = false,
-                            aiSummary = null, aiErrorMessage = null,)
+                        _uiState.update {
+                            it.copy(
+                                weatherInfo = result.data,
+                                isLoading = false,
+                                aiSummary = null,
+                                aiErrorMessage = null,
+                            )
                         }
                         generateAiSummary(result.data, city.name)
                     }
@@ -185,34 +196,33 @@ class WeatherViewModel
             }
         }
 
-    private fun generateAiSummary(
-        weatherInfo: WeatherInfo,
-        locationName: String,
-    ) {
-        aiSummaryJob?.cancel()
-        aiSummaryJob = viewModelScope.launch {
+        private fun generateAiSummary(
+            weatherInfo: WeatherInfo,
+            locationName: String,
+        ) {
+            aiSummaryJob?.cancel()
+            aiSummaryJob =
+                viewModelScope.launch {
+                    _uiState.update { currentState ->
+                        currentState.copy(isAiLoading = true, aiErrorMessage = null)
+                    }
 
-            _uiState.update { currentState ->
-                currentState.copy(isAiLoading = true, aiErrorMessage = null)
-            }
-
-            try {
-                val summary = generateWeatherSummaryUseCase(weatherInfo, locationName)
-                _uiState.update { currentState ->
-                    currentState.copy(aiSummary = summary, isAiLoading = false)
+                    try {
+                        val summary = generateWeatherSummaryUseCase(weatherInfo, locationName)
+                        _uiState.update { currentState ->
+                            currentState.copy(aiSummary = summary, isAiLoading = false)
+                        }
+                    } catch (_: Exception) {
+                        _uiState.update { currentState ->
+                            currentState.copy(
+                                isAiLoading = false,
+                                aiSummary = null,
+                                aiErrorMessage = "Couldn't generate weather recommendation.",
+                            )
+                        }
+                    }
                 }
-
-            } catch (_: Exception) {
-                _uiState.update { currentState ->
-                    currentState.copy(
-                        isAiLoading = false,
-                        aiSummary = null,
-                        aiErrorMessage = "Couldn't generate weather recommendation.",
-                    )
-                }
-            }
         }
-    }
 
         fun onAction(action: WeatherAction) {
             when (action) {
