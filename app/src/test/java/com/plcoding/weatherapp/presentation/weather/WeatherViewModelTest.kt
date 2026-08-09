@@ -6,13 +6,16 @@ import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
+import com.plcoding.weatherapp.domain.usecase.GenerateWeatherSummaryUseCase
 import com.plcoding.weatherapp.domain.usecase.GetWeatherUseCase
 import com.plcoding.weatherapp.domain.usecase.SavedCityUseCases
 import com.plcoding.weatherapp.domain.usecase.SearchCityUseCase
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
+import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.CityScreenBackClicked
+import com.plcoding.weatherapp.presentation.weather.WeatherAction.CitySelected
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.NotificationToggleClicked
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.Refresh
 import com.plcoding.weatherapp.presentation.weather.WeatherAction.SearchCityClicked
@@ -46,6 +49,7 @@ class WeatherViewModelTest {
     private val selectedLocationRepository: SelectedLocationRepository = mockk(relaxed = true)
     private val locationTracker: LocationTracker = mockk(relaxed = true)
     private val locationNameResolver: LocationNameResolver = mockk(relaxed = true)
+    private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase = mockk(relaxed = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
 
@@ -70,6 +74,7 @@ class WeatherViewModelTest {
                 selectedLocationRepository,
                 locationTracker,
                 locationNameResolver,
+                generateWeatherSummaryUseCase,
             )
     }
 
@@ -180,10 +185,22 @@ class WeatherViewModelTest {
             val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
             coEvery { getWeatherUseCase(any(), any()) } returns Result.Error(DataError.NoInternet)
 
-            viewModel.onAction(WeatherAction.CitySelected(city))
+            viewModel.onAction(CitySelected(city))
 
             assertThat(viewModel.uiState.value.locationName).isEqualTo("Berlin")
             coVerify { getWeatherUseCase(city.latitude, city.longitude) }
+        }
+
+    @Test
+    fun `Action CitySelected triggers AI summary generation`() =
+        runTest {
+            val city = City(1, "Berlin", 52.5, 13.4, "Germany", "Berlin", "Europe/Berlin")
+            val weatherInfo = mockk<WeatherInfo>(relaxed = true)
+            coEvery { getWeatherUseCase(any(), any()) } returns Result.Success(weatherInfo)
+
+            viewModel.onAction(CitySelected(city))
+
+            coVerify { generateWeatherSummaryUseCase(weatherInfo, "Berlin") }
         }
 
     @Test

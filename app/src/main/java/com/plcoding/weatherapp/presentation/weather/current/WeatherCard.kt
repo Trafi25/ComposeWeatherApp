@@ -63,7 +63,10 @@ fun WeatherCard(
                 Image(
                     painter = painterResource(id = data.weatherType.getIconRes(data.isDay)),
                     contentDescription = null,
-                    modifier = Modifier.size(MaterialTheme.sizes.weatherIconSmall),
+                    modifier =
+                        Modifier
+                            .fillMaxWidth(0.35f)
+                            .aspectRatio(1f),
                 )
                 Spacer(modifier = Modifier.height(MaterialTheme.spacing.medium))
                 Text(
