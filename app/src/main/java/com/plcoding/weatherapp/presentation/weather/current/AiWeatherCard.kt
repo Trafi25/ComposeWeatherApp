@@ -24,17 +24,20 @@ fun AiWeatherCard(
     modifier: Modifier = Modifier,
 ) {
     Card(
-        modifier = modifier.fillMaxWidth()
-            .padding(MaterialTheme.spacing.medium),
-        colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface,
-        ),
-        ) {
+        modifier =
+            modifier
+                .fillMaxWidth()
+                .padding(MaterialTheme.spacing.medium),
+        colors =
+            CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surface,
+            ),
+    ) {
         Column(
-            modifier = Modifier.padding(MaterialTheme.spacing.medium)
+            modifier = Modifier.padding(MaterialTheme.spacing.medium),
         ) {
             Text(
-                text =  "Weather Assistant",
+                text = "Weather Assistant",
                 style = MaterialTheme.typography.titleMedium,
                 color = MaterialTheme.colorScheme.onSurface,
             )
@@ -43,14 +46,14 @@ fun AiWeatherCard(
                 isLoading -> {
                     Box(
                         modifier = Modifier.fillMaxWidth().padding(MaterialTheme.spacing.medium),
-                        contentAlignment = Alignment.Center
+                        contentAlignment = Alignment.Center,
                     ) {
                         CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.primary,
                         )
                     }
                 }
-                summary!= null -> {
+                summary != null -> {
                     Text(
                         text = summary,
                         style =
@@ -66,8 +69,6 @@ fun AiWeatherCard(
                     )
                 }
             }
-
-
         }
     }
 }

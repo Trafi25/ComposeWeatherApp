@@ -32,11 +32,11 @@ class WeatherApp :
         Firebase.initialize(context = this)
         if (BuildConfig.DEBUG) {
             Firebase.appCheck.installAppCheckProviderFactory(
-                DebugAppCheckProviderFactory.getInstance()
+                DebugAppCheckProviderFactory.getInstance(),
             )
         } else {
             Firebase.appCheck.installAppCheckProviderFactory(
-                PlayIntegrityAppCheckProviderFactory.getInstance()
+                PlayIntegrityAppCheckProviderFactory.getInstance(),
             )
         }
         WeatherNotificationManager.createChannel(this)

@@ -96,9 +96,6 @@ fun WeatherContent(
                             )
                         }
                     }
-
-
-
                 }
 
                 if (uiState.isLoading) {
