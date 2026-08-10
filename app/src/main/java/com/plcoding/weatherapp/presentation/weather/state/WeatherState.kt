@@ -47,4 +47,5 @@ data class WeatherState(
     val aiSummary: String? = null,
     val isAiLoading: Boolean = false,
     val aiErrorMessage: String? = null,
+    val lastUpdated: Long = 0L,
 )

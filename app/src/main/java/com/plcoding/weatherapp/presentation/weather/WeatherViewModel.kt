@@ -104,6 +104,7 @@ class WeatherViewModel
                                     aiSummary = null,
                                     aiErrorMessage = null,
                                     isAiLoading = true,
+                                    lastUpdated = System.currentTimeMillis(),
                                 )
                             }
                             generateAiSummary(
@@ -150,6 +151,7 @@ class WeatherViewModel
                                 aiSummary = null,
                                 aiErrorMessage = null,
                                 isAiLoading = true,
+                                lastUpdated = System.currentTimeMillis(),
                             )
                         }
                         generateAiSummary(

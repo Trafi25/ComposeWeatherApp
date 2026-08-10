@@ -8,16 +8,22 @@ import com.plcoding.weatherapp.data.local.dao.CachedAiSummaryDao
 import com.plcoding.weatherapp.data.local.dao.CachedWeatherDao
 import com.plcoding.weatherapp.data.local.dao.SavedCityDao
 
-@Database(entities =
-    [SavedCityEntity::class,
-        CachedWeatherEntity::class,
-        CachedAiSummaryEntity::class], version = 3, exportSchema = true)
+@Database(
+    entities =
+        [
+            SavedCityEntity::class,
+            CachedWeatherEntity::class,
+            CachedAiSummaryEntity::class,
+        ],
+    version = 3,
+    exportSchema = true,
+)
 abstract class WeatherDatabase : RoomDatabase() {
     abstract fun savedCityDao(): SavedCityDao
 
     abstract fun cachedWeatherDao(): CachedWeatherDao
 
-    abstract fun cachedWeatherAi() : CachedAiSummaryDao
+    abstract fun cachedWeatherAi(): CachedAiSummaryDao
 }
 
 val migration2To3 =

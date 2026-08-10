@@ -8,7 +8,6 @@ import com.plcoding.weatherapp.data.local.CachedAiSummaryEntity
 
 @Dao
 interface CachedAiSummaryDao {
-
     @Query(
         """
     SELECT * FROM ai_weather_summary
@@ -31,6 +30,4 @@ interface CachedAiSummaryDao {
 
     @Query("DELETE FROM ai_weather_summary")
     suspend fun clear()
-
-
 }

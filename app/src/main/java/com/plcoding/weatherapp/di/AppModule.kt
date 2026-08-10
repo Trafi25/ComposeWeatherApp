@@ -77,9 +77,7 @@ object AppModule {
 
     @Provides
     @Singleton
-    fun provideCachedAiSummary(database: WeatherDatabase): CachedAiSummaryDao =
-        database.cachedWeatherAi()
-
+    fun provideCachedAiSummary(database: WeatherDatabase): CachedAiSummaryDao = database.cachedWeatherAi()
 
     @Provides
     @Singleton
