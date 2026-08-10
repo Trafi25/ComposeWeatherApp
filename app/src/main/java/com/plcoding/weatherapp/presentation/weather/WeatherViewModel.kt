@@ -1,5 +1,6 @@
 package com.plcoding.weatherapp.presentation.weather
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.plcoding.weatherapp.domain.location.City
@@ -102,9 +103,15 @@ class WeatherViewModel
                                     locationName = name,
                                     aiSummary = null,
                                     aiErrorMessage = null,
+                                    isAiLoading = true,
                                 )
                             }
-                            generateAiSummary(result.data, name ?: "Current location")
+                            generateAiSummary(
+                                weatherInfo = result.data,
+                                locationName = name ?: "Current location",
+                                latitude = location.latitude,
+                                longitude = location.longitude,
+                            )
                         }
                         is Result.Error -> {
                             _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
@@ -142,9 +149,15 @@ class WeatherViewModel
                                 isLoading = false,
                                 aiSummary = null,
                                 aiErrorMessage = null,
+                                isAiLoading = true,
                             )
                         }
-                        generateAiSummary(result.data, city.name)
+                        generateAiSummary(
+                            weatherInfo = result.data,
+                            locationName = city.name,
+                            latitude = city.latitude,
+                            longitude = city.longitude,
+                        )
                     }
                     is Result.Error -> _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
                 }
@@ -199,21 +212,26 @@ class WeatherViewModel
         private fun generateAiSummary(
             weatherInfo: WeatherInfo,
             locationName: String,
+            latitude: Double,
+            longitude: Double,
         ) {
             aiSummaryJob?.cancel()
             aiSummaryJob =
                 viewModelScope.launch {
-                    _uiState.update { currentState ->
-                        currentState.copy(isAiLoading = true, aiErrorMessage = null)
-                    }
-
                     try {
-                        val summary = generateWeatherSummaryUseCase(weatherInfo, locationName)
+                        val summary =
+                            generateWeatherSummaryUseCase(
+                                weatherInfo = weatherInfo,
+                                locationName = locationName,
+                                latitude = latitude,
+                                longitude = longitude,
+                            )
                         _uiState.update { currentState ->
                             currentState.copy(aiSummary = summary, isAiLoading = false)
                         }
-                    } catch (_: Exception) {
+                    } catch (exception: Exception) {
                         _uiState.update { currentState ->
+                            Log.d("DEBUG_AI", exception.message ?: "Unknown error")
                             currentState.copy(
                                 isAiLoading = false,
                                 aiSummary = null,

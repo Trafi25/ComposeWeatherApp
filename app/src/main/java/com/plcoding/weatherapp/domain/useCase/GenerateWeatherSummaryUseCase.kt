@@ -12,9 +12,13 @@ class GenerateWeatherSummaryUseCase
         suspend operator fun invoke(
             weatherInfo: WeatherInfo,
             locationName: String,
+            latitude: Double,
+            longitude: Double,
         ): String =
             repository.generateWeatherSummary(
                 weatherInfo = weatherInfo,
                 locationName = locationName,
+                latitude = latitude,
+                longitude = longitude,
             )
     }

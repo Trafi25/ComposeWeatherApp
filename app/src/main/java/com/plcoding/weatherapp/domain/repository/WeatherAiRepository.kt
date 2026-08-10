@@ -6,5 +6,7 @@ interface WeatherAiRepository {
     suspend fun generateWeatherSummary(
         weatherInfo: WeatherInfo,
         locationName: String,
+        latitude: Double,
+        longitude: Double,
     ): String
 }

@@ -5,9 +5,10 @@ import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.plcoding.weatherapp.data.local.WeatherDatabase
+import com.plcoding.weatherapp.data.local.dao.CachedAiSummaryDao
 import com.plcoding.weatherapp.data.local.dao.CachedWeatherDao
 import com.plcoding.weatherapp.data.local.dao.SavedCityDao
-import com.plcoding.weatherapp.data.local.migration1To2
+import com.plcoding.weatherapp.data.local.migration2To3
 import com.plcoding.weatherapp.data.local.util.LocalDateAdapter
 import com.plcoding.weatherapp.data.local.util.LocalDateTimeAdapter
 import com.plcoding.weatherapp.data.local.util.WeatherTypeAdapter
@@ -63,7 +64,7 @@ object AppModule {
                 app,
                 WeatherDatabase::class.java,
                 WEATHER_DATABASE_NAME,
-            ).addMigrations(migration1To2)
+            ).addMigrations(migration2To3)
             .build()
 
     @Provides
@@ -73,6 +74,12 @@ object AppModule {
     @Provides
     @Singleton
     fun provideCachedWeatherDao(database: WeatherDatabase): CachedWeatherDao = database.cachedWeatherDao()
+
+    @Provides
+    @Singleton
+    fun provideCachedAiSummary(database: WeatherDatabase): CachedAiSummaryDao =
+        database.cachedWeatherAi()
+
 
     @Provides
     @Singleton
