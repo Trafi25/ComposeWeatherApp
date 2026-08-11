@@ -17,13 +17,17 @@ import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.util.toMessage
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
+import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
@@ -44,8 +48,12 @@ class WeatherViewModel
         private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
-        private var aiSummaryJob: Job? = null
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
+
+        private val _effect = MutableSharedFlow<WeatherEffect>()
+        val effect: SharedFlow<WeatherEffect> = _effect.asSharedFlow()
+
+        private var aiSummaryJob: Job? = null
 
         private var citySearchJob: Job? = null
 
@@ -355,9 +363,17 @@ class WeatherViewModel
         }
 
         private fun retryWeatherLoading() {
-            val id = _uiState.value.selectedCityId ?: return loadWeatherInfo()
-            viewModelScope.launch {
-                cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+            val id = _uiState.value.selectedCityId
+
+            if (id == null) {
+                viewModelScope.launch {
+                    _effect.emit(WeatherEffect.RequestLocationPermission)
+                }
+                loadWeatherInfo()
+            } else {
+                viewModelScope.launch {
+                    cityUseCases.getCity(id)?.let { loadWeatherForCity(it, false) } ?: selectCurrentLocation()
+                }
             }
         }
 
@@ -408,6 +424,9 @@ class WeatherViewModel
 
         private fun notificationCall(isSelected: Boolean) {
             viewModelScope.launch {
+                if (isSelected) {
+                    _effect.emit(WeatherEffect.RequestNotificationPermission)
+                }
                 settingsUseCases.setNotificationEnabled(isSelected)
             }
         }
