@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -38,6 +40,8 @@ fun CitySearchScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -47,7 +51,7 @@ fun CitySearchScreen(
                     Text(
                         text = "Search city",
                         fontWeight = FontWeight.SemiBold,
-                        color = Color.White,
+                        color = onSurfaceColor,
                     )
                 },
                 navigationIcon = {
@@ -55,7 +59,7 @@ fun CitySearchScreen(
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = onSurfaceColor,
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -80,13 +84,13 @@ fun CitySearchScreen(
                 onValueChange = onQueryChanged,
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
-                    Text(text = "Enter city name", color = Color.White.copy(alpha = 0.7f))
+                    Text(text = "Enter city name", color = onSurfaceColor.copy(alpha = 0.7f))
                 },
                 leadingIcon = {
                     Icon(
                         painter = painterResource(R.drawable.search),
                         contentDescription = null,
-                        tint = Color.White,
+                        tint = onSurfaceColor,
                         modifier = Modifier.size(20.dp),
                     )
                 },
@@ -96,13 +100,23 @@ fun CitySearchScreen(
                             Icon(
                                 painter = painterResource(R.drawable.close),
                                 contentDescription = "Clear",
-                                tint = Color.White,
+                                tint = onSurfaceColor,
                                 modifier = Modifier.size(20.dp),
                             )
                         }
                     }
                 },
                 singleLine = true,
+                keyboardOptions =
+                    KeyboardOptions(
+                        imeAction = androidx.compose.ui.text.input.ImeAction.Search,
+                    ),
+                keyboardActions =
+                    KeyboardActions(
+                        onSearch = {
+                            // Search is already debounced in ViewModel, so we just hide keyboard if needed
+                        },
+                    ),
                 shape = RoundedCornerShape(12.dp),
                 colors =
                     OutlinedTextFieldDefaults.colors(
@@ -110,6 +124,8 @@ fun CitySearchScreen(
                         unfocusedContainerColor = MaterialTheme.colorScheme.surface,
                         focusedTextColor = MaterialTheme.colorScheme.onSurface,
                         unfocusedTextColor = MaterialTheme.colorScheme.onSurface,
+                        focusedBorderColor = MaterialTheme.colorScheme.primary,
+                        unfocusedBorderColor = onSurfaceColor.copy(alpha = 0.1f),
                     ),
             )
             Spacer(modifier = Modifier.height(16.dp))

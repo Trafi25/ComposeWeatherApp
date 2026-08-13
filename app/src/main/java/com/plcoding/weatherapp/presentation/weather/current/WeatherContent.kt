@@ -32,7 +32,7 @@ fun WeatherContent(
     PullToRefreshBox(
         isRefreshing = uiState.isLoading,
         onRefresh = {
-            onAction(WeatherAction.CurrentLocationSelected)
+            onAction(WeatherAction.Refresh)
         },
         modifier = modifier.fillMaxSize(),
     ) {

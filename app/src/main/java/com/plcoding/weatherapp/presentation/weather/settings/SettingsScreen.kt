@@ -46,6 +46,8 @@ fun SettingsScreen(
     onBackClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -54,7 +56,7 @@ fun SettingsScreen(
                 title = {
                     Text(
                         text = "Settings",
-                        color = Color.White,
+                        color = onSurfaceColor,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
@@ -63,7 +65,7 @@ fun SettingsScreen(
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = onSurfaceColor,
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -113,7 +115,7 @@ fun SettingsScreen(
 
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = Color.White.copy(alpha = 0.2f),
+                color = onSurfaceColor.copy(alpha = 0.2f),
             )
 
             SettingsSection(title = "APPEARANCE") {
@@ -137,12 +139,7 @@ fun SettingsScreen(
 
             HorizontalDivider(
                 modifier = Modifier.padding(horizontal = 16.dp),
-                color = Color.White.copy(alpha = 0.2f),
-            )
-
-            HorizontalDivider(
-                modifier = Modifier.padding(horizontal = 16.dp),
-                color = Color.White.copy(alpha = 0.2f),
+                color = onSurfaceColor.copy(alpha = 0.2f),
             )
 
             SettingsSection(title = "DATA") {

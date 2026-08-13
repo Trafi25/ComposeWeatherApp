@@ -268,6 +268,11 @@ class WeatherViewModel
                 WeatherAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
                 WeatherAction.CurrentLocationSelected -> selectCurrentLocation()
                 WeatherAction.Refresh -> retryWeatherLoading()
+                WeatherAction.RequestLocationPermission -> {
+                    viewModelScope.launch {
+                        _effect.emit(WeatherEffect.RequestLocationPermission)
+                    }
+                }
                 WeatherAction.LocationPermissionGranted -> {
                     if (_uiState.value.isLocationRestored &&
                         _uiState.value.selectedCityId == null &&
@@ -358,7 +363,6 @@ class WeatherViewModel
                         if (_uiState.value.selectedCityId == action.cityId) selectCurrentLocation()
                     }
                 }
-                else -> {}
             }
         }
 
