@@ -1,22 +1,33 @@
 package com.plcoding.weatherapp.presentation.weather
 
 import android.Manifest
-import android.content.pm.PackageManager
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.platform.LocalContext
-import androidx.core.content.ContextCompat
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.plcoding.weatherapp.presentation.weather.city.CityManagerAction
+import com.plcoding.weatherapp.presentation.weather.city.CityManagerViewModel
+import com.plcoding.weatherapp.presentation.weather.city.CitySearchAction
+import com.plcoding.weatherapp.presentation.weather.city.CitySearchViewModel
+import com.plcoding.weatherapp.presentation.weather.settings.SettingsAction
+import com.plcoding.weatherapp.presentation.weather.settings.SettingsViewModel
 import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
 
 @Composable
-fun WeatherRoute(viewModel: WeatherViewModel = hiltViewModel()) {
-    val state by viewModel.uiState.collectAsStateWithLifecycle()
-    val context = LocalContext.current
+fun WeatherRoute(
+    weatherViewModel: WeatherViewModel = hiltViewModel(),
+    searchViewModel: CitySearchViewModel = hiltViewModel(),
+    settingsViewModel: SettingsViewModel = hiltViewModel(),
+    managerViewModel: CityManagerViewModel = hiltViewModel(),
+) {
+    val weatherState by weatherViewModel.uiState.collectAsStateWithLifecycle()
+    val searchState by searchViewModel.state.collectAsStateWithLifecycle()
+    val settingsState by settingsViewModel.settings.collectAsStateWithLifecycle()
+    val savedCities by managerViewModel.savedCities.collectAsStateWithLifecycle()
+    val selectedCityId by managerViewModel.selectedCityId.collectAsStateWithLifecycle()
 
     val permissionLauncher =
         rememberLauncherForActivityResult(
@@ -26,7 +37,7 @@ fun WeatherRoute(viewModel: WeatherViewModel = hiltViewModel()) {
                 permissions[Manifest.permission.ACCESS_FINE_LOCATION] == true ||
                     permissions[Manifest.permission.ACCESS_COARSE_LOCATION] == true
 
-            viewModel.onAction(
+            weatherViewModel.onAction(
                 if (isLocationGranted) {
                     WeatherAction.LocationPermissionGranted
                 } else {
@@ -36,7 +47,7 @@ fun WeatherRoute(viewModel: WeatherViewModel = hiltViewModel()) {
         }
 
     LaunchedEffect(Unit) {
-        viewModel.effect.collect { effect ->
+        weatherViewModel.effect.collect { effect ->
             when (effect) {
                 WeatherEffect.RequestLocationPermission -> {
                     permissionLauncher.launch(
@@ -46,40 +57,56 @@ fun WeatherRoute(viewModel: WeatherViewModel = hiltViewModel()) {
                         ),
                     )
                 }
-
-                WeatherEffect.RequestNotificationPermission -> {
-                    // Handle notification permission if needed for Android 13+
-                }
-
-                is WeatherEffect.ShowSnackbar -> {
-                    // Handle snackbar
-                }
+                else -> {}
             }
         }
     }
 
     LaunchedEffect(Unit) {
-        val fineLocationGranted =
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_FINE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-
-        val coarseLocationGranted =
-            ContextCompat.checkSelfPermission(
-                context,
-                Manifest.permission.ACCESS_COARSE_LOCATION,
-            ) == PackageManager.PERMISSION_GRANTED
-
-        if (fineLocationGranted || coarseLocationGranted) {
-            viewModel.onAction(WeatherAction.LocationPermissionGranted)
-        } else {
-            viewModel.onAction(WeatherAction.RequestLocationPermission)
+        settingsViewModel.effect.collect { effect ->
+            if (effect is WeatherEffect.RequestNotificationPermission) {
+                // Trigger notification permission
+            }
         }
     }
 
     WeatherMainScreen(
-        uiState = state,
-        onAction = viewModel::onAction,
+        weatherState = weatherState,
+        searchState = searchState,
+        settingsState = settingsState,
+        savedCities = savedCities,
+        selectedCityId = selectedCityId,
+        onWeatherAction = { action ->
+            when (action) {
+                WeatherAction.RequestLocationPermission -> {
+                    permissionLauncher.launch(
+                        arrayOf(
+                            Manifest.permission.ACCESS_FINE_LOCATION,
+                            Manifest.permission.ACCESS_COARSE_LOCATION,
+                        ),
+                    )
+                }
+                else -> weatherViewModel.onAction(action)
+            }
+        },
+        onSearchAction = { action ->
+            when (action) {
+                CitySearchAction.BackClicked -> weatherViewModel.onAction(WeatherAction.BackClicked)
+                else -> searchViewModel.onAction(action)
+            }
+        },
+        onSettingsAction = { action ->
+            when (action) {
+                SettingsAction.BackClicked -> weatherViewModel.onAction(WeatherAction.BackClicked)
+                else -> settingsViewModel.onAction(action)
+            }
+        },
+        onManagerAction = { action ->
+            when (action) {
+                CityManagerAction.BackClicked -> weatherViewModel.onAction(WeatherAction.BackClicked)
+                CityManagerAction.AddCityClicked -> weatherViewModel.onAction(WeatherAction.SearchCityClicked)
+                else -> managerViewModel.onAction(action)
+            }
+        }
     )
 }

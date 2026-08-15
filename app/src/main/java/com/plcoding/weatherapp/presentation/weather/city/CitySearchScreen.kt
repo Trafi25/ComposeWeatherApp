@@ -28,16 +28,13 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
-import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CitySearchScreen(
     state: CitySearchState,
-    onQueryChanged: (String) -> Unit,
-    onCityClick: (City) -> Unit,
-    onBackClick: () -> Unit,
+    onAction: (CitySearchAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
@@ -55,7 +52,7 @@ fun CitySearchScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = { onAction(CitySearchAction.BackClicked) }) {
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
@@ -81,7 +78,7 @@ fun CitySearchScreen(
         ) {
             OutlinedTextField(
                 value = state.query,
-                onValueChange = onQueryChanged,
+                onValueChange = { onAction(CitySearchAction.QueryChanged(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 placeholder = {
                     Text(text = "Enter city name", color = onSurfaceColor.copy(alpha = 0.7f))
@@ -96,7 +93,7 @@ fun CitySearchScreen(
                 },
                 trailingIcon = {
                     if (state.query.isNotEmpty()) {
-                        IconButton(onClick = { onQueryChanged("") }) {
+                        IconButton(onClick = { onAction(CitySearchAction.ClearQuery) }) {
                             Icon(
                                 painter = painterResource(R.drawable.close),
                                 contentDescription = "Clear",
@@ -114,7 +111,7 @@ fun CitySearchScreen(
                 keyboardActions =
                     KeyboardActions(
                         onSearch = {
-                            // Search is already debounced in ViewModel, so we just hide keyboard if needed
+                            // Search is already debounced in ViewModel
                         },
                     ),
                 shape = RoundedCornerShape(12.dp),
@@ -132,7 +129,7 @@ fun CitySearchScreen(
 
             CitySearchResults(
                 state = state,
-                onCityClick = onCityClick,
+                onCityClick = { onAction(CitySearchAction.CitySelected(it)) },
             )
         }
     }

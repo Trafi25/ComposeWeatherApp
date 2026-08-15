@@ -32,10 +32,10 @@ class WeatherValueFormatter
         ): String =
             when (unit) {
                 TemperatureUnit.Celsius ->
-                    "$celsius°C"
+                    "${formatOneDecimal(celsius)}°C"
                 TemperatureUnit.Fahrenheit -> {
                     val fahrenheit = celsius * 9.0 / 5.0 + 32.0
-                    "$fahrenheit°F"
+                    "${formatOneDecimal(fahrenheit)}°F"
                 }
             }
 
