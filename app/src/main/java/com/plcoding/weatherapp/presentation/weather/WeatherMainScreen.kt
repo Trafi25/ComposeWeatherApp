@@ -14,21 +14,33 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
+import com.plcoding.weatherapp.domain.location.City
+import com.plcoding.weatherapp.domain.settings.AppSettings
+import com.plcoding.weatherapp.presentation.weather.city.CityManagerAction
 import com.plcoding.weatherapp.presentation.weather.city.CityManagerScreen
+import com.plcoding.weatherapp.presentation.weather.city.CitySearchAction
 import com.plcoding.weatherapp.presentation.weather.city.CitySearchScreen
 import com.plcoding.weatherapp.presentation.weather.common.WeatherSystemBar
 import com.plcoding.weatherapp.presentation.weather.current.WeatherContent
+import com.plcoding.weatherapp.presentation.weather.settings.SettingsAction
 import com.plcoding.weatherapp.presentation.weather.settings.SettingsScreen
+import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 
 @Composable
 fun WeatherMainScreen(
-    uiState: WeatherState,
-    onAction: (WeatherAction) -> Unit,
+    weatherState: WeatherState,
+    searchState: CitySearchState,
+    settingsState: AppSettings,
+    savedCities: List<City>,
+    selectedCityId: Int?,
+    onWeatherAction: (WeatherAction) -> Unit,
+    onSearchAction: (CitySearchAction) -> Unit,
+    onSettingsAction: (SettingsAction) -> Unit,
+    onManagerAction: (CityManagerAction) -> Unit,
 ) {
     val backgroundColor = MaterialTheme.colorScheme.background
-
     val isDarkTheme = backgroundColor.red + backgroundColor.green + backgroundColor.blue < 1.5f
 
     WeatherSystemBar(
@@ -49,7 +61,7 @@ fun WeatherMainScreen(
                 .background(backgroundColor),
     ) {
         AnimatedContent(
-            targetState = uiState.screenMode,
+            targetState = weatherState.screenMode,
             transitionSpec =
                 {
                     val direction =
@@ -72,86 +84,27 @@ fun WeatherMainScreen(
             when (screenMode) {
                 WeatherScreenMode.Weather -> {
                     WeatherContent(
-                        uiState = uiState,
-                        onAction = onAction,
+                        uiState = weatherState.copy(appSettings = settingsState),
+                        onAction = onWeatherAction,
                     )
                 }
                 WeatherScreenMode.SearchCity -> {
                     CitySearchScreen(
-                        state = uiState.citySearchState,
-                        onQueryChanged = { query ->
-                            onAction(WeatherAction.SearchQueryChanged(query))
-                        },
-                        onCityClick = { city ->
-                            onAction(WeatherAction.CitySelected(city))
-                        },
-                        onBackClick = {
-                            onAction(WeatherAction.CityScreenBackClicked)
-                        },
+                        state = searchState,
+                        onAction = onSearchAction,
                     )
                 }
                 WeatherScreenMode.ManageCities -> {
                     CityManagerScreen(
-                        cities = uiState.savedCities,
-                        selectedCityId = uiState.selectedCityId,
-                        onCityClick = { city ->
-                            onAction(
-                                WeatherAction.CitySelected(city),
-                            )
-                        },
-                        onCityDelete = { city ->
-                            onAction(
-                                WeatherAction.SavedCityDeleted(city.id),
-                            )
-                        },
-                        onAddCityClick = {
-                            onAction(WeatherAction.SearchCityClicked)
-                        },
-                        onBackClick = { onAction(WeatherAction.CityScreenBackClicked) },
-                        onCurrentLocationClick = {
-                            onAction(
-                                WeatherAction.CurrentLocationSelected,
-                            )
-                        },
+                        cities = savedCities,
+                        selectedCityId = selectedCityId,
+                        onAction = onManagerAction,
                     )
                 }
                 WeatherScreenMode.Settings -> {
                     SettingsScreen(
-                        settings = uiState.appSettings,
-                        onTemperatureUnitClick = {
-                            onAction(WeatherAction.ToggleTemperatureUnitRequested)
-                        },
-                        onWindSpeedUnitClick = {
-                            onAction(WeatherAction.ToggleWindSpeedUnitRequested)
-                        },
-                        onPressureUnitClick = {
-                            onAction(WeatherAction.TogglePressureUnitRequested)
-                        },
-                        onPrecipitationUnitClick = {
-                            onAction(WeatherAction.TogglePrecipitationUnitRequested)
-                        },
-                        onTimeFormatClick = {
-                            onAction(WeatherAction.ToggleTimeFormatRequested)
-                        },
-                        onThemeModeClick = {
-                            onAction(WeatherAction.ToggleThemeModeRequested)
-                        },
-                        onAccentColorSelected = { color ->
-                            onAction(WeatherAction.AccentColorSelected(color))
-                        },
-                        onClearCacheClick = {
-                            onAction(WeatherAction.ClearCacheClicked)
-                        },
-                        onBackClick = {
-                            onAction(WeatherAction.SettingsBackClicked)
-                        },
-                        onNotificationToggle = {
-                            onAction(
-                                WeatherAction.NotificationToggleClicked(
-                                    !uiState.appSettings.weatherNotificationEnabled,
-                                ),
-                            )
-                        },
+                        settings = settingsState,
+                        onAction = onSettingsAction,
                     )
                 }
             }

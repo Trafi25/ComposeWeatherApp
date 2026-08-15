@@ -31,14 +31,12 @@ import com.plcoding.weatherapp.domain.location.City
 @Composable
 fun CityManagerScreen(
     cities: List<City>,
-    onCityClick: (City) -> Unit,
     selectedCityId: Int?,
-    onAddCityClick: () -> Unit,
-    onCurrentLocationClick: () -> Unit,
-    onCityDelete: (City) -> Unit,
-    onBackClick: () -> Unit,
+    onAction: (CityManagerAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    val onSurfaceColor = MaterialTheme.colorScheme.onSurface
+
     Scaffold(
         modifier = modifier.fillMaxSize(),
         containerColor = MaterialTheme.colorScheme.background,
@@ -47,16 +45,16 @@ fun CityManagerScreen(
                 title = {
                     Text(
                         text = "My cities",
-                        color = Color.White,
+                        color = onSurfaceColor,
                         fontWeight = FontWeight.SemiBold,
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = { onAction(CityManagerAction.BackClicked) }) {
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
-                            tint = Color.White,
+                            tint = onSurfaceColor,
                             modifier = Modifier.size(24.dp),
                         )
                     }
@@ -70,7 +68,7 @@ fun CityManagerScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = onAddCityClick,
+                onClick = { onAction(CityManagerAction.AddCityClicked) },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
             ) {
@@ -90,9 +88,9 @@ fun CityManagerScreen(
         ) {
             CurrentLocationItem(
                 isSelected = selectedCityId == null,
-                onClick = onCurrentLocationClick,
+                onClick = { onAction(CityManagerAction.CurrentLocationSelected) },
             )
-            HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+            HorizontalDivider(color = onSurfaceColor.copy(alpha = 0.2f))
 
             if (cities.isEmpty()) {
                 EmptyCitiesContent(
@@ -112,10 +110,10 @@ fun CityManagerScreen(
                         CityManagerItem(
                             city = city,
                             isSelected = city.id == selectedCityId,
-                            onClick = { onCityClick(city) },
-                            onDelete = { onCityDelete(city) },
+                            onClick = { onAction(CityManagerAction.CitySelected(city)) },
+                            onDelete = { onAction(CityManagerAction.CityDeleted(city.id)) },
                         )
-                        HorizontalDivider(color = Color.White.copy(alpha = 0.2f))
+                        HorizontalDivider(color = onSurfaceColor.copy(alpha = 0.2f))
                     }
                 }
             }

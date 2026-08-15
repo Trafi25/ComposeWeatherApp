@@ -23,7 +23,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
-import com.plcoding.weatherapp.domain.settings.AppAccentColor
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.displayName
 import com.plcoding.weatherapp.presentation.weather.settings.components.ColorSelectionRow
@@ -34,16 +33,7 @@ import com.plcoding.weatherapp.presentation.weather.settings.components.Settings
 @Composable
 fun SettingsScreen(
     settings: AppSettings,
-    onTemperatureUnitClick: () -> Unit,
-    onWindSpeedUnitClick: () -> Unit,
-    onPressureUnitClick: () -> Unit,
-    onPrecipitationUnitClick: () -> Unit,
-    onTimeFormatClick: () -> Unit,
-    onThemeModeClick: () -> Unit,
-    onAccentColorSelected: (AppAccentColor) -> Unit,
-    onClearCacheClick: () -> Unit,
-    onNotificationToggle: () -> Unit,
-    onBackClick: () -> Unit,
+    onAction: (SettingsAction) -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val onSurfaceColor = MaterialTheme.colorScheme.onSurface
@@ -61,7 +51,7 @@ fun SettingsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBackClick) {
+                    IconButton(onClick = { onAction(SettingsAction.BackClicked) }) {
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
@@ -89,27 +79,27 @@ fun SettingsScreen(
                 SettingsItem(
                     title = "Temperature",
                     description = settings.temperatureUnit.displayName(),
-                    onClick = onTemperatureUnitClick,
+                    onClick = { onAction(SettingsAction.ToggleTemperatureUnit) },
                 )
                 SettingsItem(
                     title = "Wind speed",
                     description = settings.windSpeedUnit.displayName(),
-                    onClick = onWindSpeedUnitClick,
+                    onClick = { onAction(SettingsAction.ToggleWindSpeedUnit) },
                 )
                 SettingsItem(
                     title = "Pressure",
                     description = settings.pressureUnit.displayName(),
-                    onClick = onPressureUnitClick,
+                    onClick = { onAction(SettingsAction.TogglePressureUnit) },
                 )
                 SettingsItem(
                     title = "Precipitation",
                     description = settings.precipitationUnit.displayName(),
-                    onClick = onPrecipitationUnitClick,
+                    onClick = { onAction(SettingsAction.TogglePrecipitationUnit) },
                 )
                 SettingsItem(
                     title = "Time format",
                     description = settings.timeFormat.displayName(),
-                    onClick = onTimeFormatClick,
+                    onClick = { onAction(SettingsAction.ToggleTimeFormat) },
                 )
             }
 
@@ -122,7 +112,7 @@ fun SettingsScreen(
                 SettingsItem(
                     title = "Theme",
                     description = settings.themeMode.displayName(),
-                    onClick = onThemeModeClick,
+                    onClick = { onAction(SettingsAction.ToggleThemeMode) },
                 )
 
                 Text(
@@ -133,7 +123,7 @@ fun SettingsScreen(
                 )
                 ColorSelectionRow(
                     selectedColor = settings.accentColor,
-                    onColorSelected = onAccentColorSelected,
+                    onColorSelected = { onAction(SettingsAction.AccentColorSelected(it)) },
                 )
             }
 
@@ -146,14 +136,14 @@ fun SettingsScreen(
                 SettingsItem(
                     title = "Weather Notifications",
                     description = if (settings.weatherNotificationEnabled) "Enabled" else "Disabled",
-                    onClick = onNotificationToggle,
+                    onClick = { onAction(SettingsAction.ToggleNotifications) },
                     trailingContent = null,
                 )
 
                 SettingsItem(
                     title = "Clear weather cache",
                     description = "Remove all offline data",
-                    onClick = onClearCacheClick,
+                    onClick = { onAction(SettingsAction.ClearCache) },
                     trailingContent = null,
                 )
             }
