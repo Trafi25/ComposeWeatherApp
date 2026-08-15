@@ -107,6 +107,6 @@ fun WeatherRoute(
                 CityManagerAction.AddCityClicked -> weatherViewModel.onAction(WeatherAction.SearchCityClicked)
                 else -> managerViewModel.onAction(action)
             }
-        }
+        },
     )
 }
