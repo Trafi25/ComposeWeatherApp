@@ -38,7 +38,7 @@ fun WeatherMainScreen(
 
     val springSpec =
         spring<IntOffset>(
-            dampingRatio = 0.75f, // Equivalent to DampingRatioLowBounce
+            dampingRatio = 0.75f,
             stiffness = Spring.StiffnessLow,
         )
 

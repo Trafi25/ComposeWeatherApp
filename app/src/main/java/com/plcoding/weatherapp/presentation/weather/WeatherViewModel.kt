@@ -33,6 +33,7 @@ import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltViewModel
 class WeatherViewModel
@@ -53,8 +54,8 @@ class WeatherViewModel
         private val _effect = MutableSharedFlow<WeatherEffect>()
         val effect: SharedFlow<WeatherEffect> = _effect.asSharedFlow()
 
+        private var weatherLoadingJob: Job? = null
         private var aiSummaryJob: Job? = null
-
         private var citySearchJob: Job? = null
 
         init {
@@ -97,79 +98,76 @@ class WeatherViewModel
         }
 
         private fun loadWeatherInfo() {
-            viewModelScope.launch {
-                _uiState.update { it.copy(isLoading = true, errorMessage = null, selectedCityId = null) }
+            weatherLoadingJob?.cancel()
+            aiSummaryJob?.cancel()
+            weatherLoadingJob =
+                viewModelScope.launch {
+                    _uiState.update { it.copy(isLoading = true, errorMessage = null, selectedCityId = null) }
 
-                locationTracker.getCurrentLocation()?.let { location ->
-                    when (val result = getWeatherUseCase(location.latitude, location.longitude)) {
-                        is Result.Success -> {
-                            val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
-                            _uiState.update {
-                                it.copy(
-                                    weatherInfo = result.data,
-                                    isLoading = false,
-                                    locationName = name,
-                                    aiSummary = null,
-                                    aiErrorMessage = null,
-                                    isAiLoading = true,
-                                    lastUpdated = System.currentTimeMillis(),
-                                )
-                            }
-                            generateAiSummary(
-                                weatherInfo = result.data,
-                                locationName = name ?: "Current location",
-                                latitude = location.latitude,
-                                longitude = location.longitude,
-                            )
-                        }
-                        is Result.Error -> {
-                            _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
-                        }
+                    locationTracker.getCurrentLocation()?.let { location ->
+                        val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
+                        fetchWeather(location.latitude, location.longitude, name ?: "Current location", null)
+                    } ?: run {
+                        _uiState.update { it.copy(isLoading = false, errorMessage = "Location unavailable.") }
+                        _effect.emit(WeatherEffect.RequestLocationPermission)
                     }
-                } ?: _uiState.update { it.copy(isLoading = false, errorMessage = "Location unavailable.") }
-            }
+                }
         }
 
         private fun loadWeatherForCity(
             city: City,
             savedSelection: Boolean = true,
         ) {
-            citySearchJob?.cancel()
-            viewModelScope.launch {
-                cityUseCases.saveCity(city)
-                if (savedSelection) selectedLocationRepository.saveSelectedCityId(city.id)
+            weatherLoadingJob?.cancel()
+            aiSummaryJob?.cancel()
+            weatherLoadingJob =
+                viewModelScope.launch {
+                    cityUseCases.saveCity(city)
+                    if (savedSelection) selectedLocationRepository.saveSelectedCityId(city.id)
 
-                _uiState.update {
-                    it.copy(
-                        locationName = city.name,
-                        screenMode = WeatherScreenMode.Weather,
-                        citySearchState = CitySearchState(),
-                        isLoading = true,
-                        errorMessage = null,
-                        selectedCityId = city.id,
-                    )
-                }
-
-                when (val result = getWeatherUseCase(city.latitude, city.longitude)) {
-                    is Result.Success -> {
-                        _uiState.update {
-                            it.copy(
-                                weatherInfo = result.data,
-                                isLoading = false,
-                                aiSummary = null,
-                                aiErrorMessage = null,
-                                isAiLoading = true,
-                                lastUpdated = System.currentTimeMillis(),
-                            )
-                        }
-                        generateAiSummary(
-                            weatherInfo = result.data,
+                    _uiState.update {
+                        it.copy(
                             locationName = city.name,
-                            latitude = city.latitude,
-                            longitude = city.longitude,
+                            screenMode = WeatherScreenMode.Weather,
+                            citySearchState = CitySearchState(),
+                            isLoading = true,
+                            errorMessage = null,
+                            selectedCityId = city.id,
                         )
                     }
-                    is Result.Error -> _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
+                    fetchWeather(city.latitude, city.longitude, city.name, city.id)
+                }
+        }
+
+        private suspend fun fetchWeather(
+            lat: Double,
+            lon: Double,
+            locationName: String,
+            cityId: Int?,
+        ) {
+            when (val result = getWeatherUseCase(lat, lon)) {
+                is Result.Success -> {
+                    _uiState.update {
+                        it.copy(
+                            weatherInfo = result.data,
+                            isLoading = false,
+                            locationName = locationName,
+                            aiSummary = null,
+                            aiErrorMessage = null,
+                            isAiLoading = true,
+                            lastUpdated = System.currentTimeMillis(),
+                            selectedCityId = cityId,
+                        )
+                    }
+                    generateAiSummary(
+                        weatherInfo = result.data,
+                        locationName = locationName,
+                        latitude = lat,
+                        longitude = lon,
+                    )
+                }
+                is Result.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
                 }
             }
         }
@@ -240,6 +238,7 @@ class WeatherViewModel
                             currentState.copy(aiSummary = summary, isAiLoading = false)
                         }
                     } catch (exception: Exception) {
+                        if (exception is CancellationException) throw exception
                         _uiState.update { currentState ->
                             Log.d("DEBUG_AI", exception.message ?: "Unknown error")
                             currentState.copy(
@@ -264,97 +263,66 @@ class WeatherViewModel
                     _uiState.update { it.copy(screenMode = WeatherScreenMode.Weather) }
                 }
                 WeatherAction.LoadWeather -> restoreSelectedLocation()
-                WeatherAction.Retry -> retryWeatherLoading()
+                WeatherAction.Retry, WeatherAction.Refresh -> retryWeatherLoading()
                 WeatherAction.ErrorDismissed -> _uiState.update { it.copy(errorMessage = null) }
                 WeatherAction.CurrentLocationSelected -> selectCurrentLocation()
-                WeatherAction.Refresh -> retryWeatherLoading()
                 WeatherAction.RequestLocationPermission -> {
-                    viewModelScope.launch {
-                        _effect.emit(WeatherEffect.RequestLocationPermission)
-                    }
+                    viewModelScope.launch { _effect.emit(WeatherEffect.RequestLocationPermission) }
                 }
                 WeatherAction.LocationPermissionGranted -> {
-                    if (_uiState.value.isLocationRestored &&
-                        _uiState.value.selectedCityId == null &&
-                        _uiState.value.weatherInfo == null
-                    ) {
+                    if (_uiState.value.selectedCityId == null) {
                         loadWeatherInfo()
                     }
                 }
                 WeatherAction.LocationPermissionDenied -> _uiState.update { it.copy(errorMessage = "Permission required.") }
-                WeatherAction.SettingsClicked -> {
-                    _uiState.update { it.copy(screenMode = WeatherScreenMode.Settings) }
-                }
-                WeatherAction.SettingsBackClicked -> {
-                    _uiState.update { it.copy(screenMode = WeatherScreenMode.Weather) }
-                }
-                is WeatherAction.TemperatureUnitSelected -> {
-                    setTemperatureUnit(action.unit)
-                }
-                is WeatherAction.WindSpeedUnitSelected -> {
-                    setWindSpeedUnit(action.unit)
-                }
-                is WeatherAction.PressureUnitSelected -> {
-                    setPressureUnit(action.unit)
-                }
-                is WeatherAction.PrecipitationUnitSelected -> {
-                    setPrecipitationUnit(action.unit)
-                }
-                WeatherAction.ClearCacheClicked -> {
-                    clearCache()
-                }
-                is WeatherAction.TimeFormatSelected -> {
-                    setTimeFormat(action.format)
-                }
-                is WeatherAction.ThemeModeSelected -> {
-                    setThemeMode(action.mode)
-                }
-                is WeatherAction.AccentColorSelected -> {
-                    setAccentColor(action.color)
-                }
-                is WeatherAction.NotificationToggleClicked -> {
-                    notificationCall(action.isEnabled)
-                }
+                WeatherAction.SettingsClicked -> _uiState.update { it.copy(screenMode = WeatherScreenMode.Settings) }
+                WeatherAction.SettingsBackClicked -> _uiState.update { it.copy(screenMode = WeatherScreenMode.Weather) }
+                is WeatherAction.TemperatureUnitSelected -> updateSetting { settingsUseCases.setTemperatureUnit(action.unit) }
+                is WeatherAction.WindSpeedUnitSelected -> updateSetting { settingsUseCases.setWindSpeedUnit(action.unit) }
+                is WeatherAction.PressureUnitSelected -> updateSetting { settingsUseCases.setPressureUnit(action.unit) }
+                is WeatherAction.PrecipitationUnitSelected -> updateSetting { settingsUseCases.setPrecipitationUnit(action.unit) }
+                is WeatherAction.TimeFormatSelected -> updateSetting { settingsUseCases.setTimeFormat(action.format) }
+                is WeatherAction.ThemeModeSelected -> updateSetting { settingsUseCases.setThemeMode(action.mode) }
+                is WeatherAction.AccentColorSelected -> updateSetting { settingsUseCases.setAccentColor(action.color) }
+                WeatherAction.ClearCacheClicked -> viewModelScope.launch { settingsUseCases.clearWeatherCache() }
+                is WeatherAction.NotificationToggleClicked -> notificationCall(action.isEnabled)
                 WeatherAction.ToggleTemperatureUnitRequested -> {
-                    val currentUnit = _uiState.value.appSettings.temperatureUnit
-                    val newUnit =
-                        if (currentUnit == TemperatureUnit.Celsius) {
+                    val unit =
+                        if (_uiState.value.appSettings.temperatureUnit ==
+                            TemperatureUnit.Celsius
+                        ) {
                             TemperatureUnit.Fahrenheit
                         } else {
                             TemperatureUnit.Celsius
                         }
-                    setTemperatureUnit(newUnit)
+                    updateSetting { settingsUseCases.setTemperatureUnit(unit) }
                 }
-                WeatherAction.ToggleWindSpeedUnitRequested -> {
-                    val units = WindSpeedUnit.entries
-                    val currentIndex = units.indexOf(_uiState.value.appSettings.windSpeedUnit)
-                    val nextIndex = (currentIndex + 1) % units.size
-                    setWindSpeedUnit(units[nextIndex])
-                }
-                WeatherAction.TogglePressureUnitRequested -> {
-                    val units = PressureUnit.entries
-                    val currentIndex = units.indexOf(_uiState.value.appSettings.pressureUnit)
-                    val nextIndex = (currentIndex + 1) % units.size
-                    setPressureUnit(units[nextIndex])
-                }
-                WeatherAction.TogglePrecipitationUnitRequested -> {
-                    val units = PrecipitationUnit.entries
-                    val currentIndex = units.indexOf(_uiState.value.appSettings.precipitationUnit)
-                    val nextIndex = (currentIndex + 1) % units.size
-                    setPrecipitationUnit(units[nextIndex])
-                }
-                WeatherAction.ToggleTimeFormatRequested -> {
-                    val formats = AppTimeFormat.entries
-                    val currentIndex = formats.indexOf(_uiState.value.appSettings.timeFormat)
-                    val nextIndex = (currentIndex + 1) % formats.size
-                    setTimeFormat(formats[nextIndex])
-                }
-                WeatherAction.ToggleThemeModeRequested -> {
-                    val modes = AppThemeMode.entries
-                    val currentIndex = modes.indexOf(_uiState.value.appSettings.themeMode)
-                    val nextIndex = (currentIndex + 1) % modes.size
-                    setThemeMode(modes[nextIndex])
-                }
+                WeatherAction.ToggleWindSpeedUnitRequested ->
+                    toggleSetting(
+                        WindSpeedUnit.entries,
+                        _uiState.value.appSettings.windSpeedUnit,
+                    ) {
+                        settingsUseCases.setWindSpeedUnit(it)
+                    }
+                WeatherAction.TogglePressureUnitRequested ->
+                    toggleSetting(PressureUnit.entries, _uiState.value.appSettings.pressureUnit) {
+                        settingsUseCases.setPressureUnit(it)
+                    }
+                WeatherAction.TogglePrecipitationUnitRequested ->
+                    toggleSetting(
+                        PrecipitationUnit.entries,
+                        _uiState.value.appSettings.precipitationUnit,
+                    ) {
+                        settingsUseCases.setPrecipitationUnit(it)
+                    }
+                WeatherAction.ToggleTimeFormatRequested ->
+                    toggleSetting(AppTimeFormat.entries, _uiState.value.appSettings.timeFormat) {
+                        settingsUseCases.setTimeFormat(it)
+                    }
+                WeatherAction.ToggleThemeModeRequested ->
+                    toggleSetting(AppThemeMode.entries, _uiState.value.appSettings.themeMode) {
+                        settingsUseCases.setThemeMode(it)
+                    }
                 is WeatherAction.SearchQueryChanged -> updateSearchQuery(action.query)
                 is WeatherAction.CitySelected -> loadWeatherForCity(action.city)
                 is WeatherAction.SavedCityDeleted -> {
@@ -366,13 +334,23 @@ class WeatherViewModel
             }
         }
 
+        private fun <T> toggleSetting(
+            entries: List<T>,
+            current: T,
+            updateBlock: suspend (T) -> Unit,
+        ) {
+            val nextIndex = (entries.indexOf(current) + 1) % entries.size
+            updateSetting { updateBlock(entries[nextIndex]) }
+        }
+
+        private fun updateSetting(block: suspend () -> Unit) {
+            viewModelScope.launch { block() }
+        }
+
         private fun retryWeatherLoading() {
             val id = _uiState.value.selectedCityId
 
             if (id == null) {
-                viewModelScope.launch {
-                    _effect.emit(WeatherEffect.RequestLocationPermission)
-                }
                 loadWeatherInfo()
             } else {
                 viewModelScope.launch {
@@ -398,46 +376,12 @@ class WeatherViewModel
             }
         }
 
-        private fun setTemperatureUnit(unit: TemperatureUnit) {
-            viewModelScope.launch { settingsUseCases.setTemperatureUnit(unit) }
-        }
-
-        private fun setWindSpeedUnit(unit: WindSpeedUnit) {
-            viewModelScope.launch { settingsUseCases.setWindSpeedUnit(unit) }
-        }
-
-        private fun setPressureUnit(unit: PressureUnit) {
-            viewModelScope.launch { settingsUseCases.setPressureUnit(unit) }
-        }
-
-        private fun setPrecipitationUnit(unit: PrecipitationUnit) {
-            viewModelScope.launch { settingsUseCases.setPrecipitationUnit(unit) }
-        }
-
-        private fun setTimeFormat(format: AppTimeFormat) {
-            viewModelScope.launch { settingsUseCases.setTimeFormat(format) }
-        }
-
-        private fun setThemeMode(mode: AppThemeMode) {
-            viewModelScope.launch { settingsUseCases.setThemeMode(mode) }
-        }
-
-        private fun setAccentColor(color: AppAccentColor) {
-            viewModelScope.launch { settingsUseCases.setAccentColor(color) }
-        }
-
         private fun notificationCall(isSelected: Boolean) {
             viewModelScope.launch {
                 if (isSelected) {
                     _effect.emit(WeatherEffect.RequestNotificationPermission)
                 }
                 settingsUseCases.setNotificationEnabled(isSelected)
-            }
-        }
-
-        private fun clearCache() {
-            viewModelScope.launch {
-                settingsUseCases.clearWeatherCache()
             }
         }
     }
