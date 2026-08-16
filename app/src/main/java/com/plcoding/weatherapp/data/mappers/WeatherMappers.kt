@@ -1,9 +1,9 @@
 package com.plcoding.weatherapp.data.mappers
 
-import com.plcoding.weatherapp.data.remote.dtos.CurrentWeatherDto
-import com.plcoding.weatherapp.data.remote.dtos.DailyWeatherDto
-import com.plcoding.weatherapp.data.remote.dtos.WeatherDataDto
-import com.plcoding.weatherapp.data.remote.dtos.WeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.weather.CurrentWeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.weather.DailyWeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.weather.WeatherDataDto
+import com.plcoding.weatherapp.data.remote.dtos.weather.WeatherDto
 import com.plcoding.weatherapp.domain.weather.CurrentWeatherData
 import com.plcoding.weatherapp.domain.weather.DailyWeatherData
 import com.plcoding.weatherapp.domain.weather.WeatherData
@@ -18,7 +18,7 @@ private data class IndexedWeatherData(
     val data: WeatherData,
 )
 
-fun WeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> =
+private fun WeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> =
     time
         .mapIndexed { index, time ->
             val temperature = temperatures[index]
@@ -42,19 +42,16 @@ fun WeatherDataDto.toWeatherDataMap(): Map<Int, List<WeatherData>> =
             )
         }.groupBy {
             it.index / 24
-        }.mapValues {
-            it.value.map { it.data }
+        }.mapValues { entry ->
+            entry.value.map { it.data }
         }
 
-fun WeatherDto.toWeatherInfo(): WeatherInfo {
-    val weatherDataMap =
-        hourlyWeatherData.toWeatherDataMap()
-    return WeatherInfo(
-        weatherDataPerDay = weatherDataMap,
+internal fun WeatherDto.toWeatherInfo(): WeatherInfo =
+    WeatherInfo(
+        weatherDataPerDay = hourlyWeatherData.toWeatherDataMap(),
         currentWeatherData = currentWeatherData.toWeatherData(),
         dailyWeatherData = dailyWeatherData.toDailyWeatherData(),
     )
-}
 
 private fun DailyWeatherDto.toDailyWeatherData(): List<DailyWeatherData> {
     return time.indices.mapNotNull { index ->
@@ -96,18 +93,7 @@ private fun CurrentWeatherDto.toWeatherData(): CurrentWeatherData =
             ),
     )
 
-fun CurrentWeatherData.toWeatherData(): WeatherData =
-    WeatherData(
-        time = time,
-        temperatureCelsius = temperatureCelsius,
-        pressure = pressure,
-        windSpeed = windSpeed,
-        humidity = humidity,
-        weatherType = weatherType,
-        isDay = isDay,
-    )
-
-fun Int.toCompareDirection(): String {
+internal fun Int.toCompareDirection(): String {
     val normalizedDegrees = ((this % 360) + 360) % 360
 
     return when (normalizedDegrees) {

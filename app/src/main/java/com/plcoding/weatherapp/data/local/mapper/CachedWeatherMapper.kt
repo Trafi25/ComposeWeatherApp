@@ -13,7 +13,7 @@ class CachedWeatherMapper
         private val adapter =
             moshi.adapter(WeatherInfo::class.java)
 
-        fun toEntity(
+        internal fun toEntity(
             weatherInfo: WeatherInfo,
             locationKey: String,
             latitude: Double,
@@ -27,5 +27,5 @@ class CachedWeatherMapper
                 cachedAt = System.currentTimeMillis(),
             )
 
-        fun toDomain(entity: CachedWeatherEntity): WeatherInfo? = adapter.fromJson(entity.weatherJson)
+        internal fun toDomain(entity: CachedWeatherEntity): WeatherInfo? = adapter.fromJson(entity.weatherJson)
     }

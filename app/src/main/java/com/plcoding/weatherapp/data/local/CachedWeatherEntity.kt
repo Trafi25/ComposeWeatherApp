@@ -5,7 +5,7 @@ import androidx.room.PrimaryKey
 import java.util.Locale
 
 @Entity(tableName = "cached_weather")
-data class CachedWeatherEntity(
+internal data class CachedWeatherEntity(
     @PrimaryKey
     val locationKey: String,
     val latitude: Double,

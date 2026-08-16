@@ -12,7 +12,6 @@ import java.util.Locale
 import javax.inject.Inject
 import kotlin.coroutines.resume
 
-// todo find a way to do it without android
 class AndroidLocationNameResolver
     @Inject
     constructor(

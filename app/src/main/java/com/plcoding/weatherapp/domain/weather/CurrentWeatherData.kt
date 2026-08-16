@@ -17,3 +17,14 @@ data class CurrentWeatherData(
     val isDay: Boolean,
     val weatherType: WeatherType,
 )
+
+fun CurrentWeatherData.toWeatherData(): WeatherData =
+    WeatherData(
+        time = time,
+        temperatureCelsius = temperatureCelsius,
+        pressure = pressure,
+        windSpeed = windSpeed,
+        humidity = humidity,
+        weatherType = weatherType,
+        isDay = isDay,
+    )

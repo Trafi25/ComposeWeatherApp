@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.plcoding.weatherapp.data.local.CachedWeatherEntity
 
 @Dao
-interface CachedWeatherDao {
+internal interface CachedWeatherDao {
     @Query(
         """
     SELECT * FROM cached_weather WHERE locationKey = :locationKey LIMIT 1

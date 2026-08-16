@@ -1,9 +1,9 @@
 package com.plcoding.weatherapp.data.mappers
 
-import com.plcoding.weatherapp.data.remote.dtos.CityDto
+import com.plcoding.weatherapp.data.remote.dtos.cities.CityDto
 import com.plcoding.weatherapp.domain.location.City
 
-fun CityDto.toCityDomain(): City =
+internal fun CityDto.toCityDomain(): City =
     City(
         id = id,
         name = name,

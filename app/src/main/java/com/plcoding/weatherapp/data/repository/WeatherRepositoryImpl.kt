@@ -10,10 +10,11 @@ import com.plcoding.weatherapp.domain.repository.WeatherRepository
 import com.plcoding.weatherapp.domain.util.DataError
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
+import retrofit2.HttpException
 import java.io.IOException
 import javax.inject.Inject
 
-class WeatherRepositoryImpl
+internal class WeatherRepositoryImpl
     @Inject
     constructor(
         private val api: WeatherApi,
@@ -48,14 +49,16 @@ class WeatherRepositoryImpl
                     weather = cachedWeather,
                 )
                 Result.Success(weatherInfo)
-            } catch (_: IOException) {
-                loadCachedWeather(locationKey)
             } catch (exception: Exception) {
-                exception.printStackTrace()
-
-                Result.Error(
-                    error = exception.toWeatherError(),
-                )
+                when (exception) {
+                    is IOException, is HttpException -> loadCachedWeather(locationKey)
+                    else -> {
+                        exception.printStackTrace()
+                        Result.Error(
+                            error = exception.toWeatherError(),
+                        )
+                    }
+                }
             }
         }
 

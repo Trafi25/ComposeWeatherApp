@@ -7,7 +7,7 @@ import androidx.room.Query
 import com.plcoding.weatherapp.data.local.CachedAiSummaryEntity
 
 @Dao
-interface CachedAiSummaryDao {
+internal interface CachedAiSummaryDao {
     @Query(
         """
     SELECT * FROM ai_weather_summary

@@ -8,7 +8,7 @@ import com.plcoding.weatherapp.data.local.SavedCityEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface SavedCityDao {
+internal interface SavedCityDao {
     @Query(
         """
             SELECT * FROM saved_cities ORDER BY name ASC
