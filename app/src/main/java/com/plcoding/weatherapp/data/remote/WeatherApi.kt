@@ -3,11 +3,11 @@ package com.plcoding.weatherapp.data.remote
 import com.plcoding.weatherapp.data.remote.WeatherQueryFields.CURRENT
 import com.plcoding.weatherapp.data.remote.WeatherQueryFields.DAILY_WEATHER_FIELDS
 import com.plcoding.weatherapp.data.remote.WeatherQueryFields.HOURLY
-import com.plcoding.weatherapp.data.remote.dtos.WeatherDto
+import com.plcoding.weatherapp.data.remote.dtos.weather.WeatherDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface WeatherApi {
+internal interface WeatherApi {
     @GET("v1/forecast")
     suspend fun getWeatherData(
         @Query("latitude") lat: Double,

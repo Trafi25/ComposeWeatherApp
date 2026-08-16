@@ -26,7 +26,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-object AppModule {
+internal object AppModule {
     private const val WEATHER_BASE_URL =
         "https://api.open-meteo.com/"
 

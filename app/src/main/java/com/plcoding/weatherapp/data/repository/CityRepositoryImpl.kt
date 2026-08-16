@@ -3,7 +3,7 @@ package com.plcoding.weatherapp.data.repository
 import android.util.Log
 import com.plcoding.weatherapp.data.mappers.toCityDomain
 import com.plcoding.weatherapp.data.remote.GeoCodingApi
-import com.plcoding.weatherapp.data.remote.dtos.CityDto
+import com.plcoding.weatherapp.data.remote.dtos.cities.CityDto
 import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.repository.CityRepository
 import com.plcoding.weatherapp.domain.util.DataError
@@ -12,7 +12,7 @@ import okio.IOException
 import retrofit2.HttpException
 import javax.inject.Inject
 
-class CityRepositoryImpl
+internal class CityRepositoryImpl
     @Inject
     constructor(
         private val geocodingApi: GeoCodingApi,
@@ -43,7 +43,7 @@ class CityRepositoryImpl
                     exception,
                 )
                 Result.Error(error = DataError.ServerError)
-            } catch (exception: HttpException) {
+            } catch (exception: Exception) {
                 Result.Error(error = DataError.Unknown(exception))
             }
         }

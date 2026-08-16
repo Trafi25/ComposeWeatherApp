@@ -9,14 +9,14 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.Text
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.plcoding.weatherapp.data.mappers.toWeatherData
+import com.plcoding.weatherapp.domain.weather.toWeatherData
 import com.plcoding.weatherapp.domain.weather.upcomingHours
 import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import com.plcoding.weatherapp.presentation.weather.state.WeatherState

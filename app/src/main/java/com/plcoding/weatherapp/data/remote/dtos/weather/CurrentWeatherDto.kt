@@ -1,10 +1,10 @@
-package com.plcoding.weatherapp.data.remote.dtos
+package com.plcoding.weatherapp.data.remote.dtos.weather
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CurrentWeatherDto(
+internal data class CurrentWeatherDto(
     val time: String,
     @field:Json(name = "temperature_2m")
     val temperature: Double,

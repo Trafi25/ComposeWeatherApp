@@ -12,7 +12,7 @@ import javax.inject.Singleton
 
 @Module
 @InstallIn(SingletonComponent::class)
-abstract class LocationModule {
+internal abstract class LocationModule {
     @Binds
     @Singleton
     abstract fun binLocationTracker(defaultLocationTracker: DefaultLocationTracker): LocationTracker

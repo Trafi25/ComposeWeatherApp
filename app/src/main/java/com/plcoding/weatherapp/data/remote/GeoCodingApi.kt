@@ -1,10 +1,10 @@
 package com.plcoding.weatherapp.data.remote
 
-import com.plcoding.weatherapp.data.remote.dtos.GeocodingResponseDto
+import com.plcoding.weatherapp.data.remote.dtos.cities.GeocodingResponseDto
 import retrofit2.http.GET
 import retrofit2.http.Query
 
-interface GeoCodingApi {
+internal interface GeoCodingApi {
     @GET("v1/search")
     suspend fun searchCities(
         @Query("name") query: String,

@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
-class SavedCityRepositoryImpl
+internal class SavedCityRepositoryImpl
     @Inject
     constructor(
         private val savedCityDao: SavedCityDao,

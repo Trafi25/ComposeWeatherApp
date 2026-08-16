@@ -1,10 +1,10 @@
-package com.plcoding.weatherapp.data.remote.dtos
+package com.plcoding.weatherapp.data.remote.dtos.cities
 
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
 @JsonClass(generateAdapter = true)
-data class CityDto(
+internal data class CityDto(
     val id: Int,
     val name: String,
     val latitude: Double,

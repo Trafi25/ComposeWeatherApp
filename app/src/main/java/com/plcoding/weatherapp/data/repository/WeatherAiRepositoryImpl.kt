@@ -10,7 +10,7 @@ import com.plcoding.weatherapp.domain.repository.WeatherAiRepository
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import javax.inject.Inject
 
-class WeatherAiRepositoryImpl
+internal class WeatherAiRepositoryImpl
     @Inject
     constructor(
         private val aiSummaryDao: CachedAiSummaryDao,

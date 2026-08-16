@@ -18,7 +18,7 @@ import com.plcoding.weatherapp.data.local.dao.SavedCityDao
     version = 3,
     exportSchema = true,
 )
-abstract class WeatherDatabase : RoomDatabase() {
+internal abstract class WeatherDatabase : RoomDatabase() {
     abstract fun savedCityDao(): SavedCityDao
 
     abstract fun cachedWeatherDao(): CachedWeatherDao
