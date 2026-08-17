@@ -1,7 +1,6 @@
 package com.plcoding.weatherapp.presentation.weather.state
 
 import androidx.compose.runtime.Immutable
-import com.plcoding.weatherapp.domain.location.City
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.weather.WeatherInfo
 
@@ -10,7 +9,7 @@ import com.plcoding.weatherapp.domain.weather.WeatherInfo
  *
  * This state contains the currently loaded weather data, loading and error information,
  * the resolved location name, the currently displayed screen mode, and the state of the
- * city-search feature.
+ * AI weather recommendation.
  *
  * The class is marked as [Immutable] so that Jetpack Compose can treat its instances
  * as immutable and avoid unnecessary recompositions when the state has not changed.
@@ -29,8 +28,18 @@ import com.plcoding.weatherapp.domain.weather.WeatherInfo
  * @property screenMode Determines which main screen content is currently displayed,
  * such as the weather screen, city search, or city management.
  *
- * @property citySearchState Contains all state related to city search,
- * including the query, search results, loading status, and search errors.
+ * @property selectedCityId The ID of the currently selected city from the user's saved cities.
+ * `null` if the user's current GPS location is being used.
+ *
+ * @property appSettings User preferences for units, time format, and theme.
+ *
+ * @property aiSummary A generated natural-language weather summary and recommendation.
+ *
+ * @property isAiLoading Indicates whether the AI summary is currently being generated.
+ *
+ * @property aiErrorMessage Error message if the AI summary generation fails.
+ *
+ * @property lastUpdated Timestamp of the last successful weather data fetch.
  */
 @Immutable
 data class WeatherState(
@@ -39,10 +48,7 @@ data class WeatherState(
     val errorMessage: String? = null,
     val locationName: String? = null,
     val screenMode: WeatherScreenMode = WeatherScreenMode.Weather,
-    val citySearchState: CitySearchState = CitySearchState(),
-    val savedCities: List<City> = emptyList(),
     val selectedCityId: Int? = null,
-    val isLocationRestored: Boolean = false,
     val appSettings: AppSettings = AppSettings(),
     val aiSummary: String? = null,
     val isAiLoading: Boolean = false,

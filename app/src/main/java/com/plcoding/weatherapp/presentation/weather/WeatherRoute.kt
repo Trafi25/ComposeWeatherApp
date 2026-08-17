@@ -1,6 +1,7 @@
 package com.plcoding.weatherapp.presentation.weather
 
 import android.Manifest
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.runtime.Composable
@@ -46,6 +47,15 @@ fun WeatherRoute(
             )
         }
 
+    val notificationPermissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission(),
+        ) { isGranted ->
+            if (!isGranted && settingsState.weatherNotificationEnabled) {
+                settingsViewModel.onAction(SettingsAction.ToggleNotifications)
+            }
+        }
+
     LaunchedEffect(Unit) {
         weatherViewModel.effect.collect { effect ->
             when (effect) {
@@ -65,7 +75,9 @@ fun WeatherRoute(
     LaunchedEffect(Unit) {
         settingsViewModel.effect.collect { effect ->
             if (effect is WeatherEffect.RequestNotificationPermission) {
-                // Trigger notification permission
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                    notificationPermissionLauncher.launch(Manifest.permission.POST_NOTIFICATIONS)
+                }
             }
         }
     }

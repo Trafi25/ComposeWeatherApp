@@ -16,7 +16,11 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
 - **7-Day Forecast**: Long-term weather outlook.
 - **City Management**: Search for any city globally and save your favorites for quick access.
 - **Location Awareness**: Automatic weather detection based on your current GPS location.
+- **Resilient Caching**:
+  - **Network Fallback**: Smart fallback to **Room** cache during network failures (`IOException`) or server errors (`HttpException`).
+  - **Location-based Keys**: Weather data is cached using coordinate-based keys (rounded to 4 decimal places) for high-precision local updates.
 - **AI Weather Assistant**: Personalized weather insights and clothing recommendations powered by **Google Gemini (Firebase AI)**.
+  - **Cost-efficient Caching**: AI summaries are cached for **2 hours** to optimize performance and reduce API token consumption.
 - **Daily Notifications**: Smart background updates that notify you of the weather every morning at **7:00 AM** using **WorkManager**.
 - **Highly Customizable**:
   - Toggle between Celsius and Fahrenheit.
@@ -27,6 +31,7 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
   - **Spring Physics**: Smooth, elastic navigation transitions.
   - **Auto-Scrolling Title**: Long location names automatically scroll (Marquee) in the top bar.
   - **Adaptive UI**: Responsive layouts and graphics that scale beautifully across all screen sizes.
+  - **Smart Hourly Forecasts**: Automatic calculation of "Upcoming Hours" starting from the current hour, ensuring the UI always shows relevant future data.
   - **Pull-to-Refresh**: Seamlessly sync the latest data and reset forecast timelines.
 
 ## Testing & CI/CD
