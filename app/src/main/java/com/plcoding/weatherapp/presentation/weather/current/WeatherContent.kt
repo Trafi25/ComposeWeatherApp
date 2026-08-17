@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
@@ -30,7 +30,7 @@ fun WeatherContent(
     val backgroundColor = MaterialTheme.colorScheme.background
 
     PullToRefreshBox(
-        isRefreshing = uiState.isLoading,
+        isRefreshing = uiState.isLoading && uiState.weatherInfo != null,
         onRefresh = {
             onAction(WeatherAction.Refresh)
         },
@@ -98,7 +98,7 @@ fun WeatherContent(
                     }
                 }
 
-                if (uiState.isLoading) {
+                if (uiState.isLoading && uiState.weatherInfo == null) {
                     CircularProgressIndicator(
                         modifier = Modifier.align(Alignment.Center),
                     )
