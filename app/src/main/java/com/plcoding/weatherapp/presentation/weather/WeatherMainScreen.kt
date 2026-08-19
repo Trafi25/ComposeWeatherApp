@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.IntOffset
@@ -30,6 +31,7 @@ import com.plcoding.weatherapp.presentation.weather.state.WeatherState
 
 @Composable
 fun WeatherMainScreen(
+    windowSizeClass: WindowSizeClass,
     weatherState: WeatherState,
     searchState: CitySearchState,
     settingsState: AppSettings,
@@ -84,6 +86,7 @@ fun WeatherMainScreen(
             when (screenMode) {
                 WeatherScreenMode.Weather -> {
                     WeatherContent(
+                        windowSizeClass = windowSizeClass,
                         uiState = weatherState.copy(appSettings = settingsState),
                         onAction = onWeatherAction,
                     )

@@ -4,6 +4,7 @@ import android.Manifest
 import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.material3.windowsizeclass.WindowSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -19,6 +20,7 @@ import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
 
 @Composable
 fun WeatherRoute(
+    windowSizeClass: WindowSizeClass,
     weatherViewModel: WeatherViewModel = hiltViewModel(),
     searchViewModel: CitySearchViewModel = hiltViewModel(),
     settingsViewModel: SettingsViewModel = hiltViewModel(),
@@ -83,6 +85,7 @@ fun WeatherRoute(
     }
 
     WeatherMainScreen(
+        windowSizeClass = windowSizeClass,
         weatherState = weatherState,
         searchState = searchState,
         settingsState = settingsState,
