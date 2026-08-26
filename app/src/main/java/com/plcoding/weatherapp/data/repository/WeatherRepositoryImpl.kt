@@ -53,7 +53,6 @@ internal class WeatherRepositoryImpl
                 when (exception) {
                     is IOException, is HttpException -> loadCachedWeather(locationKey)
                     else -> {
-                        exception.printStackTrace()
                         Result.Error(
                             error = exception.toWeatherError(),
                         )

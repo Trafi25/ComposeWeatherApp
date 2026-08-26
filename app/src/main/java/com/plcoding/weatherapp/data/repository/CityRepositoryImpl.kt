@@ -1,6 +1,5 @@
 package com.plcoding.weatherapp.data.repository
 
-import android.util.Log
 import com.plcoding.weatherapp.data.mappers.toCityDomain
 import com.plcoding.weatherapp.data.remote.GeoCodingApi
 import com.plcoding.weatherapp.data.remote.dtos.cities.CityDto
@@ -32,16 +31,6 @@ internal class CityRepositoryImpl
             } catch (_: IOException) {
                 Result.Error(error = DataError.NoInternet)
             } catch (exception: HttpException) {
-                Log.e(
-                    "CitySearch",
-                    """
-                    HTTP error while searching for: $query
-                    code=${exception.code()}
-                    message=${exception.message()}
-                    errorBody=${exception.response()?.errorBody()?.string()}
-                    """.trimIndent(),
-                    exception,
-                )
                 Result.Error(error = DataError.ServerError)
             } catch (exception: Exception) {
                 Result.Error(error = DataError.Unknown(exception))
