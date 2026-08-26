@@ -15,6 +15,9 @@ internal interface CachedWeatherDao {
     )
     suspend fun getWeather(locationKey: String): CachedWeatherEntity?
 
+    @Query("SELECT * FROM cached_weather ORDER BY cachedAt DESC LIMIT 1")
+    suspend fun getLatestWeather(): CachedWeatherEntity?
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun saveWeather(weather: CachedWeatherEntity)
 
