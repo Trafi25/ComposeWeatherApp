@@ -32,10 +32,12 @@ coroutinesTest = "1.8.0"
 hiltCommon = "1.4.0"
 hiltWork = "1.4.0"
 googleAi = "0.9.0"
+glance = "1.1.1"
 firebaseAppcheckPlayintegrity = "19.4.0"
 
 [libraries]
 # AndroidX Core & Lifecycle
+androidx-glance-appwidget = { group = "androidx.glance", name = "glance-appwidget", version.ref = "glance" }
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-lifecycle-runtime-compose = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "lifecycleRuntimeKtx" }
