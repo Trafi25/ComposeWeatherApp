@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.location.Location
 import android.location.LocationManager
+import android.util.Log
 import androidx.core.content.ContextCompat
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.Priority
@@ -40,7 +41,21 @@ internal class DefaultLocationTracker
                     locationManager.isProviderEnabled(
                         LocationManager.GPS_PROVIDER,
                     )
-            if (!hasAccessFineLocationPermission || !hasAccessCoarseLocationPermission || !isGpsEnabled) return null
+
+            if (
+                (!hasAccessFineLocationPermission &&
+                    !hasAccessCoarseLocationPermission) ||
+                !isGpsEnabled
+            ) {
+                return null
+            }
+
+            Log.d(
+                "LocationTracker",
+                "fine=$hasAccessFineLocationPermission, " +
+                    "coarse=$hasAccessCoarseLocationPermission, " +
+                    "gpsEnabled=$isGpsEnabled",
+            )
 
             val lastLocation =
                 suspendCancellableCoroutine { cont ->
@@ -51,12 +66,15 @@ internal class DefaultLocationTracker
                     }
                 }
 
-            if (lastLocation != null) return lastLocation
+            if (lastLocation != null) {
+                Log.d("LocationTracker", "Using lastKnownLocation")
+                return lastLocation
+            }
 
             return suspendCancellableCoroutine { cont ->
                 locationClient
                     .getCurrentLocation(
-                        Priority.PRIORITY_HIGH_ACCURACY,
+                        Priority.PRIORITY_BALANCED_POWER_ACCURACY,
                         CancellationTokenSource().token,
                     ).apply {
                         addOnSuccessListener { cont.resume(it) }

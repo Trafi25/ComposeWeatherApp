@@ -2,6 +2,7 @@ package com.plcoding.weatherapp.presentation.widget
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.util.Log
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
@@ -33,6 +34,7 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.data.preferences.WidgetLocationStorage
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.weather.WeatherData
@@ -42,9 +44,10 @@ import com.plcoding.weatherapp.presentation.MainActivity
 import com.plcoding.weatherapp.presentation.formatter.WeatherValueFormatter
 import dagger.hilt.android.EntryPointAccessors
 import kotlinx.coroutines.flow.first
+import java.time.ZoneId
 
 @SuppressLint("RestrictedApi")
-private val WhiteColorProvider = ColorProvider(Color.White)
+val WhiteColorProvider = ColorProvider(Color.White)
 
 class WeatherWidget : GlanceAppWidget() {
     override suspend fun provideGlance(
@@ -62,9 +65,11 @@ class WeatherWidget : GlanceAppWidget() {
         val cityUseCases = entryPoint.getSavedCityUseCases()
         val settingsRepository = entryPoint.getSettingsRepository()
         val formatter = entryPoint.getWeatherValueFormatter()
+        val widgetLocationStorage = entryPoint.getWidgetLocationStorage()
 
         val settings = settingsRepository.observeSettings().first()
         val selectedCityId = selectedLocationRepository.observeSelectedCityId().first()
+        Log.d("WeatherWidget", "selectedCityId=$selectedCityId")
 
         var coordinates: Pair<Double, Double>? = null
         var locationName = "Current location"
@@ -79,40 +84,16 @@ class WeatherWidget : GlanceAppWidget() {
             val location = locationTracker.getCurrentLocation()
             if (location != null) {
                 coordinates = location.latitude to location.longitude
+                widgetLocationStorage.save(location.latitude, location.longitude)
+            } else {
+                coordinates = widgetLocationStorage.observeLocation().first()
+                Log.d("WeatherWidget", "Using stored location=$coordinates")
             }
         }
 
         if (coordinates == null) {
             provideContent {
-                Box(
-                    modifier =
-                        GlanceModifier
-                            .fillMaxSize()
-                            .background(ImageProvider(R.drawable.bg_widget))
-                            .clickable(actionStartActivity<MainActivity>()),
-                    contentAlignment = Alignment.Center,
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = "No location data",
-                            style =
-                                TextStyle(
-                                    color = WhiteColorProvider,
-                                    fontSize = 16.sp,
-                                    fontWeight = FontWeight.Bold,
-                                ),
-                        )
-                        Spacer(modifier = GlanceModifier.height(8.dp))
-                        Text(
-                            text = "Tap to open app and set location",
-                            style =
-                                TextStyle(
-                                    color = WhiteColorProvider,
-                                    fontSize = 12.sp,
-                                ),
-                        )
-                    }
-                }
+                NoLocationContent()
             }
             return
         }
@@ -274,7 +255,13 @@ private fun WeatherWidgetContent(
                 )
             }
 
-            items(upcomingHours) { hour ->
+            items( items = upcomingHours,
+                itemId = { hour ->
+                    hour.time
+                        .atZone(ZoneId.systemDefault())
+                        .toEpochSecond()
+                },
+            ) { hour ->
                 HourlyItem(hour, settings, formatter)
             }
         }
