@@ -15,6 +15,7 @@ import com.plcoding.weatherapp.domain.weather.WeatherInfo
 import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
 import com.plcoding.weatherapp.presentation.weather.state.WeatherScreenMode
 import com.plcoding.weatherapp.presentation.weather.state.WeatherState
+import com.plcoding.weatherapp.presentation.widget.WeatherWidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -41,6 +42,7 @@ class WeatherViewModel
         private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase,
         private val cityUseCases: SavedCityUseCases,
         private val lastLocationStorage: LastLocationStorage,
+        private val weatherWidgetUpdater: WeatherWidgetUpdater,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
@@ -149,8 +151,12 @@ class WeatherViewModel
                         )
                     }
                     generateAiSummary(result.data, locationName, lat, lon)
+                    weatherWidgetUpdater.update()
                 }
-                is Result.Error -> _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
+                is Result.Error -> {
+                    _uiState.update { it.copy(isLoading = false, errorMessage = result.error.toMessage()) }
+                    weatherWidgetUpdater.update()
+                }
             }
         }
 

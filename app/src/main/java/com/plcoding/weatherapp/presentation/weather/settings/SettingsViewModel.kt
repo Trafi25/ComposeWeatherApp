@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.plcoding.weatherapp.domain.settings.*
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
+import com.plcoding.weatherapp.presentation.widget.WeatherWidgetUpdater
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +20,7 @@ class SettingsViewModel
     @Inject
     constructor(
         private val settingsUseCases: SettingsUseCases,
+        private val weatherWidgetUpdater: WeatherWidgetUpdater,
     ) : ViewModel() {
         private val _settings = MutableStateFlow(AppSettings())
         val settings = _settings.asStateFlow()
@@ -106,6 +108,9 @@ class SettingsViewModel
         }
 
         private fun updateSetting(block: suspend () -> Unit) {
-            viewModelScope.launch { block() }
+            viewModelScope.launch {
+                block()
+                weatherWidgetUpdater.update()
+            }
         }
     }
