@@ -1,7 +1,6 @@
 package com.plcoding.weatherapp.di
 
 import android.app.Application
-import android.content.Context
 import androidx.room.Room
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -13,7 +12,6 @@ import com.plcoding.weatherapp.data.local.migration2To3
 import com.plcoding.weatherapp.data.local.util.LocalDateAdapter
 import com.plcoding.weatherapp.data.local.util.LocalDateTimeAdapter
 import com.plcoding.weatherapp.data.local.util.WeatherTypeAdapter
-import com.plcoding.weatherapp.data.preferences.LastLocationStorage
 import com.plcoding.weatherapp.data.remote.GeoCodingApi
 import com.plcoding.weatherapp.data.remote.WeatherApi
 import com.squareup.moshi.Moshi
@@ -21,7 +19,6 @@ import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
-import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
@@ -97,9 +94,4 @@ internal object AppModule {
     @Singleton
     fun provideFusedLocationProviderClient(app: Application): FusedLocationProviderClient =
         LocationServices.getFusedLocationProviderClient(app)
-
-    @Provides
-    @Singleton
-    fun provideLastLocationStorage(@ApplicationContext context: Context): LastLocationStorage =
-        LastLocationStorage(context)
 }

@@ -16,8 +16,11 @@ class WeatherWidgetWorker
         @Assisted private val context: Context,
         @Assisted workerParams: WorkerParameters,
     ) : CoroutineWorker(context, workerParams) {
-        override suspend fun doWork(): Result {
-            WeatherWidget().updateAll(context)
-            return Result.success()
-        }
+        override suspend fun doWork(): Result =
+            try {
+                WeatherWidget().updateAll(context)
+                Result.success()
+            } catch (_: Exception) {
+                Result.retry()
+            }
     }
