@@ -37,6 +37,8 @@ class WeatherViewModelTest {
     private val locationTracker: LocationTracker = mockk(relaxed = true)
     private val locationNameResolver: LocationNameResolver = mockk(relaxed = true)
     private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase = mockk(relaxed = true)
+    private val lastLocationStorage: com.plcoding.weatherapp.data.preferences.LastLocationStorage = mockk(relaxed = true)
+    private val weatherWidgetUpdater: com.plcoding.weatherapp.presentation.widget.WeatherWidgetUpdater = mockk(relaxed = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val selectedCityIdFlow = MutableStateFlow<Int?>(null)
@@ -59,6 +61,8 @@ class WeatherViewModelTest {
                 locationNameResolver,
                 generateWeatherSummaryUseCase,
                 cityUseCases,
+                lastLocationStorage,
+                weatherWidgetUpdater,
             )
     }
 

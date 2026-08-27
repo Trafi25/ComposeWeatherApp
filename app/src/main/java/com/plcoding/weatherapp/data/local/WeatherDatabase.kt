@@ -16,7 +16,7 @@ import com.plcoding.weatherapp.data.local.dao.SavedCityDao
             CachedAiSummaryEntity::class,
         ],
     version = 3,
-    exportSchema = true,
+    exportSchema = false,
 )
 internal abstract class WeatherDatabase : RoomDatabase() {
     abstract fun savedCityDao(): SavedCityDao
