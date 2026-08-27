@@ -47,7 +47,6 @@ class WeatherNotificationWorker
                 val city = cityUseCases.getCity(selectedCityId) ?: return Result.retry()
 
                 coordinates = city.latitude to city.longitude
-
                 locationName = city.name
             } else {
                 val location = locationTracker.getCurrentLocation()
@@ -55,11 +54,12 @@ class WeatherNotificationWorker
                 if (location != null) {
                     coordinates = location.latitude to location.longitude
                     lastLocationStorage.save(location.latitude, location.longitude)
+                    locationName = "Current location"
                 } else {
-                    coordinates = lastLocationStorage.observeLocation().first() ?: return Result.retry()
+                    val cached = lastLocationStorage.observeLocation().first() ?: return Result.retry()
+                    coordinates = cached.first to cached.second
+                    locationName = cached.third ?: "Current location"
                 }
-
-                locationName = "Current location"
             }
 
             return when (val weatherResult = getWeatherUseCase(coordinates.first, coordinates.second)) {

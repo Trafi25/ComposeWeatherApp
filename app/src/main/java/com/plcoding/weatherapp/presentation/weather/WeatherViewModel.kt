@@ -94,13 +94,14 @@ class WeatherViewModel
                         )
                     }
                     locationTracker.getCurrentLocation()?.let { location ->
-                        lastLocationStorage.save(location.latitude, location.longitude)
                         val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
+                        lastLocationStorage.save(location.latitude, location.longitude, name)
                         fetchWeather(location.latitude, location.longitude, name ?: "Current location", null)
-                    } ?: run {
-                        _uiState.update { it.copy(isLoading = false, errorMessage = "Location unavailable.") }
-                        _effect.emit(WeatherEffect.RequestLocationPermission)
                     }
+                        ?: run {
+                            _uiState.update { it.copy(isLoading = false, errorMessage = "Location unavailable.") }
+                            _effect.emit(WeatherEffect.RequestLocationPermission)
+                        }
                 }
         }
 
