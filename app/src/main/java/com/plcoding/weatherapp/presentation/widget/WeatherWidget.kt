@@ -34,7 +34,6 @@ import androidx.glance.text.Text
 import androidx.glance.text.TextStyle
 import androidx.glance.unit.ColorProvider
 import com.plcoding.weatherapp.R
-import com.plcoding.weatherapp.data.preferences.WidgetLocationStorage
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.util.Result
 import com.plcoding.weatherapp.domain.weather.WeatherData
@@ -65,7 +64,7 @@ class WeatherWidget : GlanceAppWidget() {
         val cityUseCases = entryPoint.getSavedCityUseCases()
         val settingsRepository = entryPoint.getSettingsRepository()
         val formatter = entryPoint.getWeatherValueFormatter()
-        val widgetLocationStorage = entryPoint.getWidgetLocationStorage()
+        val lastLocationStorage = entryPoint.getLastLocationStorage()
 
         val settings = settingsRepository.observeSettings().first()
         val selectedCityId = selectedLocationRepository.observeSelectedCityId().first()
@@ -84,9 +83,9 @@ class WeatherWidget : GlanceAppWidget() {
             val location = locationTracker.getCurrentLocation()
             if (location != null) {
                 coordinates = location.latitude to location.longitude
-                widgetLocationStorage.save(location.latitude, location.longitude)
+                lastLocationStorage.save(location.latitude, location.longitude)
             } else {
-                coordinates = widgetLocationStorage.observeLocation().first()
+                coordinates = lastLocationStorage.observeLocation().first()
                 Log.d("WeatherWidget", "Using stored location=$coordinates")
             }
         }
