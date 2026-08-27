@@ -32,10 +32,8 @@ class WeatherWidget : GlanceAppWidget() {
         val settings = settingsRepository.observeSettings().first()
         val selectedCityId = selectedLocationRepository.observeSelectedCityId().first()
 
-        // 1. Визначаємо місто згідно з вибором у додатку
         val selectedCity = selectedCityId?.let { cityUseCases.getCity(it) }
 
-        // 2. Визначаємо координати та назву (Пріоритет: Вибране місто -> Свіжий GPS -> Кеш додатка)
         val (latitude, longitude, locationName) =
             if (selectedCity != null) {
                 Triple(selectedCity.latitude, selectedCity.longitude, selectedCity.name)
