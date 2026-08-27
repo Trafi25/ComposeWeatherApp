@@ -6,6 +6,7 @@ import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.TemperatureUnit
 import com.plcoding.weatherapp.domain.usecase.SettingsUseCases
 import com.plcoding.weatherapp.presentation.weather.state.WeatherEffect
+import com.plcoding.weatherapp.presentation.widget.WeatherWidgetUpdater
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
@@ -24,6 +25,7 @@ import org.junit.jupiter.api.Test
 class SettingsViewModelTest {
     private lateinit var viewModel: SettingsViewModel
     private val settingsUseCases: SettingsUseCases = mockk(relaxed = true)
+    private val weatherWidgetUpdater: WeatherWidgetUpdater = mockk(relaxed = true)
 
     private val testDispatcher = UnconfinedTestDispatcher()
     private val settingsFlow = MutableStateFlow(AppSettings())
@@ -32,7 +34,7 @@ class SettingsViewModelTest {
     fun setUp() {
         Dispatchers.setMain(testDispatcher)
         every { settingsUseCases.observeSettings() } returns settingsFlow
-        viewModel = SettingsViewModel(settingsUseCases)
+        viewModel = SettingsViewModel(settingsUseCases, weatherWidgetUpdater)
     }
 
     @AfterEach
