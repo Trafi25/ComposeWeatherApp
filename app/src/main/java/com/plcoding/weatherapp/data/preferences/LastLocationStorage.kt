@@ -11,32 +11,34 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class LastLocationStorage @Inject constructor(
-    @ApplicationContext private val context: Context,
-) {
-    private companion object {
-        val KEY_LATITUDE = doublePreferencesKey("last_known_lat")
-        val KEY_LONGITUDE = doublePreferencesKey("last_known_long")
-        val KEY_LOCATION_NAME = stringPreferencesKey("last_known_name")
-    }
-
-    suspend fun save(
-        latitude: Double,
-        longitude: Double,
-        name: String? = null,
+class LastLocationStorage
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
     ) {
-        context.locationDataStore.edit { prefs ->
-            prefs[KEY_LATITUDE] = latitude
-            prefs[KEY_LONGITUDE] = longitude
-            name?.let { prefs[KEY_LOCATION_NAME] = it }
+        private companion object {
+            val KEY_LATITUDE = doublePreferencesKey("last_known_lat")
+            val KEY_LONGITUDE = doublePreferencesKey("last_known_long")
+            val KEY_LOCATION_NAME = stringPreferencesKey("last_known_name")
         }
-    }
 
-    fun observeLocation(): Flow<Triple<Double, Double, String?>?> =
-        context.locationDataStore.data.map { prefs ->
-            val lat = prefs[KEY_LATITUDE]
-            val lon = prefs[KEY_LONGITUDE]
-            val name = prefs[KEY_LOCATION_NAME]
-            if (lat != null && lon != null) Triple(lat, lon, name) else null
+        suspend fun save(
+            latitude: Double,
+            longitude: Double,
+            name: String? = null,
+        ) {
+            context.locationDataStore.edit { prefs ->
+                prefs[KEY_LATITUDE] = latitude
+                prefs[KEY_LONGITUDE] = longitude
+                name?.let { prefs[KEY_LOCATION_NAME] = it }
+            }
         }
-}
+
+        fun observeLocation(): Flow<Triple<Double, Double, String?>?> =
+            context.locationDataStore.data.map { prefs ->
+                val lat = prefs[KEY_LATITUDE]
+                val lon = prefs[KEY_LONGITUDE]
+                val name = prefs[KEY_LOCATION_NAME]
+                if (lat != null && lon != null) Triple(lat, lon, name) else null
+            }
+    }

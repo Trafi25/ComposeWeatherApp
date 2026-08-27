@@ -7,10 +7,12 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class WeatherWidgetUpdater @Inject constructor(
-    @ApplicationContext private val context: Context
-) {
-    suspend fun update() {
-        WeatherWidget().updateAll(context)
+class WeatherWidgetUpdater
+    @Inject
+    constructor(
+        @ApplicationContext private val context: Context,
+    ) {
+        suspend fun update() {
+            WeatherWidget().updateAll(context)
+        }
     }
-}
