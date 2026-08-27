@@ -43,8 +43,10 @@ internal class DefaultLocationTracker
                     )
 
             if (
-                (!hasAccessFineLocationPermission &&
-                    !hasAccessCoarseLocationPermission) ||
+                (
+                    !hasAccessFineLocationPermission &&
+                        !hasAccessCoarseLocationPermission
+                ) ||
                 !isGpsEnabled
             ) {
                 return null

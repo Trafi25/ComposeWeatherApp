@@ -1,4 +1,4 @@
-package com.plcoding.weatherapp.presentation.widget
+package com.plcoding.weatherapp.presentation.widget.components
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.unit.dp
@@ -23,14 +23,17 @@ import com.plcoding.weatherapp.presentation.MainActivity
 @Composable
 fun NoLocationContent() {
     Box(
-        modifier = GlanceModifier.fillMaxSize().background(ImageProvider(R.drawable.bg_widget))
-            .clickable(
-                actionStartActivity<MainActivity>(),
-            ),
+        modifier =
+            GlanceModifier
+                .fillMaxSize()
+                .background(ImageProvider(R.drawable.bg_widget))
+                .clickable(
+                    actionStartActivity<MainActivity>(),
+                ),
         contentAlignment = Alignment.Center,
     ) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Text(
                 text = "No location data",

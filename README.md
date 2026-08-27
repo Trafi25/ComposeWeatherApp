@@ -16,6 +16,7 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
 - **7-Day Forecast**: Long-term weather outlook.
 - **City Management**: Search for any city globally and save your favorites for quick access.
 - **Location Awareness**: Automatic weather detection based on your current GPS location.
+- **Home Screen Widget**: Stay updated at a glance with a custom widget built using **Jetpack Glance**, supporting dynamic updates and multiple states (Success, Error, No Location).
 - **Resilient Caching**:
   - **Network Fallback**: Smart fallback to **Room** cache during network failures (`IOException`) or server errors (`HttpException`).
   - **Location-based Keys**: Weather data is cached using coordinate-based keys (rounded to 4 decimal places) for high-precision local updates.
@@ -42,13 +43,15 @@ A modern, clean, and feature-rich weather application built with **Jetpack Compo
 
 ## Tech Stack
 
-- **UI**: Jetpack Compose for a modern declarative UI.
+- **UI**: **Jetpack Compose** for a modern declarative UI.
+- **Widget**: **Jetpack Glance** for interactive home screen widgets.
 - **Architecture**: Clean Architecture with MVVM + MVI pattern.
-- **Dependency Injection**: Hilt + Hilt-Work for background injection.
-- **Networking**: Retrofit + Moshi for API communication.
-- **Background Tasks**: WorkManager for scheduled notifications.
-- **Local Database**: Room for caching and storage.
-- **Preferences**: DataStore for persistent settings.
+- **Processing**: **KSP (Kotlin Symbol Processing)** for faster compilation and better Kotlin support.
+- **Dependency Injection**: **Hilt** + Hilt-Work for background injection.
+- **Networking**: **Retrofit** + **Moshi** for API communication.
+- **Background Tasks**: **WorkManager** for scheduled notifications and widget updates.
+- **Local Database**: **Room** for caching and storage.
+- **Preferences**: **DataStore** for persistent settings.
 - **Animations**: Compose Animation APIs with custom Spring physics.
 
 ## Project Structure
@@ -68,11 +71,14 @@ com.plcoding.weatherapp
 │   └── weather         # Weather domain models
 ├── presentation        # UI layer (Composables, ViewModels, State)
 │   ├── ui.theme        # Color, Type, and Theme definitions
-│   └── weather         # Weather feature screens and components
-│       ├── current     # Current weather components
-│       ├── hourly      # Hourly forecast components
-│       ├── daily       # Daily forecast components
-│       └── state       # MVI State and Actions
+│   ├── weather         # Weather feature screens and components
+│   │   ├── current     # Current weather components
+│   │   ├── hourly      # Hourly forecast components
+│   │   ├── daily       # Daily forecast components
+│   │   └── state       # MVI State and Actions
+│   └── widget          # Jetpack Glance widget implementation
+│       ├── components  # Widget UI components
+│       └── worker      # Widget background update logic
 ├── notification        # WorkManager Workers and Notification logic
 └── di                  # Dependency Injection modules
 ```
