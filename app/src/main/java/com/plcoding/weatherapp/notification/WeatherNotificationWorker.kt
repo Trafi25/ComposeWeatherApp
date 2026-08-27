@@ -6,6 +6,7 @@ import androidx.annotation.RequiresPermission
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
+import com.plcoding.weatherapp.data.preferences.LastLocationStorage
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
 import com.plcoding.weatherapp.domain.repository.SettingsRepository
@@ -28,6 +29,7 @@ class WeatherNotificationWorker
         private val cityUseCases: SavedCityUseCases,
         private val locationTracker: LocationTracker,
         private val settingsRepository: SettingsRepository,
+        private val lastLocationStorage: LastLocationStorage,
     ) : CoroutineWorker(context, workerParameters) {
         @RequiresPermission(Manifest.permission.POST_NOTIFICATIONS)
         override suspend fun doWork(): WorkerResult {
@@ -48,9 +50,14 @@ class WeatherNotificationWorker
 
                 locationName = city.name
             } else {
-                val location = locationTracker.getCurrentLocation() ?: return Result.retry()
+                val location = locationTracker.getCurrentLocation()
 
-                coordinates = location.latitude to location.longitude
+                if (location != null) {
+                    coordinates = location.latitude to location.longitude
+                    lastLocationStorage.save(location.latitude, location.longitude)
+                } else {
+                    coordinates = lastLocationStorage.observeLocation().first() ?: return Result.retry()
+                }
 
                 locationName = "Current location"
             }

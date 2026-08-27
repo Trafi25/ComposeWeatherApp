@@ -2,6 +2,7 @@ package com.plcoding.weatherapp.presentation.weather
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.plcoding.weatherapp.data.preferences.LastLocationStorage
 import com.plcoding.weatherapp.domain.location.LocationNameResolver
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
@@ -39,6 +40,7 @@ class WeatherViewModel
         private val locationNameResolver: LocationNameResolver,
         private val generateWeatherSummaryUseCase: GenerateWeatherSummaryUseCase,
         private val cityUseCases: SavedCityUseCases,
+        private val lastLocationStorage: LastLocationStorage,
     ) : ViewModel() {
         private val _uiState = MutableStateFlow(WeatherState())
         val uiState: StateFlow<WeatherState> = _uiState.asStateFlow()
@@ -92,6 +94,7 @@ class WeatherViewModel
                         )
                     }
                     locationTracker.getCurrentLocation()?.let { location ->
+                        lastLocationStorage.save(location.latitude, location.longitude)
                         val name = locationNameResolver.getLocationName(location.latitude, location.longitude)
                         fetchWeather(location.latitude, location.longitude, name ?: "Current location", null)
                     } ?: run {

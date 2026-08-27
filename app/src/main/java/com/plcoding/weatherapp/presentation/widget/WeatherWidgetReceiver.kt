@@ -1,5 +1,6 @@
 package com.plcoding.weatherapp.presentation.widget import androidx.glance.appwidget.GlanceAppWidget
 import androidx.glance.appwidget.GlanceAppWidgetReceiver
+import com.plcoding.weatherapp.data.preferences.LastLocationStorage
 import com.plcoding.weatherapp.domain.location.LocationTracker
 import com.plcoding.weatherapp.domain.repository.SelectedLocationRepository
 import com.plcoding.weatherapp.domain.repository.SettingsRepository
@@ -28,4 +29,6 @@ interface WeatherWidgetEntryPoint {
     fun getSettingsRepository(): SettingsRepository
 
     fun getWeatherValueFormatter(): WeatherValueFormatter
+
+    fun getLastLocationStorage(): LastLocationStorage
 }
