@@ -28,10 +28,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -90,7 +92,7 @@ fun CitySearchScreen(
                 OutlinedTextField(
                     value = state.query,
                     onValueChange = { onAction(CitySearchAction.QueryChanged(it)) },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().testTag(TestTags.CITY_SEARCH_BAR),
                     placeholder = {
                         Text(text = "Enter city name", color = onSurfaceColor.copy(alpha = 0.7f))
                     },

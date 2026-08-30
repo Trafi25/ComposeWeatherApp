@@ -19,12 +19,14 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.settings.AppSettings
 import com.plcoding.weatherapp.domain.settings.displayName
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.weather.settings.components.ColorSelectionRow
 import com.plcoding.weatherapp.presentation.weather.settings.components.SettingsItem
 import com.plcoding.weatherapp.presentation.weather.settings.components.SettingsSection
@@ -51,7 +53,10 @@ fun SettingsScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = { onAction(SettingsAction.BackClicked) }) {
+                    IconButton(
+                        onClick = { onAction(SettingsAction.BackClicked) },
+                        modifier = Modifier.testTag(TestTags.SETTINGS_BACK_BUTTON),
+                    ) {
                         Icon(
                             painter = painterResource(R.drawable.back_icon),
                             contentDescription = "Back",
@@ -73,7 +78,8 @@ fun SettingsScreen(
                 Modifier
                     .fillMaxSize()
                     .padding(paddingValues)
-                    .verticalScroll(rememberScrollState()),
+                    .verticalScroll(rememberScrollState())
+                    .testTag(TestTags.SETTINGS_CONTENT),
         ) {
             SettingsSection(title = "UNITS") {
                 SettingsItem(

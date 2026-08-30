@@ -20,9 +20,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.sp
 import com.plcoding.weatherapp.R
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.formatter.LocalWeatherValueFormatter
 import com.plcoding.weatherapp.presentation.ui.theme.sizes
 import com.plcoding.weatherapp.presentation.ui.theme.spacing
@@ -41,7 +43,7 @@ fun WeatherCard(
         Card(
             backgroundColor = backgroundColor,
             shape = MaterialTheme.shapes.medium,
-            modifier = modifier.padding(MaterialTheme.spacing.medium),
+            modifier = modifier.padding(MaterialTheme.spacing.medium).testTag(TestTags.WEATHER_CARD),
         ) {
             Column(
                 modifier =

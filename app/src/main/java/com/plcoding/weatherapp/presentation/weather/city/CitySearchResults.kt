@@ -13,9 +13,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.domain.location.City
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.weather.state.CitySearchState
 
 @Composable
@@ -60,7 +62,7 @@ fun CitySearchResults(
             )
         else -> {
             LazyColumn(
-                modifier = modifier.fillMaxSize(),
+                modifier = modifier.fillMaxSize().testTag(TestTags.CITY_SEARCH_RESULTS),
             ) {
                 items(
                     items = state.results,

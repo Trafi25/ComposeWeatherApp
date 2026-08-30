@@ -25,11 +25,13 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.plcoding.weatherapp.R
 import com.plcoding.weatherapp.domain.location.City
+import com.plcoding.weatherapp.presentation.TestTags
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -75,6 +77,7 @@ fun CityManagerScreen(
                 onClick = { onAction(CityManagerAction.AddCityClicked) },
                 containerColor = MaterialTheme.colorScheme.surface,
                 contentColor = MaterialTheme.colorScheme.onSurface,
+                modifier = Modifier.testTag(TestTags.CITY_MANAGER_ADD_BUTTON),
             ) {
                 Icon(
                     painter = painterResource(R.drawable.add_icon),
@@ -112,7 +115,7 @@ fun CityManagerScreen(
                     )
                 } else {
                     LazyColumn(
-                        modifier = Modifier.fillMaxWidth().weight(1f),
+                        modifier = Modifier.fillMaxWidth().weight(1f).testTag(TestTags.CITY_MANAGER_LIST),
                     ) {
                         items(
                             items = cities,

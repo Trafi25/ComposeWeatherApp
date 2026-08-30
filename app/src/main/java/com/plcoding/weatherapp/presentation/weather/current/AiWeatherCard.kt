@@ -14,6 +14,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.ui.theme.spacing
 
 @Composable
@@ -27,7 +29,8 @@ fun AiWeatherCard(
         modifier =
             modifier
                 .fillMaxWidth()
-                .padding(MaterialTheme.spacing.medium),
+                .padding(MaterialTheme.spacing.medium)
+                .testTag(TestTags.AI_SUMMARY_CARD),
         colors =
             CardDefaults.cardColors(
                 containerColor = MaterialTheme.colorScheme.surface,
