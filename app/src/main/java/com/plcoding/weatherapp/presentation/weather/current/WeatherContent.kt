@@ -20,7 +20,9 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.unit.dp
+import com.plcoding.weatherapp.presentation.TestTags
 import com.plcoding.weatherapp.presentation.ui.theme.spacing
 import com.plcoding.weatherapp.presentation.weather.WeatherAction
 import com.plcoding.weatherapp.presentation.weather.common.WeatherErrorContent
@@ -42,7 +44,7 @@ fun WeatherContent(
         onRefresh = {
             onAction(WeatherAction.Refresh)
         },
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier.fillMaxSize().testTag(TestTags.WEATHER_MAIN_CONTENT),
     ) {
         Column(
             modifier =
@@ -164,7 +166,7 @@ fun WeatherContent(
 
                     if (uiState.isLoading && uiState.weatherInfo == null) {
                         CircularProgressIndicator(
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.Center).testTag(TestTags.WEATHER_LOADING_INDICATOR),
                         )
                     }
 
@@ -177,7 +179,7 @@ fun WeatherContent(
                             onDismiss = {
                                 onAction(WeatherAction.ErrorDismissed)
                             },
-                            modifier = Modifier.align(Alignment.Center),
+                            modifier = Modifier.align(Alignment.Center).testTag(TestTags.WEATHER_ERROR_CONTENT),
                         )
                     }
                 }
